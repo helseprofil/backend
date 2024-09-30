@@ -1,0 +1,320 @@
+Kommune;DepartmentID;OrgNo;Skole;Bydel;GEO
+Bergen;1613;874738352;Alvøen skole;Laksevåg;460105
+Bergen;1614;986171096;Apeltun skole;Fana;460103
+Bergen;1617;974222078;Aurdalslia skole;Ytrebygda;460106
+Bergen;1624;974738627;Bjørndalsskogen skole;Laksevåg;460105
+Bergen;1625;974737817;Blokkhaugen skole;Åsane;460108
+Bergen;1626;980155307;Breimyra skole;Åsane;460108
+Bergen;1627;974738287;Bønes skole;Fyllingsdalen;460104
+Bergen;1628;974737957;Christi Krybbe Skoler;Bergenhus;460102
+Bergen;1630;974738392;Damsgård skole;Laksevåg;460105
+Bergen;1633;974738554;Eidsvåg skole;Åsane;460108
+Bergen;1635;976654773;Fjellsdalen skole;Fyllingsdalen;460104
+Bergen;1636;974738740;Flaktveit skole;Åsane;460108
+Bergen;1637;974737949;Fridalen skole;Årstad;460107
+Bergen;1639;974738120;Garnes skule;Arna;460101
+Bergen;1640;974738473;Garnes ungdomsskule;Arna;460101
+Bergen;1642;974738015;Gimle Oppveksttun Skole;Årstad;460107
+Bergen;1645;974738562;Haukedalen skole;Åsane;460108
+Bergen;1646;974737930;Haukeland skole;Bergenhus;460102
+Bergen;1647;974738066;Haukås skole;Åsane;460108
+Bergen;1649;974737892;Hellen skole;Bergenhus;460102
+Bergen;1650;874738182;Hjellestad skole;Ytrebygda;460106
+Bergen;1651;974738368;Holen skole;Laksevåg;460105
+Bergen;1652;874738522;Hop Oppveksttun skole;Fana;460103
+Bergen;1653;974738023;Hordvik skole;Åsane;460108
+Bergen;1659;974738333;Kaland skole;Fana;460103
+Bergen;1660;974738503;Kalvatræet skole;Åsane;460108
+Bergen;1661;974738252;Kirkevoll skole;Fana;460103
+Bergen;1662;974738449;Kjøkkelvik skole;Laksevåg;460105
+Bergen;1663;874222062;Kringlebotn skole;Fana;460103
+Bergen;1664;974737914;Krohnengen skole;Bergenhus;460102
+Bergen;1666;974738228;Krokeide skole;Fana;460103
+Bergen;1668;974737922;Kronstad skole;Årstad;460107
+Bergen;1669;874738042;Kyrkjekrinsen skole;Åsane;460108
+Bergen;1673;974737868;Landås skole;Årstad;460107
+Bergen;1677;874738662;Li skole;Åsane;460108
+Bergen;1678;974738279;Liland skole;Ytrebygda;460106
+Bergen;1679;974738589;Loddefjord skole;Laksevåg;460105
+Bergen;1680;974738112;Lone skule;Arna;460101
+Bergen;1681;974738481;Lynghaug skole;Fyllingsdalen;460104
+Bergen;1682;974738406;Lyshovden Oppveksttun Avd skole;Fyllingsdalen;460104
+Bergen;1684;974738538;Løvås Oppveksttun - skole;Fyllingsdalen;460104
+Bergen;1686;974738376;Mathopen skole;Laksevåg;460105
+Bergen;1687;974738341;Midtun skole;Fana;460103
+Bergen;1688;974738295;Minde skole;Årstad;460107
+Bergen;1689;974738031;Mjølkeråen skole;Åsane;460108
+Bergen;1690;974737965;Møhlenpris Oppveksttun Avd skole;Bergenhus;460102
+Bergen;1691;974738309;Nattland Oppveksttun - skole;Fana;460103
+Bergen;1692;874737852;Nordnes skole;Bergenhus;460102
+Bergen;1694;974737906;Ny Krohnborg skole;Årstad;460107
+Bergen;1696;974738546;Nygårdslien skole;Laksevåg;460105
+Bergen;1697;974738635;Olsvik skole;Laksevåg;460105
+Bergen;1698;974738414;Ortun skole;Fyllingsdalen;460104
+Bergen;1699;974738317;Paradis skole;Fana;460103
+Bergen;1701;974737825;Rolland skole;Åsane;460108
+Bergen;1702;874737992;Rothaugen skole;Bergenhus;460102
+Bergen;1705;974738600;Rå skole;Ytrebygda;460106
+Bergen;15265;992584602;Rådalslien skole;Fana;460103
+Bergen;1706;974738058;Salhus skule;Åsane;460108
+Bergen;1708;974737833;Sandgotna skole;Laksevåg;460105
+Bergen;1710;974737841;Seljedalen skole;Fyllingsdalen;460104
+Bergen;1711;974738171;Skeie skole;Ytrebygda;460106
+Bergen;1712;974738260;Skjold skole;Fana;460103
+Bergen;1713;979276028;Skranevatnet skole;Ytrebygda;460106
+Bergen;1714;974737876;Slettebakken skole;Årstad;460107
+Bergen;1715;974738457;Slåtthaug skole;Fana;460103
+Bergen;1717;974738325;Smørås skole;Fana;460103
+Bergen;1724;974738619;Storetveit skole;Fana;460103
+Bergen;1648;974738244;Sædalen skole;Fana;460103
+Bergen;1725;974737981;Sælen Oppveksttun Avd skole;Fyllingsdalen;460104
+Bergen;1726;974738236;Søreide skole;Ytrebygda;460106
+Bergen;1727;974739380;Søråshøgda skole;Ytrebygda;460106
+Bergen;1729;974738074;Tertnes skole;Åsane;460108
+Bergen;1730;974738155;Trengereid Oppveksttun Avd skule;Arna;460101
+Bergen;1732;974738643;Tveiterås skole;Fana;460103
+Bergen;1734;874738492;Ulsetskogen skole;Åsane;460108
+Bergen;1735;974738511;Ulsmåg skole;Fana;460103
+Bergen;1736;974738422;Vadmyra skole;Laksevåg;460105
+Bergen;1737;974737973;Varden skole;Fyllingsdalen;460104
+Bergen;1738;974738139;Ytre Arna skule;Arna;460101
+Bergen;1739;974738597;Ytrebygda skole;Ytrebygda;460106
+Bergen;1740;974738570;Ådnamarka skule;Arna;460101
+Bergen;1745;974738465;Åstveit skole;Åsane;460108
+Oslo;3101;974589648;Abildsø skole;Østensjø;030113
+Oslo;3102;974589656;Ammerud skole;Grorud;030110
+Oslo;3103;982254701;Apalløkka skole;Grorud;030110
+Oslo;3104;974590433;Bakås skole;Alna;030112
+Oslo;3106;974589664;Bekkelaget skole;Nordstrand;030114
+Oslo;40522;912697711;Berg skole;Nordre Aker;030108
+Oslo;3109;974589672;Bestum skole;Ullern;030106
+Oslo;3111;974589680;Bjølsen skole;Sagene;030103
+Oslo;3112;974590514;Bjørndal skole;Søndre Nordstrand;030115
+Oslo;3113;980953602;Bjørnholt ungdomsskole;Søndre Nordstrand;030115
+Oslo;3114;974590603;Bjørnsletta skole;Ullern;030106
+Oslo;3115;974590441;Bjøråsen skole;Grorud;030110
+Oslo;5015;987865997;Bogstad skole;Vestre Aker;030107
+Oslo;3118;974589702;Bolteløkka skole;St. Hanshaugen;030104
+Oslo;3119;974590581;Brannfjell skole;Nordstrand;030114
+Oslo;3122;974589710;Bryn skole;Alna;030112
+Oslo;40690;916513968;Brynseng skole;Gamle Oslo;030101
+Oslo;3123;974589729;Bygdøy skole;Frogner;030105
+Oslo;3124;974589737;Bøler skole;Østensjø;030113
+Oslo;3125;879128072;Disen skole;Nordre Aker;030108
+Oslo;3127;974589745;Ekeberg skole;Nordstrand;030114
+Oslo;3128;974590530;Ellingsrud skole;Alna;030112
+Oslo;3129;974589753;Ellingsrudåsen skole;Alna;030112
+Oslo;3131;979127642;Engebråten skole;Nordre Aker;030108
+Oslo;40573;913511204;Fagerborg skole;St. Hanshaugen;030104
+Oslo;40685;916203993;Fernanda Nissen skole;Sagene;030103
+Oslo;31732;996377210;Frydenberg skole;Grünerløkka;030102
+Oslo;3137;974589761;Furuset skole;Alna;030112
+Oslo;30618;995821664;Fyrstikkalleen skole;Gamle Oslo;030101
+Oslo;3138;973626442;Gamlebyen skole;Gamle Oslo;030101
+Oslo;3139;979927533;Godlia skole;Østensjø;030113
+Oslo;40572;913511085;Granstangen skole;Stovner;030111
+Oslo;3141;974589788;Grefsen skole;Nordre Aker;030108
+Oslo;3144;974589699;Grindbakken skole;Vestre Aker;030107
+Oslo;3145;974589796;Grorud skole;Grorud;030110
+Oslo;3146;979125917;Groruddalen skole;Grorud;030110
+Oslo;3147;874589802;Grünerløkka skole;Grünerløkka;030102
+Oslo;3148;974590417;Hallagerbakken skole;Søndre Nordstrand;030115
+Oslo;3150;974589818;Hasle skole;Grünerløkka;030102
+Oslo;3151;874590452;Haugen skole;Stovner;030111
+Oslo;3152;974590549;Haugenstua skole;Stovner;030111
+Oslo;3153;974590557;Haugerud skole;Alna;030112
+Oslo;3154;974590565;Hauketo skole;Søndre Nordstrand;030115
+Oslo;3160;874589772;Holmlia skole;Søndre Nordstrand;030115
+Oslo;3163;874590592;Hovseter skole;Vestre Aker;030107
+Oslo;3164;974589834;Huseby skole;Vestre Aker;030107
+Oslo;3165;974589842;Høybråten skole;Stovner;030111
+Oslo;3166;974589850;Høyenhall skole;Østensjø;030113
+Oslo;3167;974589869;Ila skole;St. Hanshaugen;030104
+Oslo;3168;974590506;Jeriko skole;Alna;030112
+Oslo;3169;880954342;Jordal skole;Gamle Oslo;030101
+Oslo;3170;974589877;Kampen skole;Gamle Oslo;030101
+Oslo;3171;979126743;Karlsrud skole;Nordstrand;030114
+Oslo;3172;987131780;Kastellet skole;Nordstrand;030114
+Oslo;3174;974589893;Kjelsås skole;Nordre Aker;030108
+Oslo;3175;974589907;Klemetsrud skole;Søndre Nordstrand;030115
+Oslo;3177;974589915;Korsvoll skole;Nordre Aker;030108
+Oslo;3178;975960315;Kringsjå skole;Nordre Aker;030108
+Oslo;3181;974589923;Lakkegata skole;Grünerløkka;030102
+Oslo;3182;974589931;Lambertseter skole;Nordstrand;030114
+Oslo;3184;874589942;Lilleaker skole;Ullern;030106
+Oslo;3185;974589958;Lilleborg skole;Sagene;030103
+Oslo;3186;974590468;Lindeberg skole;Alna;030112
+Oslo;3187;974589966;Linderud skole;Bjerke;030109
+Oslo;3188;974589974;Ljan skole;Nordstrand;030114
+Oslo;3189;974590794;Lofsrud skole;Søndre Nordstrand;030115
+Oslo;3190;973626450;Lusetjern skole;Søndre Nordstrand;030115
+Oslo;3191;976811232;Lutvann skole;Alna;030112
+Oslo;3192;974590522;Lysejordet skole;Ullern;030106
+Oslo;3193;974590786;Lønnebakken skole;Ullern;030106
+Oslo;39626;912033333;Løren skole;Bjerke;030109
+Oslo;3195;974589990;Majorstuen skole;Frogner;030105
+Oslo;3196;874590002;Manglerud skole;Østensjø;030113
+Oslo;3198;974590018;Maridalen skole;Nordre Aker;030108
+Oslo;3199;974590026;Marienlyst skole;St. Hanshaugen;030104
+Oslo;3200;974590808;Midtstuen skole;Vestre Aker;030107
+Oslo;37144;998469635;Morellbakken skole;Nordre Aker;030108
+Oslo;3203;974590492;Mortensrud skole;Søndre Nordstrand;030115
+Oslo;3204;974590034;Munkerud skole;Nordstrand;030114
+Oslo;3205;974590042;Møllergata skole;St. Hanshaugen;030104
+Oslo;3207;974590476;Nedre Bekkelaget skole;Nordstrand;030114
+Oslo;3208;979120087;Nordberg skole;Nordre Aker;030108
+Oslo;37115;997621506;Nordpolen skole;Sagene;030103
+Oslo;3209;974590611;Nordseter skole;Nordstrand;030114
+Oslo;3210;974590069;Nordstrand skole;Nordstrand;030114
+Oslo;42320;926000705;Nordstrand ungdomsskole;Nordstrand;030114
+Oslo;3212;974590077;Nordtvet skole;Grorud;030110
+Oslo;3217;974590085;Nøklevann skole;Østensjø;030113
+Oslo;3218;974590093;Oppsal skole;Østensjø;030113
+Oslo;3229;974590107;Prinsdal skole;Søndre Nordstrand;030115
+Oslo;3194;974589982;Refstad skole;Bjerke;030109
+Oslo;3230;974590824;Ris skole;Vestre Aker;030107
+Oslo;3231;974590115;Rommen skole;Stovner;030111
+Oslo;3232;974590050;Rosenholm skole;Søndre Nordstrand;030115
+Oslo;3234;974590131;Ruseløkka skole;Frogner;030105
+Oslo;3235;874590142;Rustad skole;Østensjø;030113
+Oslo;3237;974590158;Rødtvet skole;Grorud;030110
+Oslo;3238;974590166;Sagene skole;Sagene;030103
+Oslo;3241;979127502;Seterbråten skole;Søndre Nordstrand;030115
+Oslo;3242;974590174;Sinsen skole;Grünerløkka;030102
+Oslo;3243;874590282;Skjønnhaug skole;Alna;030112
+Oslo;3244;979126352;Skullerud skole;Østensjø;030113
+Oslo;3245;979128134;Skøyen skole;Ullern;030106
+Oslo;3246;876805022;Skøyenåsen skole;Østensjø;030113
+Oslo;3247;974590182;Slemdal skole;Vestre Aker;030107
+Oslo;3248;974590190;Smestad skole;Ullern;030106
+Oslo;39633;912187071;Sofienberg skole;Grünerløkka;030102
+Oslo;3253;973626434;Sollerudstranda skole;Ullern;030106
+Oslo;3255;974590646;Stasjonsfjellet skole;Stovner;030111
+Oslo;3258;975960277;Stenbråten skole;Søndre Nordstrand;030115
+Oslo;3260;974590212;Stovner skole;Stovner;030111
+Oslo;3264;979127413;Svendstuen skole;Vestre Aker;030107
+Oslo;3266;974590220;Sørkedalen skole;Vestre Aker;030107
+Oslo;40577;913579321;Teglverket skole Barne- og ungdomsskole;Grünerløkka;030102
+Oslo;3267;974590123;Tiurleiken skole;Grorud;030110
+Oslo;3268;874590622;Tokerud skole;Stovner;030111
+Oslo;3269;974590239;Tonsenhagen skole;Bjerke;030109
+Oslo;3270;974590484;Toppåsen skole;Søndre Nordstrand;030115
+Oslo;3271;974590247;Trasop skole;Østensjø;030113
+Oslo;3272;974590255;Trosterud skole;Alna;030112
+Oslo;3273;974590263;Tveita skole;Alna;030112
+Oslo;3274;974590271;Tøyen skole;Gamle Oslo;030101
+Oslo;3275;974590298;Tåsen skole;Nordre Aker;030108
+Oslo;3277;974590301;Ullevål skole;Nordre Aker;030108
+Oslo;3280;974590328;Uranienborg skole;Frogner;030105
+Oslo;3282;879126312;Vahl skole;Gamle Oslo;030101
+Oslo;3283;974590336;Veitvet skole;Bjerke;030109
+Oslo;3284;974590344;Vestli skole;Stovner;030111
+Oslo;3288;974590352;Vinderen skole;Vestre Aker;030107
+Oslo;3289;974590360;Voksen skole;Vestre Aker;030107
+Oslo;40749;918399267;Vollebekk skole;Bjerke;030109
+Oslo;3292;974590379;Vålerenga skole;Gamle Oslo;030101
+Oslo;3294;974590638;Øraker skole;Ullern;030106
+Oslo;3295;974590387;Østensjø skole;Østensjø;030113
+Oslo;3297;974590395;Årvoll skole;Bjerke;030109
+Oslo;;929177525;Voldsløkka skole;Nordre Aker;030108
+Oslo;;917526427;Holmen skole;Vestre Aker;030107
+Stavanger;3503;974611473;Auglend skole;Hillevåg;110306
+Stavanger;3504;974611244;Austbø skole;Hundvåg;110301
+Stavanger;3506;974611414;Buøy skole;Hundvåg;110301
+Stavanger;3507;874611662;Byfjord skole;Tasta;110302
+Stavanger;3508;974611457;Eiganes skole;Eiganes og Våland;110303
+Stavanger;3318;975289249;Finnøy Sentralskule;Finnøy;110308
+Stavanger;3319;975275345;Fogn oppvekstsenter Avdeling skule;Finnøy;110308
+Stavanger;3510;974611805;Gausel skole;Hinna;110307
+Stavanger;3511;874735582;Gautesete skole;Hinna;110307
+Stavanger;3513;974611341;Godeset skole;Hinna;110307
+Stavanger;3514;974611686;Gosen skole;Madla;110304
+Stavanger;3515;974611570;Hafrsfjord skole;Madla;110304
+Stavanger;3517;974611600;Hinna skole;Hinna;110307
+Stavanger;3519;974611546;Hundvåg skole;Hundvåg;110301
+Stavanger;3521;974611511;Jåtten skole;Hinna;110307
+Stavanger;3522;974611465;Kampen skole;Eiganes og Våland;110303
+Stavanger;3523;974611597;Kannik skole;Eiganes og Våland;110303
+Stavanger;3525;974611651;Kristianslyst skole;Hillevåg;110306
+Stavanger;3526;874611492;Kvaleberg skole;Hillevåg;110306
+Stavanger;3527;974611678;Kvernevik skole;Madla;110304
+Stavanger;3528;977506123;Lassa skole;Eiganes og Våland;110303
+Stavanger;3529;983083269;Lunde skole;Hundvåg;110301
+Stavanger;3530;974611562;Madlamark skole;Madla;110304
+Stavanger;3531;974611813;Madlavoll skole;Madla;110304
+Stavanger;3435;975275299;Mosterøy skole;Rennesøy;110309
+Stavanger;3534;974611422;Nylund skole;Storhaug;110305
+Stavanger;3436;975275272;Rennesøy skule;Rennesøy;110309
+Stavanger;3537;974611627;Revheim skole;Madla;110304
+Stavanger;3538;974611376;Roaldsøy skole;Hundvåg;110301
+Stavanger;3540;874611832;Skeie skole;Hundvåg;110301
+Stavanger;3541;974611848;Smiodden skole;Madla;110304
+Stavanger;3544;974611635;St. Svithun skole;Storhaug;110305
+Stavanger;3550;974611430;Storhaug skole;Storhaug;110305
+Stavanger;3551;974611589;Sunde skole;Madla;110304
+Stavanger;3552;974611538;Tasta skole;Tasta;110302
+Stavanger;3553;984034547;Tastarustå skole;Tasta;110302
+Stavanger;3554;974611619;Tastaveden skole;Tasta;110302
+Stavanger;3555;977506077;Teinå skole;Tasta;110302
+Stavanger;3557;874611522;Tjensvoll skole;Hillevåg;110306
+Stavanger;3559;974611481;Ullandhaug skole;Hillevåg;110306
+Stavanger;3560;974611406;Vardenes skole;Tasta;110302
+Stavanger;3561;974611384;Vassøy skole;Storhaug;110305
+Stavanger;3562;974611503;Vaulen skole;Hinna;110307
+Stavanger;3437;983618979;Vikevåg skule;Rennesøy;110309
+Stavanger;3564;974611449;Våland skole;Eiganes og Våland;110303
+Trondheim;3963;975278964;Berg skole;Lerkendal;500103
+Trondheim;3965;975278867;Bispehaugen skole;Østbyen;500102
+Trondheim;3966;975279103;Blussuvoll skole;Lerkendal;500103
+Trondheim;3967;975278883;Bratsberg skole;Lerkendal;500103
+Trondheim;3968;975278956;Breidablikk skole;Heimdal;500104
+Trondheim;3969;975292886;Brundalen skole;Østbyen;500102
+Trondheim;3972;975278840;Byåsen skole;Midtbyen;500101
+Trondheim;3974;975278891;Charlottenlund barneskole;Østbyen;500102
+Trondheim;3975;975290158;Charlottenlund ungdomsskole;Østbyen;500102
+Trondheim;3979;979195052;Eberg skole;Lerkendal;500103
+Trondheim;3980;975299171;Flatåsen skole;Lerkendal;500103
+Trondheim;3983;975289796;Hallset skole;Midtbyen;500101
+Trondheim;3985;975298779;Hoeggen skole;Lerkendal;500103
+Trondheim;41930;921181183;Huseby barneskole - Ac Møller tegnspråksenter;Heimdal;500104
+Trondheim;3986;975267792;Huseby ungdomsskole;Heimdal;500104
+Trondheim;3987;979195346;Hårstad skole;Heimdal;500104
+Trondheim;3988;975278905;Ila skole;Midtbyen;500101
+Trondheim;40694;916594550;Jakobsli skole;Østbyen;500102
+Trondheim;3990;875299492;Kattem skole;Heimdal;500104
+Trondheim;3858;974588145;Klæbu ungdomsskole;Heimdal;500104
+Trondheim;3993;975278921;Lade skole;Østbyen;500102
+Trondheim;3996;975278859;Lilleby skole;Østbyen;500102
+Trondheim;3997;983210058;Markaplassen skole;Østbyen;500102
+Trondheim;3998;975289443;Nardo skole;Lerkendal;500103
+Trondheim;3999;875278932;Nidarvoll skole;Lerkendal;500103
+Trondheim;4001;975278948;Nyborg skole;Midtbyen;500101
+Trondheim;4002;975278972;Nypvang skole;Heimdal;500104
+Trondheim;4003;979195192;Okstad skole;Lerkendal;500103
+Trondheim;4004;975278980;Ranheim skole;Østbyen;500102
+Trondheim;4006;975267806;Romolslia skole;Lerkendal;500103
+Trondheim;4007;875279092;Rosenborg skole;Østbyen;500102
+Trondheim;4008;975300102;Rosten skole;Heimdal;500104
+Trondheim;4009;975278999;Rye skole;Heimdal;500104
+Trondheim;4011;875295942;Selsbakk skole;Midtbyen;500101
+Trondheim;4012;976677269;Singsaker skole;Midtbyen;500101
+Trondheim;4013;875290142;Sjetne skole;Lerkendal;500103
+Trondheim;4015;975279006;Solbakken skole;Østbyen;500102
+Trondheim;4016;975279081;Spongdal skole;Heimdal;500104
+Trondheim;4017;975298582;Stabbursmoen skole;Heimdal;500104
+Trondheim;4018;975324761;Stavset skole;Midtbyen;500101
+Trondheim;4019;975297519;Steindal skole;Lerkendal;500103
+Trondheim;4024;975279014;Strindheim skole;Østbyen;500102
+Trondheim;4025;975279073;Sunnland skole;Lerkendal;500103
+Trondheim;4026;975279065;Sverresborg skole;Midtbyen;500101
+Trondheim;3859;975298515;Sørborgen skole;Heimdal;500104
+Trondheim;3860;975300072;Tanem skole;Heimdal;500104
+Trondheim;4028;975298736;Tonstad skole;Heimdal;500104
+Trondheim;42027;923189963;Trondheim Idrettsungdomsskole AS;Lerkendal;500103
+Trondheim;4034;975279057;Ugla skole;Midtbyen;500101
+Trondheim;4035;975294595;Utleira skole;Lerkendal;500103
+Trondheim;4036;975327043;Vikåsen skole;Østbyen;500102
+Trondheim;4037;975279022;Åsheim barneskole;Heimdal;500104
+Trondheim;4038;975279049;Åsheim ungdomsskole;Heimdal;500104
+Trondheim;4039;975278875;Åsvang skole;Lerkendal;500103
+Trondheim;4040;975279030;Åsveien skole og ressurssenter;Midtbyen;500101

@@ -1,0 +1,123 @@
+# Geo recode reference year
+# To select which geo recode table to use eg. 2021 will use tables grunnkrets2021, kommune2021 etc
+year: 2024
+
+# Only in use up to version 1.4.6
+encoding: latin1
+# Implemented from version 1.4.7
+encoding.access: UTF-8
+encoding.csv: Latin-1
+
+win.drive: "O:"
+linux.drive: "/mnt/O"
+
+# Where the database files are kept
+folder.db:
+ - "Prosjekt/FHP/PRODUKSJON/STYRING/raw-khelse"
+
+# Where the original data files are read from
+folder.data:
+ - "Prosjekt/FHP/PRODUKSJON/ORGDATA"
+
+# Foldername to keep all original data in DuckDB. Root folder is folder.db above
+folder.org.db: org_database
+
+# Access database file for orgdata
+db: raw-database_BE.accdb
+
+# Access database file for geo codes
+geo: geo-koder.accdb
+
+verbose: TRUE
+aggregate: TRUE
+implicit.null: TRUE
+
+# Use year as in the original data for geo recode and aggregate
+# See do_geo_recode documentation on arg "base"
+recode.base: FALSE
+
+# Read data directly from original file if TRUE ie. raw data, even if the dataset is already in DuckDB
+# or marked as KONTROLLERT in Access. Options can also be activated in `make_file()` argument
+read.raw: TRUE
+
+# Number of column for TABS and VALS
+tabs: 3
+vals: 3
+
+# Geographical granularities
+geo.levels:
+  - land
+  - grunnkrets
+  - fylke
+  - kommune
+  - bydel
+  - delbydel
+  - levekaar
+
+## How many digits to represent geo codes including the leading zero
+geo.digits:
+  - land : 1
+  - grunnkrets : 8
+  - fylke : 2
+  - kommune : 4
+  - bydel : 6
+  - delbydel : 8
+  - levekaar : 8
+
+# Abbreviation for geo granularities that will be used in AGGREGATE column in
+# tabel FILGRUPPE in MS Access database.
+geo.abv:
+  - land : L
+  - grunnkrets : G
+  - fylke : F
+  - kommune : K
+  - bydel : B
+  - delbydel : D
+  - levekaar : V
+
+# Standard columns that will be in the output dataset whenever available in the
+# original dataset
+columns:
+ - GEO
+ - LEVEL
+ - AAR
+ - KJONN
+ - ALDER
+ - UTDANN
+ - LANDSSB
+
+# Columns with numeric values. GEO must not be converted to numeric at early
+# stage because some geo codes have to be a combination of 2 columns and need
+# to keep the leading 0 on second column before merging. GEO will only be
+# converted to numeric after merging
+num:
+ - GEO
+ - AAR
+ - KJONN
+ - ALDER
+
+# MISC -----------------
+emoji: mark
+
+# -----------------------------------------------
+# Use for debuging only
+# -----------------------------------------------
+# Choose "deep" to show helper functions as well
+debug: FALSE
+
+# If other than 0 then x rows will be selected
+debug.nrow: 0
+
+# Select specific rows eg. 20:50, else default is NULL
+debug.rows: NULL
+
+# Recode but don't aggregate if TRUE
+debug.aggregate: FALSE
+
+# Keep old geo if TRUE
+debug.geo: FALSE
+
+# -----------------
+# TESTING
+# -----------------
+opt.test: 400

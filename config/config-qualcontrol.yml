@@ -1,0 +1,51 @@
+year: 2024
+
+# Paths
+root: "O:/Prosjekt/FHP/PRODUKSJON"
+output: "VALIDERING/QualControl"
+files: "PRODUKTER/KUBER"
+mode: 
+  kh: "KOMMUNEHELSA"
+  nh: "NORGESHELSA"
+  fvb: "FRISKVIK_BYDEL"
+  fvk: "FRISKVIK_KOMM"
+  fvf: "FRISKVIK_FYLKE"
+  ovb: "OVP_BYDEL"
+  ovk: "OVP_KOMM"
+ 
+# Columns 
+rename:
+  "antall": TELLER
+  "Crude": RATE
+  "Adjusted": MEIS
+  "sumteller": sumTELLER
+  "sumnevner": sumNEVNER
+  "smr": SMR
+  "FLx": MEIS
+  "Utdanningsnivå": UTDANN
+  
+standarddimensions:
+  - GEO
+  - AAR
+  - KJONN
+  - ALDER
+  - UTDANN
+  - INNVKAT
+  - LANDBAK
+  
+standardvalues:
+  - TELLER
+  - sumTELLER
+  - NEVNER
+  - sumNEVNER
+  - MEIS
+  - RATE
+  - SMR
+  
+# Filedumps
+dumps:
+  - comparecube
+  - newcube_flag
+
+# DEVELOP parameters
+skipslowtest: TRUE
