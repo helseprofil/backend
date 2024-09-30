@@ -1,0 +1,56 @@
+---
+title: "Oppdatere GEO i Orgdata"
+output: html_document
+date: "2023-08-10"
+---
+
+Alle norgeo-mekanismene er bygget inn i kommandoer i orgdata.
+
+# Last inn funksjoner og sett årgang
+```{r}
+library(orgdata)
+aargang <- 2024
+```
+
+
+# Lage årgangstabellene for ny årgang
+
+Dette lager årgangstabellene, f.eks. grunnkrets2024, kommune2024, fylke2024.
+Alle SSBs endringstabeller for grunnkrets leses inn og stables. Så ryddes alle år uten endringer bort. Alle gamle koder mappes helt til gyldig kode i siste årgang. 
+
+Må kjøres eksplisitt for hvert geonivå - g, k, f, da dette lagres som tre ulike tabeller. 
+
+NB: Vi må ta "from" så langt tilbake som vi har data på grunnkrets.
+
+```{r}
+geo_recode("g", from = 1990, to = aargang, write = TRUE)
+geo_recode("k", from = 1990, to = aargang, write = TRUE)
+geo_recode("f", from = 1990, to = aargang, write = TRUE)
+
+```
+
+# Lage mapping mellom geonivåene for nyeste år
+
+Dette genererer tabellen tblGEO, som brukes for å aggregere fra et geonivå til et annet. Her kan du legge til en ny årgang i eksisterende tabell, eller generere hele tabellen på nytt. 
+
+## Legge til et år til eksisterende tabell
+
+NB: BRUK APPEND, ellers slettes tidligere årganger i tabellen.
+Nå hentes mappingtabellene for angitt år fra SSB.
+GK -> K, GK -> bydel, K -> F.
+Dersom disse ikke finnes, setter systemet selv opp den mappingen som følger av geokodene (dvs. GK -> K -> F).
+
+```{r}
+geo_map(year = aargang, 
+        append = TRUE) # må være TRUE for å legge til eksisterende tabell
+```
+
+## Lage hele tabellen fra bunnen
+
+Du kan også lage hele tabellen fra bunnen, for flere årganger, ved å bruke `geo_map_multi()`. Her setter du de årgangene du vil inkludere med argumentene `from` og `to`, og `write` = TRUE indikerer at hele tabellen skal overskrives. 
+
+```{r}
+geo_map_multi(from = 2022,
+              to = 2024,
+              write = TRUE) # DETTE OVERSKRIVER EKSISTERENDE TABELL
+```
