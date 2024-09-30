@@ -9,41 +9,12 @@ Script to compare and update the GEO-tables in ORGDATA and KHELSA
 
 
 ```{r setup, include=FALSE}
-# Sett encoding for R >= 4.2
-if(as.numeric(R.version$major) >= 4 & as.numeric(R.version$minor) >= 2){
-    Sys.setlocale("LC_ALL", "nb-NO.UTF-8")
-}
-
-# Load functions (required packages: RODBC, orgdata, and data.table)
-
-source("https://raw.githubusercontent.com/helseprofil/GeoMaster/master/functions_GeoMaster.R")
+source("https://raw.githubusercontent.com/helseprofil/backend/GeoMaster/main/R/functions_GeoMaster.R")
 
 # Database file paths
 root <- "F:/Forskningsprosjekter/PDB 2455 - Helseprofiler og til_/PRODUKSJON/STYRING/"
 khelsa <- "VERSJONSARKIV/KHELSA202012051008.mdb"
 geokoder <- "raw-khelse/geo-koder.accdb"
-```
-
-# Update GEO-tables for ORGDATA
-
-The following codes are used to generate updated versions of the geo-tables in `Orgdata` (geo-koders.accdb)
-
-- Saves tables in environment for inspection, check this before writing anything to the database
-- Change `write` to TRUE to update `recoding tables` in database
-- Change `append` to TRUE to update `tblGeo` in database
-
-```{r}
-year <- 2024
-write <- FALSE # only applies to recoding tables below, change to TRUE to update in database
-append <- FALSE # only applies to tblGeo below, change to TRUE to update in database
-
-# Recoding tables
-assign(paste0("kommune", year), orgdata::geo_recode("k", from = 1990, to = year, write = write, append = FALSE))
-assign(paste0("fylke", year), orgdata::geo_recode("f", from = 1990, to = year, write = write, append = FALSE))
-assign(paste0("grunnkrets", year), orgdata::geo_recode("g", from = 1990, to = year, write = write, append = FALSE))
-
-# tblGeo
-tblGeo <- geo_map(year = aargang, write = FALSE, append = append)
 ```
 
 # Update GEO-tables for KHELSA

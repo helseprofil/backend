@@ -1,5 +1,12 @@
 # GeoMaster
 
+R- og STATA-kode som brukes for å oppdatere GEO-tabeller, script med funksjoner ligger i dedikerte mapper. 
+
+## Brukerfiler
+
+- *ORGDATA_tabeller.Rmd* inneholder kode for å oppdatere geotabeller i orgdata (geo-koder.accdb)
+- *GEO_tabeller.Rmd* inneholder kode for å oppdatere geotabeller i KHELSA. 
+
 ## Flere spor:
 Verktøy for å oppdatere Geo-masterfiler fra ett år til neste. Manuell oppdatering, uavhengig av norgeo.
 
