@@ -141,18 +141,14 @@ DevelopSystems <- function(path,
   
   check_R_version()
 
-  projects <- c("norgeo", 
-                "produksjon",
+  projects <- c("produksjon",
                 "backend",
+                "norgeo", 
                 "orgdata", 
                 "khfunctions", 
                 "orgcube",
                 "qualcontrol",
-                "config", 
-                "GeoMaster", 
-                "misc", 
-                "manual", 
-                "snutter")
+                "manual")
   
   if(is.null(path)){
     path <- file.path(fs::path_home(), "helseprofil")
