@@ -9,7 +9,7 @@ readUngdata <- function(year, file){
   haven::read_spss(path)
 }
 
-ungdataKey <- function(file){
+ungdataKey <- function(fil){
   
   cols <- names(fil)
   cols <- cols[!cols %in% c("år", "tidspunkt", "kommune", "fylke", "søs", "vekt2020") & !grepl("bydel",cols)]
