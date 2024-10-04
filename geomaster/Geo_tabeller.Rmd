@@ -7,13 +7,16 @@ output: html_document
 
 Script to compare and update the GEO-tables in ORGDATA and KHELSA
 
+For å oppdatere tabellene for hvert geonivå i geo-databasen brukes funksjonen geo_recode(). Denne benytter track_change() fra norgeo, med fix = TRUE for å håndtere geosplitting. For å lage koblingstabellen som kobler koder fra ulike geonivå sammen (f.eks. grunnkrets -> kommune -> fylke -> bydel) brukes funksjonen geo_map().
+
+
 
 ```{r setup, include=FALSE}
 source("https://raw.githubusercontent.com/helseprofil/backend/GeoMaster/main/R/functions_GeoMaster.R")
 
 # Database file paths
-root <- "F:/Forskningsprosjekter/PDB 2455 - Helseprofiler og til_/PRODUKSJON/STYRING/"
-khelsa <- "VERSJONSARKIV/KHELSA202012051008.mdb"
+root <- "O:/Prosjekt/FHP/PRODUKSJON/STYRING/"
+khelsa <- "KHELSA.mdb"
 geokoder <- "raw-khelse/geo-koder.accdb"
 ```
 

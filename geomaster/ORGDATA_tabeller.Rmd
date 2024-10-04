@@ -6,6 +6,7 @@ date: "2023-08-10"
 
 Alle norgeo-mekanismene er bygget inn i kommandoer i orgdata.
 
+
 # Last inn funksjoner og sett årgang
 ```{r}
 library(orgdata)
@@ -14,6 +15,8 @@ aargang <- 2024
 
 
 # Lage årgangstabellene for ny årgang
+
+For å oppdatere tabellene for hvert geonivå i geo-databasen brukes funksjonen geo_recode(). Denne benytter track_change() fra norgeo, med fix = TRUE for å håndtere geosplitting.
 
 Dette lager årgangstabellene, f.eks. grunnkrets2024, kommune2024, fylke2024.
 Alle SSBs endringstabeller for grunnkrets leses inn og stables. Så ryddes alle år uten endringer bort. Alle gamle koder mappes helt til gyldig kode i siste årgang. 
@@ -30,6 +33,8 @@ geo_recode("f", from = 1990, to = aargang, write = TRUE)
 ```
 
 # Lage mapping mellom geonivåene for nyeste år
+
+For å lage koblingstabellen som kobler koder fra ulike geonivå sammen (f.eks. grunnkrets -> kommune -> fylke -> bydel) brukes funksjonen geo_map().
 
 Dette genererer tabellen tblGEO, som brukes for å aggregere fra et geonivå til et annet. Her kan du legge til en ny årgang i eksisterende tabell, eller generere hele tabellen på nytt. 
 
