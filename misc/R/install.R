@@ -44,7 +44,8 @@ ProfileSystems <- function(path = NULL,
   }
   
   if(isTRUE(packages)){
-    packages <- c("collapse",
+    packages <- c("beepr",
+                  "collapse",
                   "conflicted",
                   "data.table",
                   "devtools",
