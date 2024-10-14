@@ -57,5 +57,5 @@ Du kan også lage hele tabellen fra bunnen, for flere årganger, ved å bruke `g
 ```{r}
 geo_map_multi(from = 2022,
               to = 2024,
-              write = TRUE) # DETTE OVERSKRIVER EKSISTERENDE TABELL
+              write = T) # DETTE OVERSKRIVER EKSISTERENDE TABELL
 ```

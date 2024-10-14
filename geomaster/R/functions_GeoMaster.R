@@ -293,17 +293,19 @@ addleading0 <- function(data){
     cols <- names(data)[names(data) %in% allcols]
     data[, (cols) := lapply(.SD, as.character), .SDcols = cols]
     
-    
-    for(i in 1:length(cols[cols != "okonomisk"])){
-        data[level != "okonomisk" & get(cols[i]) != 0 & nchar(get(cols[i])) %in% c(1,3,5,7), (cols[i]) := paste0("0", get(cols[i]))]
-    }
-    
     # Special handling of "okonomisk" which should be 5 chars
-    
-    if("okonomisk" %in% names(data)){
+    if("okonomisk" %in% cols){
+      for(i in 1:length(cols[cols != "okonomisk"])){
+          data[level != "okonomisk" & get(cols[i]) != 0 & nchar(get(cols[i])) %in% c(1,3,5,7), (cols[i]) := paste0("0", get(cols[i]))]
+      }
       data[nchar(okonomisk) == 4, okonomisk := paste0("0", okonomisk)]
       data[level == "okonomisk" & nchar(code) == 4, code := paste0("0", code)]
+      return(data)
     }
     
-    data[]
+    for(i in 1:length(cols)){
+      data[get(cols[i]) != 0 & nchar(get(cols[i])) %in% c(1,3,5,7), (cols[i]) := paste0("0", get(cols[i]))]
+    }
+    
+    return(data)
 }

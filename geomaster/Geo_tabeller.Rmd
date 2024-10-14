@@ -12,7 +12,7 @@ For å oppdatere tabellene for hvert geonivå i geo-databasen brukes funksjonen 
 
 
 ```{r setup, include=FALSE}
-source("https://raw.githubusercontent.com/helseprofil/backend/GeoMaster/main/R/functions_GeoMaster.R")
+source("https://raw.githubusercontent.com/helseprofil/backend/main/geomaster/R/functions_GeoMaster.R")
 
 # Database file paths
 root <- "O:/Prosjekt/FHP/PRODUKSJON/STYRING/"
