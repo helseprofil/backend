@@ -4,7 +4,7 @@ library(orgdata)
 library(collapse)
 
 # Update to use correct files, default = production files
-root <- "O:/Prosjekt/FHP/PRODUKSJON/STYRING"
+root <- "O:/Prosjekt/FHP/PRODUKSJON/STYRING/"
 khelsa <- "KHELSA.mdb"
 geokoder <- "raw-khelse/geo-koder.accdb"
 # Functions used to update geo tables
@@ -289,11 +289,21 @@ GeoKoderUpdate <- function(year = 2024,
 # Helper function to convert GEO columns to character and add leading 0
 addleading0 <- function(data){
     
-    allcols <- c("GEO", "GEO_omk", "oldCode", "currentCode", "code", "grunnkrets", "kommune", "fylke", "bydel")
+    allcols <- c("GEO", "GEO_omk", "oldCode", "currentCode", "code", "grunnkrets", "kommune", "fylke", "bydel", "levekaar", "okonomisk")
     cols <- names(data)[names(data) %in% allcols]
     data[, (cols) := lapply(.SD, as.character), .SDcols = cols]
-    for(i in 1:length(cols)){
-        data[get(cols[i]) != 0 & nchar(get(cols[i])) %in% c(1,3,5,7), (cols[i]) := paste0("0", get(cols[i]))]
+    
+    
+    for(i in 1:length(cols[cols != "okonomisk"])){
+        data[level != "okonomisk" & get(cols[i]) != 0 & nchar(get(cols[i])) %in% c(1,3,5,7), (cols[i]) := paste0("0", get(cols[i]))]
     }
+    
+    # Special handling of "okonomisk" which should be 5 chars
+    
+    if("okonomisk" %in% names(data)){
+      data[nchar(okonomisk) == 4, okonomisk := paste0("0", okonomisk)]
+      data[level == "okonomisk" & nchar(code) == 4, code := paste0("0", code)]
+    }
+    
     data[]
 }
