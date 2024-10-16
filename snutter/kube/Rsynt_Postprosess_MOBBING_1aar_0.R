@@ -59,7 +59,7 @@ udirprikk_kommune <- udirprikk_kommune[, .(GEO, AAR, KJONN, TRINN, UDIRPRIKK)]
 
 # Identify censored strata bydel
 udirprikk_bydel <- udirprikk[EnhetNivaa == 4, .(AAR, KJONN, TRINN, Organisasjonsnummer, EnhetNavn, AndelMobbet)]
-skolebydel <- fread("https://raw.githubusercontent.com/helseprofil/snutter/main/misc/SkoleBydel.csv", 
+skolebydel <- fread("https://raw.githubusercontent.com/helseprofil/backend/refs/heads/main/snutter/misc/SkoleBydel.csv", 
                     colClasses=list(character=c("OrgNo","GEO")))
 udirprikk_bydel <- udirprikk_bydel[skolebydel, `:=` (GEO = i.GEO), on = c(Organisasjonsnummer = "OrgNo")]
 udirprikk_bydel <- udirprikk_bydel[!is.na(GEO)]
