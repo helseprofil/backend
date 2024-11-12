@@ -8,7 +8,6 @@ encoding.csv: Latin-1
 
 # Paths 
 root: "O:/Prosjekt/FHP/PRODUKSJON"
-folder.db: "STYRING"
 dumps: "RUNTIMEDUMP"
 filegroups: "PRODUKTER/MELLOMPROD/R/STABLAORG"
 kubedir: "PRODUKTER/KUBER/KOMMUNEHELSA"
@@ -22,8 +21,8 @@ dumpdir: "RUNTIMEDUMP"
 
 # Scripts and databases
 stataprikkfile: "BIN/Z_Statasnutter/StataPrikking.do"
-db: KHelsa.mdb
-logg: KHlogg.mdb
+db: "STYRING/KHelsa.mdb"
+logg: "STYRING/KHlogg.mdb"
 
 # columns
 kolorgs: 
