@@ -94,7 +94,7 @@ totals:
   S: 0
   L: 0
   In: 0
-geo_illegal "GGG"
+geo_illegal: "GGG"
 alder_illegal: "888_888"
 alder_ukjent: "999_999"
 aar_illegal: "8888_8888"
