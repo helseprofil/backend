@@ -10,7 +10,8 @@ encoding.csv: Latin-1
 root: "O:/Prosjekt/FHP/PRODUKSJON"
 dumps: "RUNTIMEDUMP"
 dumpdir: "RUNTIMEDUMP"
-filegroups: "PRODUKTER/MELLOMPROD/R/STABLAORG"
+filegroupsny: "PRODUKTER/MELLOMPROD/R/STABLAORG/NYESTE"
+filegroupsdat: "PRODUKTER/MELLOMPROD/R/STABLAORG/DATERT"
 kubedir: "PRODUKTER/KUBER"
 # Mapper under kubedir for outputfiler
 kubeny: "KOMMUNEHELSA/NYESTE"
