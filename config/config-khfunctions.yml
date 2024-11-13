@@ -14,7 +14,7 @@ filegroups.ny: "PRODUKTER/MELLOMPROD/R/STABLAORG/NYESTE"
 filegroups.dat: "PRODUKTER/MELLOMPROD/R/STABLAORG/DATERT"
 kubedir: "PRODUKTER/KUBER"
 # Mapper under kubedir for outputfiler
-kube.ny: "KOMMUNEHELSA/NYESTE"
+kube.ny: "KOMMUNEHELSA/NYESTE/R"
 kube.dat: "KOMMUNEHELSA/DATERT"
 kube.specs: "KOMMUNEHELSA/SPECS"
 kube.qc: "KOMMUNEHELSA/QC"
