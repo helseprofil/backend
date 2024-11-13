@@ -9,15 +9,20 @@ encoding.csv: Latin-1
 # Paths 
 root: "O:/Prosjekt/FHP/PRODUKSJON"
 dumps: "RUNTIMEDUMP"
-filegroups: "PRODUKTER/MELLOMPROD/R/STABLAORG"
-kubedir: "PRODUKTER/KUBER/KOMMUNEHELSA"
-fhpF: "PRODUKTER/KUBER/FRISKVIK_FYLKE"
-fhpK: "PRODUKTER/KUBER/FRISKVIK_KOMM"
-fhpB: "PRODUKTER/KUBER/FRISKVIK_BYDEL"
-ovpF: "PRODUKTER/KUBER/OVP_FYLKE"
-ovpK: "PRODUKTER/KUBER/OVP_KOMM"
-ovpB: "PRODUKTER/KUBER/OVP_BYDEL"
 dumpdir: "RUNTIMEDUMP"
+filegroups: "PRODUKTER/MELLOMPROD/R/STABLAORG"
+kubedir: "PRODUKTER/KUBER"
+# Mapper under kubedir for outputfiler
+kubeny: "KOMMUNEHELSA/NYESTE"
+kubedat: "KOMMUNEHELSA/DATERT"
+kubespecs: "KOMMUNEHELSA/SPECS"
+kubeqc: "KOMMUNEHELSA/QC"
+fhpF: "FRISKVIK_FYLKE"
+fhpK: "FRISKVIK_KOMM"
+fhpB: "FRISKVIK_BYDEL"
+ovpF: "OVP_FYLKE"
+ovpK: "OVP_KOMM"
+ovpB: "OVP_BYDEL"
 
 # Scripts and databases
 stataprikkfile: "BIN/Z_Statasnutter/StataPrikking.do"
