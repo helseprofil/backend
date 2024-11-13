@@ -137,8 +137,9 @@ ProfileSystems <- function(path = NULL,
 
 #' Clones all projects into a folder
 #'
-#' @param path 
-DevelopSystems <- function(path,
+#' @param path path to where the projects will be installed
+#' @param getupdates TRUE/FALSE, get updates if project already exists?
+DevelopSystems <- function(path = NULL,
                            getupdates = FALSE){
   
   check_R_version()
@@ -169,7 +170,7 @@ DevelopSystems <- function(path,
       setwd(dir)
       branch <- ifelse(project %in% c("khfunctions", "GeoMaster"), "master", "main")
       message("\n", project, " already exists, updating ", branch, " branch to current GitHub version...")
-      invisible(system("git fetch origin", branch))
+      invisible(system(paste("git fetch origin", branch)))
       invisible(system("git reset --hard origin/main"))
       invisible(system("git pull"))
     } 
