@@ -105,6 +105,7 @@ alder_ukjent: "999_999"
 aar_illegal: "8888_8888"
 illegal: "8"
 defdumpformat: "CSV"
+amin: 0
 amax: 120
 anon_svakandel: 0.5
 anon_hullandel: 0.2
