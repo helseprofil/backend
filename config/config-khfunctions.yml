@@ -109,3 +109,7 @@ amax: 120
 anon_svakandel: 0.5
 anon_hullandel: 0.2
 anon_tot_tol: 0.2
+
+# testing
+test.db: "STYRING/test/KHELSAtest.mdb"
+test.logg: "STYRING/test/KHloggtest.mdb"
