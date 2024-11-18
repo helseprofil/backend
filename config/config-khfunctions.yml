@@ -106,6 +106,6 @@ aar_illegal: "8888_8888"
 illegal: "8"
 defdumpformat: "CSV"
 amax: 120
-svakandel: 0.5
-hullandel: 0.2
+anon_svakandel: 0.5
+anon_hullandel: 0.2
 anon_tot_tol: 0.2
