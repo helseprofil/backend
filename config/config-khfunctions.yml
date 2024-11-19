@@ -64,6 +64,14 @@ valcols:
   "SN": "sumNEVNER"
   "SPT": "sumPREDTELLER"
   "RN": "RATE.n"
+khtabs:
+  - GEO
+  - AAR
+  - KJONN
+  - ALDER
+  - UTDANN
+  - INNVKAT
+  - LANDBAK
 profiltabs: 
  - GEO 
  - AAR
@@ -96,7 +104,7 @@ totals:
   Gn: "L"
   K: 0
   U: 0
-  S: 0
+  # S: 0
   L: 0
   In: 0
 geo_illegal: "GGG"
