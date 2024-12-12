@@ -26,7 +26,7 @@ ovpK: "OVP_KOMM"
 ovpB: "OVP_BYDEL"
 
 # Scripts and databases
-stataprikkfile: "BIN/Z_Statasnutter/StataPrikking.do"
+stataprikkfile: "BIN/Z_Statasnutter/StataPrikking_MASTER.do"
 db: "STYRING/KHelsa.mdb"
 logg: "STYRING/KHlogg.mdb"
 
