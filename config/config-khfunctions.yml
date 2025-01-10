@@ -25,10 +25,11 @@ ovpF: "OVP_FYLKE"
 ovpK: "OVP_KOMM"
 ovpB: "OVP_BYDEL"
 
-# Scripts and databases
+# Scripts, databases and files
 stataprikkfile: "BIN/Z_Statasnutter/StataPrikking_MASTER.do"
 db: "STYRING/KHelsa.mdb"
 logg: "STYRING/KHlogg.mdb"
+lagkube_guardfile: "helseprofil/lagkube_running.txt"
 
 # columns
 kolorgs: 
