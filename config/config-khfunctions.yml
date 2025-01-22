@@ -113,6 +113,7 @@ alder_illegal: "888_888"
 alder_ukjent: "999_999"
 aar_illegal: "8888_8888"
 illegal: "8"
+ukjent: "9"
 defdumpformat: "CSV"
 amin: 0
 amax: 120
