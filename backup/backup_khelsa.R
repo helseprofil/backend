@@ -42,11 +42,11 @@ backup <- function(profilaargang, filename = "KHELSA.mdb", force = FALSE, ...){
       nytt <- 0
       
       #Lage tabellnavn for de to siste KUBESTATUS for begge stat.banker
-      ifjor <- profilaargang -1
-      KUBESTATUS_1 <- paste("KH", profilaargang, "_KUBESTATUS", sep = "")
-      KUBESTATUS_2 <- paste("KH", ifjor, "_KUBESTATUS", sep = "")
-      KUBESTATUS_3 <- paste("NH", profilaargang, "_KUBESTATUS", sep = "")
-      KUBESTATUS_4 <- paste("NH", ifjor, "_KUBESTATUS", sep = "")
+      # ifjor <- profilaargang -1
+      # KUBESTATUS_1 <- paste("KH", profilaargang, "_KUBESTATUS", sep = "")
+      # KUBESTATUS_2 <- paste("KH", ifjor, "_KUBESTATUS", sep = "")
+      # KUBESTATUS_3 <- paste("NH", profilaargang, "_KUBESTATUS", sep = "")
+      # KUBESTATUS_4 <- paste("NH", ifjor, "_KUBESTATUS", sep = "")
       
       #Sammenlign
       for (TAB in c("INNLESING", "KUBER", "TNP_PROD", "FILGRUPPER", "ORGINNLESkobl", "ORIGINALFILER",
@@ -68,7 +68,6 @@ backup <- function(profilaargang, filename = "KHELSA.mdb", force = FALSE, ...){
   )
   # Rydde opp: Stenge forbindelser til databasen.
   odbcCloseAll()
-  
 }
 
 ## Slik brukes den

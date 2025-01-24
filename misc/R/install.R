@@ -25,13 +25,7 @@
 #' 
 #' Install to other path than `C:/Users/name/helseprofil`
 #' ProfileSystem(path = "Your/Preferred/Path)
-ProfileSystems <- function(path = NULL,
-                           all = TRUE,
-                           packages = FALSE,
-                           norgeo = FALSE,
-                           orgdata = FALSE,
-                           qualcontrol = FALSE,
-                           produksjon = FALSE){
+ProfileSystems <- function(path = NULL, all = TRUE, packages = FALSE, norgeo = FALSE, orgdata = FALSE, qualcontrol = FALSE, produksjon = FALSE){
   
   check_R_version()
   
@@ -44,45 +38,9 @@ ProfileSystems <- function(path = NULL,
   }
   
   if(isTRUE(packages)){
-    packages <- c("beepr",
-                  "collapse",
-                  "conflicted",
-                  "data.table",
-                  "devtools",
-                  "DBI",
-                  "dplyr",
-                  "DT",
-                  "epitools",
-                  "forcats",
-                  "foreign",
-                  "fs",
-                  "ggforce",
-                  "ggh4x",
-                  "ggplot2",
-                  "ggtext",
-                  "httr2",
-                  "intervals",
-                  "pak",
-                  "plyr",
-                  "purrr",
-                  "readxl",
-                  "remotes",
-                  "rlang",
-                  "RODBC",
-                  "sas7bdat",
-                  "sqldf",
-                  "stringr",
-                  "usethis",
-                  "testthat",
-                  "XML",
-                  "zoo")
-    
-    missingpackages <- setdiff(packages, installed.packages()[, "Package"])
-    
-    if (length(missingpackages) > 0) {
-      message(paste("Installing missing packages:", paste(missingpackages, collapse = ", ")))
-      install.packages(missingpackages)
-    }
+    packages <- get_kh_packages()
+    install_kh_packages(packages)
+    check_package_versions(packages)
   }
   
   # Install packages from GitHub
@@ -108,9 +66,7 @@ ProfileSystems <- function(path = NULL,
     cat("\n- ", helseprofil)
   } 
   
-  if(is.null(path)){
-    path <- helseprofil
-  } 
+  if(is.null(path)) path <- helseprofil
     
   if(!fs::dir_exists(path)){
       fs::dir_create(path)
@@ -134,41 +90,36 @@ ProfileSystems <- function(path = NULL,
   message("\nWOHOO, done! \n\nOpen the .Rproj file in the produksjon project to use the systems")
 }
 
-
 #' Clones all projects into a folder
 #'
 #' @param path path to where the projects will be installed
 #' @param getupdates TRUE/FALSE, get updates if project already exists?
-DevelopSystems <- function(path = NULL,
-                           getupdates = FALSE){
+DevelopSystems <- function(path = NULL, getupdates = FALSE){
   
   check_R_version()
+  packages <- get_kh_packages()
+  install_kh_packages(packages)
+  check_package_versions(packages)
 
   projects <- c("produksjon",
                 "backend",
                 "norgeo", 
                 "orgdata", 
                 "khfunctions", 
-                "orgcube",
                 "qualcontrol",
                 "manual")
   
-  if(is.null(path)){
-    path <- file.path(fs::path_home(), "helseprofil")
-  }
+  if(is.null(path)) path <- file.path(fs::path_home(), "helseprofil")
   
-  if(!fs::dir_exists(path)){
-    fs::dir_create(path)
-  }
+  if(!fs::dir_exists(path)) fs::dir_create(path)
   
   for(project in projects){
-    
     dir <- file.path(path, project)
     repo <- paste0("https://github.com/helseprofil/", project, ".git")
     
     if(fs::dir_exists(dir) && isTRUE(getupdates)){
       setwd(dir)
-      branch <- ifelse(project %in% c("khfunctions", "GeoMaster"), "master", "main")
+      branch <- ifelse(project %in% c("khfunctions"), "master", "main")
       message("\n", project, " already exists, updating ", branch, " branch to current GitHub version...")
       invisible(system(paste("git fetch origin", branch)))
       invisible(system("git reset --hard origin/main"))
@@ -186,4 +137,32 @@ check_R_version <- function(){
   if(version$major <= 4 & version$minor < 4) stop("Du bruker en gammel versjon av R, installer versjon 4.4.0 eller nyere")
 }
 
+get_kh_packages <- function(){
+  c("beepr", "collapse", "conflicted", "data.table", "devtools", "DBI", "dplyr",
+    "DT", "epitools", "forcats", "foreign", "fs", "ggforce", "ggh4x", "ggplot2",
+    "ggtext", "httr2", "intervals", "pak", "plyr", "purrr", "readxl", "remotes",
+    "rlang", "RODBC", "sas7bdat", "sqldf", "stringr", "usethis", "testthat", "XML", "zoo",
+    "gitcreds", "glue", "haven", "readr", "rmarkdown")
+}
+
+install_kh_packages <- function(packages = NULL){
+  if(is.null(packages)) packages <- get_kh_packages()
+  missingpackages <- setdiff(packages, installed.packages()[, "Package"])
+  
+  if (length(missingpackages) > 0) {
+    message(paste("Installing missing packages:", paste(missingpackages, collapse = ", ")))
+    for(pkg in missingpackages) try(install.packages(pkg))
+  }
+  check_package_versions(packages)
+}
+
+check_package_versions <- function(packages){
+  outdated <- packages[packages %in% as.character(old.packages()[, 1])]
+  if(length(outdated) > 0){
+    pkglist <- paste0(outdated, collapse = ", ")
+    message(paste0("The following packages have newer versions: ", 
+                   paste0("\n- ", pkglist), "\n\n",
+                   "To update, run:\n 'update.packages(oldPkgs = c(", paste0("\"", pkglist, "\""), "))'"))
+  }
+}
   
