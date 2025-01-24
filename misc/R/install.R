@@ -26,7 +26,7 @@
 #' Install to other path than `C:/Users/name/helseprofil`
 #' ProfileSystem(path = "Your/Preferred/Path)
 ProfileSystems <- function(path = NULL, all = TRUE, packages = FALSE, norgeo = FALSE, orgdata = FALSE, qualcontrol = FALSE, produksjon = FALSE){
-  
+  # 
   check_R_version()
   
   if(isTRUE(all)){
