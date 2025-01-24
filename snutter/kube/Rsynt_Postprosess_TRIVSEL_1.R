@@ -32,7 +32,7 @@ pages <- httr2::request(trivselapi) |>
 pages <- pages$JSONSider
 
 # Get data
-udirprikk <- data.table()
+udirprikk <- data.table::data.table()
 for(i in 1:pages){
   newpage <- httr2::request(trivselapi) |>
     httr2::req_url_path_append("data") |> 
@@ -42,13 +42,13 @@ for(i in 1:pages){
     httr2::req_perform() |> 
     httr2::resp_body_json(simplifyDataFrame = TRUE)
   
-  udirprikk <- rbindlist(list(udirprikk,
-                              newpage))
+  udirprikk <- data.table::rbindlist(list(udirprikk,
+                                          newpage))
 }
 
-udirprikk[, `:=` (KJONN = fcase(KjoennKode == "A", 0,
-                                KjoennKode == "G", 1,
-                                KjoennKode == "J", 2),
+udirprikk[, `:=` (KJONN = data.table::fcase(KjoennKode == "A", 0,
+                                            KjoennKode == "G", 1,
+                                            KjoennKode == "J", 2),
                   TRINN = TrinnKode,
                   AAR = paste0(substr(Skoleaarnavn, 1,4), "_", 
                                as.integer(substr(Skoleaarnavn, 1,4))+1))]
@@ -61,8 +61,8 @@ udirprikk_kommune <- udirprikk_kommune[, .(GEO, AAR, KJONN, TRINN, UDIRPRIKK)]
 
 # Identify censored strata bydel
 udirprikk_bydel <- udirprikk[EnhetNivaa == 4, .(AAR, KJONN, TRINN, Organisasjonsnummer, EnhetNavn, AndelSvaralternativ4, AndelSvaralternativ5)]
-skolebydel <- fread("https://raw.githubusercontent.com/helseprofil/backend/refs/heads/main/snutter/misc/SkoleBydel.csv", 
-                    colClasses=list(character=c("OrgNo","GEO")))
+skolebydel <- data.table::fread("https://raw.githubusercontent.com/helseprofil/backend/refs/heads/main/snutter/misc/SkoleBydel.csv", 
+                                colClasses=list(character=c("OrgNo","GEO")))
 udirprikk_bydel <- udirprikk_bydel[skolebydel, `:=` (GEO = i.GEO), on = c(Organisasjonsnummer = "OrgNo")]
 udirprikk_bydel <- udirprikk_bydel[!is.na(GEO)]
 
