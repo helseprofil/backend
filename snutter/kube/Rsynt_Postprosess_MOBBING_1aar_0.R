@@ -48,23 +48,22 @@ for(i in 1:pages){
 
 udirprikk[, `:=` (KJONN = 0,
                   TRINN = TrinnKode,
-                  AAR = paste0(substr(Skoleaarnavn, 1,4), "_", 
-                               as.integer(substr(Skoleaarnavn, 1,4))+1))]
+                  AARl = paste0(substr(Skoleaarnavn, 1,4)))]
 
 # Identify censored strata kommune
 udirprikk_kommune <- udirprikk[EnhetNivaa == 3 & AndelMobbet == "*"]
 udirprikk_kommune[, `:=` (GEO = Kommunekode,
                           UDIRPRIKK = 1)]
-udirprikk_kommune <- udirprikk_kommune[, .(GEO, AAR, KJONN, TRINN, UDIRPRIKK)]
+udirprikk_kommune <- udirprikk_kommune[, .(GEO, AARl, KJONN, TRINN, UDIRPRIKK)]
 
 # Identify censored strata bydel
-udirprikk_bydel <- udirprikk[EnhetNivaa == 4, .(AAR, KJONN, TRINN, Organisasjonsnummer, EnhetNavn, AndelMobbet)]
+udirprikk_bydel <- udirprikk[EnhetNivaa == 4, .(AARl, KJONN, TRINN, Organisasjonsnummer, EnhetNavn, AndelMobbet)]
 skolebydel <- fread("https://raw.githubusercontent.com/helseprofil/backend/refs/heads/main/snutter/misc/SkoleBydel.csv", 
                     colClasses=list(character=c("OrgNo","GEO")))
 udirprikk_bydel <- udirprikk_bydel[skolebydel, `:=` (GEO = i.GEO), on = c(Organisasjonsnummer = "OrgNo")]
 udirprikk_bydel <- udirprikk_bydel[!is.na(GEO)]
 udirprikk_bydel <- udirprikk_bydel[, .(UDIRPRIKK = sum(AndelMobbet == "*", na.rm = T)), 
-                   by = c("GEO", "AAR", "KJONN", "TRINN")]
+                   by = c("GEO", "AARl", "KJONN", "TRINN")]
 udirprikk_bydel <- udirprikk_bydel[UDIRPRIKK == 1]
 
 # Combine lists of strata to censor
@@ -72,7 +71,7 @@ censor <- data.table::rbindlist(list(udirprikk_kommune,
                                      udirprikk_bydel))
 
 # Merge udirdata
-KUBE <- merge.data.table(KUBE, censor, by = c("GEO", "AAR", "KJONN", "TRINN"), all.x = T)
+KUBE <- collapse::join(KUBE, censor, how = "l", on = c("GEO", "AARl", "KJONN", "TRINN"))
 
 # Save object UDIRPRIKKpre
 UDIRPRIKKpre <<- KUBE[UDIRPRIKK == 1]
