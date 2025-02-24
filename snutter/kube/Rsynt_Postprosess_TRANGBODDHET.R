@@ -12,7 +12,7 @@ cat("\nIdentifiserer relevante GEO-koder\n")
 
 kommunegeo <- c("0301", "1103", "4601", "5001")
 bydelsgeo <- grep(paste(paste0("^", kommunegeo), collapse = "|"), unique(KUBE[GEOniv == "B", GEO]), value = TRUE)
-bydelsgeo <- bydelsgeo[!bydelsgeo %in% c(grep("99$", bydelsgeo, value = TRUE), # ukjent bydel må ut før beregning
+bydelsgeo <- bydelsgeo[!bydelsgeo %in% c(grep("99$", bydelsgeo, value = TRUE), # ukjent bydel m? ut f?r beregning
                                          "030116", "030117")] # Skal ikke vises ut, tas derfor ut av beregningen
 cat("\nKommuner:\n")
 print(kommunegeo)
@@ -58,7 +58,7 @@ cat("\nOmstrukturerer og beregner diff ukjent sumTELLER og sumNEVNER\n")
 cat("\nFiltrerer ut rader med > 8 % ukjent sumTELLER eller > 5 %-poeng diff\n")
 .deletestrata <- .deletestrata[sumTELLER > 0.08 | (.DIFF > 0.05 | .DIFF < -0.05)]
 .deletestrata <- .deletestrata[, .(.GEOKODE, AAR, ALDER)]
-cat("\nBydelstall for følgende strata slettes\n")
+cat("\nBydelstall for f?lgende strata slettes\n")
 print(.deletestrata)
 
 # Loop gjennom identifiserte strata, slett bydelstall. Sletter tall for bÃ¥de BODD == "trangt" og "uoppgitt"
@@ -88,13 +88,15 @@ rm(.deletestrata)
 cat("\n\nSTARTER RSYNT_POSTPROSESS, STATA-SNUTT: Rsynt_Postprosess_TRANGBODDHET_v2.do\n")
 
 # Finner STATA-fil
-sfile <- paste(globs[["path"]], "BIN/Z_Statasnutter/Rsynt_Postprosess_TRANGBODDHET_v2.do", sep = "/")
+sfile <- file.path(getOption("khfunctions.root"), 
+                   getOption("khfunctions.snuttdir"),
+                   "Rsynt_Postprosess_TRANGBODDHET_v2.do")
 synt <- paste0('include "', sfile, '"')
 
 RES <- KjorStataSkript(KUBE, script = synt, tableTYP = "DT", batchdate = batchdate, globs = globs)
 
 if (RES$feil != "") {
-  stop("Noe gikk galt i kjøring av STATA \n", RES$feil)
+  stop("Noe gikk galt i kj?ring av STATA \n", RES$feil)
 }
 
 KUBE <- RES$TABLE
