@@ -99,6 +99,7 @@ qcvals:
  - NEVNER
  - sumTELLER
  - sumNEVNER
+ - PREDTELLER
  - RATE.n
  
 # values and other parameters
