@@ -32,7 +32,34 @@ db: "STYRING/KHelsa.mdb"
 logg: "STYRING/KHlogg.mdb"
 lagkube_guardfile: "helseprofil/lagkube_running.txt"
 
-# columns
+# columns. 
+standarddimensions:
+  - GEO
+  - AAR
+  - KJONN
+  - ALDER
+  - UTDANN
+  - INNVKAT
+  - LANDBAK
+profilecolumns:
+  - GEO 
+  - AAR
+  - KJONN
+  - ALDER
+  - UTDANN
+  - INNVKAT
+  - LANDBAK
+  - ETAB
+  - sumTELLER
+  - sumNEVNER
+  - RATE
+  - MALTALL
+  - sumPREDTELLER
+  - PREDTELLER
+  - SMR
+  - NORM
+  - MEIS
+  - RATE.n
 kolorgs: 
  - GEO
  - AAR
