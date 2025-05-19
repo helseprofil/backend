@@ -10,18 +10,8 @@ backup_khelsa <- function(){
   orgfile <- file.path(styring, filename)
   archivefilepath <- file.path(arkiv, paste0("KHELSA", date, ".mdb"))
   
-  i = 2
-  while(file.exists(archivefilepath)){
-    archivefilepath <- file.path(arkiv, paste0("KHELSA", date, "_v", i, ".mdb"))
-    i <- i + 1
-  }
-  
   message("Kopierer:\n", orgfile, "\ntil:\n", archivefilepath, "\n...")
   file.copy(orgfile, archivefilepath)
   message("Ferdig!")
 }
 
-## Slik brukes den
-## -----------------
-## backup(2024)
-## backup(2024, "KHELSA.mdb")
