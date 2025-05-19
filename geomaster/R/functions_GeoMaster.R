@@ -169,7 +169,7 @@ KnrHarmUpdate <- function(year = 2024,
 #' @param write option to overwrite the table in khelsa database
 #'
 #' @examples  GeoKoderUpdate(year = 2024, basepath = root, khelsapath = "KHELSA.mdb", geokoderpath = "raw-khelse/geo-koder.accdb", write = FALSE)
-GeoKoderUpdate <- function(year = 2024,
+GeoKoderUpdate <- function(year = 2025,
                            basepath = root,
                            khelsapath = khelsa,
                            geokoderpath = geokoder,
@@ -185,7 +185,7 @@ GeoKoderUpdate <- function(year = 2024,
     
     # Read and format original tables
     cat("\n Read, format, and combine original tables")
-    GeoKoder <- addleading0(setDT(sqlQuery(.KHELSA, "SELECT * FROM GeoKoder WHERE GEOniv <> 'S'")))
+    GeoKoder <- addleading0(setDT(sqlQuery(.KHELSA, "SELECT * FROM GeoKoder WHERE GEOniv NOT IN ('S', 'V', 'G')")))
     
     tblGeo <- addleading0(
         setDT(sqlQuery(.GEOtables, paste0("SELECT [code], [name], [validTo], [level] FROM tblGeo WHERE validTo = '", year, "' AND level NOT IN ('grunnkrets', 'okonomisk')")))
@@ -198,13 +198,12 @@ GeoKoderUpdate <- function(year = 2024,
              skip_absent = T)
     
     ## Change GEOniv to F/K/B, add ID and TYP columns
-    tblGeo[, `:=` (GEOniv = fcase(GEOniv == "fylke", "F",
-                                  GEOniv == "kommune", "K",
-                                  GEOniv == "bydel", "B",
-                                  GEOniv == "levekaar", "V"),
-                   ID = 1,
-                   TYP = fcase(grepl("99$", GEO), "U",
-                               default = "O"))]
+    tblGeo[, let(GEOniv = data.table::fcase(GEOniv == "fylke", "F",
+                                            GEOniv == "kommune", "K",
+                                            GEOniv == "bydel", "B",
+                                            GEOniv == "levekaar", "V"),
+                 ID = 1,
+                 TYP = ifelse(grepl("99$", GEO), "U", "O"))]
     
     # Identify rows with expired GEO-codes, and set TIL = year - 1
     # Exception for 99, 9999, and 999999
@@ -215,12 +214,7 @@ GeoKoderUpdate <- function(year = 2024,
     geoexist <- GeoKoder[, .(GEOniv, GEO)][, let(exist = 1)]
     newrows <- collapse::join(tblGeo, geoexist, on = c("GEOniv", "GEO"), how = "left")
     newrows <- newrows[is.na(exist)][, let(exist = NULL)]
-    
-    ## Set FRA = validTo and TIL = 9999
-    ## Change column order to comply with GeoKoder
-    setnames(newrows, 
-             old = "validTo",
-             new = "FRA")
+    setnames(newrows, old = "validTo", new = "FRA")
     newrows[, TIL := 9999]
     setcolorder(newrows, names(GeoKoder))
     

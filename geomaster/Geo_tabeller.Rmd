@@ -5,12 +5,6 @@ date: "2023-10-13"
 output: html_document
 ---
 
-Script to compare and update the GEO-tables in ORGDATA and KHELSA
-
-For å oppdatere tabellene for hvert geonivå i geo-databasen brukes funksjonen geo_recode(). Denne benytter track_change() fra norgeo, med fix = TRUE for å håndtere geosplitting. For å lage koblingstabellen som kobler koder fra ulike geonivå sammen (f.eks. grunnkrets -> kommune -> fylke -> bydel) brukes funksjonen geo_map().
-
-
-
 ```{r setup, include=FALSE}
 source("https://raw.githubusercontent.com/helseprofil/backend/main/geomaster/R/functions_GeoMaster.R")
 
@@ -19,6 +13,13 @@ root <- "O:/Prosjekt/FHP/PRODUKSJON/STYRING/"
 khelsa <- "KHELSA.mdb"
 geokoder <- "raw-khelse/geo-koder.accdb"
 ```
+
+```{r}
+con <- RODBC::odbcConnectAccess2007(file.path(root, khelsa))
+KnrHarmOld <- RODBC::sqlQuery(con, "SELECT * FROM KnrHarm")
+GeoKoderOld <- RODBC::sqlQuery(con, "SELECT * FROM GeoKoder")
+```
+
 
 # Update GEO-tables for KHELSA
 
@@ -37,7 +38,7 @@ The following codes are used to generate updated versions of the tables `GeoKode
     - This will replace the original table, so first make sure that the table is correct by running the code with `write = FALSE`
 
 ```{r}
-KnrHarmNew <- KnrHarmUpdate(year = 2024,
+KnrHarmNew <- KnrHarmUpdate(year = 2025,
                             basepath = root,
                             khelsapath = khelsa,
                             geokoderpath = geokoder,
@@ -47,9 +48,9 @@ KnrHarmNew <- KnrHarmUpdate(year = 2024,
 ## Update GeoKoder
 
 ```{r}
-GeoKoderNew <- GeoKoderUpdate(year = 2024,
+GeoKoderNew <- GeoKoderUpdate(year = 2025,
                               basepath = root,
                               khelsapath = khelsa,
                               geokoderpath = geokoder,
-                              write = FALSE)
+                              write = TRUE)
 ```

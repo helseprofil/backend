@@ -10,7 +10,7 @@ Alle norgeo-mekanismene er bygget inn i kommandoer i orgdata.
 # Last inn funksjoner og sett årgang
 ```{r}
 library(orgdata)
-aargang <- 2024
+aargang <- 2025
 ```
 
 
@@ -26,9 +26,9 @@ Må kjøres eksplisitt for hvert geonivå - g, k, f, da dette lagres som tre uli
 NB: Vi må ta "from" så langt tilbake som vi har data på grunnkrets.
 
 ```{r}
-geo_recode("g", from = 1990, to = aargang, write = TRUE)
-geo_recode("k", from = 1990, to = aargang, write = TRUE)
-geo_recode("f", from = 1990, to = aargang, write = TRUE)
+geo_recode("g", from = 1990, to = aargang, write = TRUE, fix = TRUE)
+geo_recode("k", from = 1990, to = aargang, write = TRUE, fix = TRUE)
+geo_recode("f", from = 1990, to = aargang, write = TRUE, fix = TRUE)
 
 ```
 
@@ -55,7 +55,7 @@ geo_map(year = aargang,
 Du kan også lage hele tabellen fra bunnen, for flere årganger, ved å bruke `geo_map_multi()`. Her setter du de årgangene du vil inkludere med argumentene `from` og `to`, og `write` = TRUE indikerer at hele tabellen skal overskrives. 
 
 ```{r}
-geo_map_multi(from = 2022,
-              to = 2024,
+geo_map_multi(from = 2024,
+              to = 2025,
               write = T) # DETTE OVERSKRIVER EKSISTERENDE TABELL
 ```
