@@ -2,16 +2,14 @@
 # To select which geo recode table to use eg. 2021 will use tables grunnkrets2021, kommune2021 etc
 year: 2026
 
-# Set encoding
-encoding.access: UTF-8
-encoding.csv: Latin-1
-
 # Paths 
 root: "O:/Prosjekt/FHP/PRODUKSJON"
 dumps: "RUNTIMEDUMP"
 dumpdir: "RUNTIMEDUMP"
 filegroups.ny: "PRODUKTER/MELLOMPROD/R/STABLAORG/NYESTE"
 filegroups.dat: "PRODUKTER/MELLOMPROD/R/STABLAORG/DATERT"
+filegroups.kblogg: "PRODUKTER/MELLOMPROD/KODEBOK_LOGG"
+filegroups.fgsjekk: "PRODUKTER/MELLOMPROD/FILGRUPPE_SJEKK"
 kubedir: "PRODUKTER/KUBER"
 snuttdir: "BIN/Z_Statasnutter"
 # Mapper under kubedir for outputfiler
