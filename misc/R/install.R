@@ -25,7 +25,7 @@
 #' 
 #' Install to other path than `C:/Users/name/helseprofil`
 #' ProfileSystem(path = "Your/Preferred/Path)
-ProfileSystems <- function(path = NULL, all = TRUE, packages = FALSE, norgeo = FALSE, orgdata = FALSE, qualcontrol = FALSE, produksjon = FALSE){
+ProfileSystems <- function(path = NULL, all = TRUE, packages = FALSE, norgeo = FALSE, orgdata = FALSE, khfunctions = FALSE, qualcontrol = FALSE, produksjon = FALSE){
   # 
   check_R_version()
   
@@ -33,6 +33,7 @@ ProfileSystems <- function(path = NULL, all = TRUE, packages = FALSE, norgeo = F
     packages <- TRUE
     norgeo <- TRUE
     orgdata <- TRUE
+    khfunctions <- TRUE
     qualcontrol <- TRUE
     produksjon <- TRUE
   }
@@ -52,6 +53,11 @@ ProfileSystems <- function(path = NULL, all = TRUE, packages = FALSE, norgeo = F
   if(isTRUE(orgdata)){
     message("\nInstalling orgdata...")
     remotes::install_github("helseprofil/orgdata")
+  }
+  
+  if(isTRUE(khfunctions)){
+    message("\nInstalling khfunctions...")
+    remotes::install_github("helseprofil/khfunctions@master")
   }
   
   if(isTRUE(qualcontrol)){
