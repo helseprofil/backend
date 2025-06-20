@@ -133,7 +133,6 @@ totals:
   Gn: "L"
   K: 0
   U: 0
-  # S: 0
   L: 0
   In: 0
 geo_illegal: "GGG"
@@ -142,6 +141,8 @@ alder_ukjent: "999_999"
 aar_illegal: "8888_8888"
 landbak_ukjent: "8"
 landbak_illegal: "88"
+innvkat_ukjent: "8"
+innvkat_illegal: "88"
 illegal: "8"
 ukjent: "9"
 defdumpformat: "CSV"
