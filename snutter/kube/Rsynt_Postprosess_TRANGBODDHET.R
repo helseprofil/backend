@@ -1,11 +1,10 @@
 # RSYNT_POSTPROSESS for kube TRANGBODDHET
-# Skrevet av: VL desember 2022
+# Oppdatert juni 2025 (VL)
 
-# Sletter tall på bydelsnivå der forskjellen i uoppgitt bydel for sumTELLER og sumNEVNER overskrider 5 %-poeng for BODD == "trangt"
-# Diff > 5 %-poeng for BODD == "trangt" vil medføre sletting av alle tall for dette strataet, også BODD == "uoppgitt"
-
-# Finn geokoder for bydeler og relevante kommuner
-# Bare inkluder bydelskoder fra de fire kommunene
+# Sletter tall på bydelsnivå dersom
+# - > 5 %-poeng forskjell mellom ukjent sumTELLER og sumNEVNER for BODD == "trangt"
+# - > 8% ukjent sumTELLER
+# - > 10% har BODD == "uoppgitt" (sletter BODD == "trangt")
 
 cat("\n\nSTARTER RSYNT_POSTPROSESS, R-SNUTT\n")
 cat("\nIdentifiserer relevante GEO-koder\n")
@@ -14,91 +13,37 @@ kommunegeo <- c("0301", "1103", "4601", "5001")
 bydelsgeo <- grep(paste(paste0("^", kommunegeo), collapse = "|"), unique(KUBE[GEOniv == "B", GEO]), value = TRUE)
 bydelsgeo <- bydelsgeo[!bydelsgeo %in% c(grep("99$", bydelsgeo, value = TRUE), # ukjent bydel m? ut f?r beregning
                                          "030116", "030117")] # Skal ikke vises ut, tas derfor ut av beregningen
-cat("\nKommuner:\n")
-print(kommunegeo)
-cat("\nBydeler:\n")
-print(bydelsgeo)
 
-# Lag subset av KUBE med relevante geokoder og BODD == trangt, lag KOMMUNE og GEONIV-kolonner
-cat("\nOppretter deletestrata\n")
-.deletestrata <- copy(KUBE)
-.deletestrata <- .deletestrata[BODD == "trangt" & GEO %in% c(kommunegeo, bydelsgeo), 
-               .(GEO,AAR,ALDER,UTDANN,LANDBAK,INNVKAT,BODD,sumTELLER,sumNEVNER)]
+cat("\nSletter bydelsdata med >8% ukjent sumTELLER eller >5%-poeng forskjell i ukjent sumTELLER/sumNEVNER")
+keepcols <- c("GEO","AAR","ALDER","UTDANN","LANDBAK","INNVKAT","BODD","sumTELLER","sumNEVNER")
+deletestrata <- data.table::copy(KUBE)[BODD == "trangt" & GEO %in% c(kommunegeo, bydelsgeo), .SD, .SDcols = keepcols]
 
-# Opprette .GEONIV og .GEOKODE
-.deletestrata[, `:=` (.GEONIV = ".BYDEL",
-                     .GEOKODE = character())]
-.deletestrata[nchar(GEO) == 4, .GEONIV := ".KOMMUNE"]
+deletestrata[, let(GEONIV = "BYDEL", GEOKODE = character())]
+deletestrata[nchar(GEO) == 4, GEONIV := "KOMMUNE"]
+deletestrata[, GEOKODE := sub("^(\\d{4}).*", "\\1", GEO)]
+deletebydel <- unique(deletestrata[GEONIV == "BYDEL", .SD, .SDcols = c("GEO", "GEOKODE")])
 
-.deletestrata[grep("^0301", GEO), .GEOKODE := "^0301"]
-.deletestrata[grep("^1103", GEO), .GEOKODE := "^1103"]
-.deletestrata[grep("^4601", GEO), .GEOKODE := "^4601"]
-.deletestrata[grep("^5001", GEO), .GEOKODE := "^5001"]
+bycols <- c("GEOKODE", "GEONIV", "AAR", "ALDER", "UTDANN", "LANDBAK", "INNVKAT", "BODD")
+deletestrata[, MISSING := sum(is.na(sumTELLER)), by = bycols]
+deletestrata <- deletestrata[MISSING == 0]
+deletestrata <- deletestrata[, lapply(.SD, sum, na.rm = T), .SDcols = c("sumTELLER", "sumNEVNER"), by = bycols]
 
-# Identifiser og filtrer ut komplette strata
-## Prikking er ikke et problem da sumTELLER ikke er prikket med unntak av for 99-koder og bydeler i Tromso (5401..)
-bycols <- c(".GEOKODE", ".GEONIV", "AAR", "ALDER", "UTDANN", "LANDBAK", "INNVKAT", "BODD")
+deletestrata <- data.table::melt(deletestrata, measure.vars = c("sumTELLER", "sumNEVNER"), variable.name = "MALTALL", value.name = "VALUE")
+deletestrata <- data.table::dcast(deletestrata, ... ~ GEONIV, value.var = "VALUE")
+deletestrata[, UKJENT := 1 - (BYDEL/KOMMUNE)]
 
-cat("\nFinner komplette strata og finner total sumTELLER og sumNEVNER \n")
-.deletestrata[, MISSING := sum(is.na(sumTELLER)), by = bycols]
-.deletestrata <- .deletestrata[MISSING == 0]
-.deletestrata <- .deletestrata[, lapply(.SD, sum, na.rm = T), .SDcols = c("sumTELLER", "sumNEVNER"), by = bycols]
+deletestrata <- data.table::dcast(deletestrata, GEOKODE + AAR + ALDER + UTDANN + LANDBAK + INNVKAT + BODD ~ MALTALL, value.var = "UKJENT")
+deletestrata[, DIFF := sumTELLER - sumNEVNER]
 
-# Omstrukturer tabell, vis sum for Kommune og Bydel
-cat("\nOmstrukturerer tabell og beregner andelen ukjent bydel\n")
-.deletestrata <- melt(.deletestrata, measure.vars = c("sumTELLER", "sumNEVNER"), variable.name = "MALTALL", value.name = ".VALUE")
-.deletestrata <- dcast(.deletestrata, ... ~ .GEONIV, value.var = ".VALUE")
-.deletestrata[, .UKJENT := 1 - (.BYDEL / .KOMMUNE)]
-
-cat("\nOmstrukturerer og beregner diff ukjent sumTELLER og sumNEVNER\n")
-.deletestrata <- dcast(.deletestrata, .GEOKODE + AAR + ALDER + UTDANN + LANDBAK + INNVKAT + BODD ~ MALTALL, value.var = ".UKJENT")
-.deletestrata[, .DIFF := sumTELLER - sumNEVNER]
-
-# Filtrer ut strata hvor ukjent bydel sumTELLER > 8 % eller differansen er > 5 %-poeng
 cat("\nFiltrerer ut rader med > 8 % ukjent sumTELLER eller > 5 %-poeng diff\n")
-.deletestrata <- .deletestrata[sumTELLER > 0.08 | (.DIFF > 0.05 | .DIFF < -0.05)]
-.deletestrata <- .deletestrata[, .(.GEOKODE, AAR, ALDER)]
-cat("\nBydelstall for f?lgende strata slettes\n")
-print(.deletestrata)
+deletestrata <- deletestrata[sumTELLER > 0.08 | (DIFF > 0.05 | DIFF < -0.05)][, .SD, .SDcols = c("GEOKODE", "AAR", "ALDER")]
+delete <- collapse::join(deletestrata, deletebydel, on = "GEOKODE", multiple = TRUE, verbose = FALSE, overid = 2)[, let(GEOKODE = NULL, SLETT = 1)]
 
-# Loop gjennom identifiserte strata, slett bydelstall. Sletter tall for både BODD == "trangt" og "uoppgitt"
+KUBE <- collapse::join(KUBE, delete, on = c("GEO", "AAR", "ALDER"))
+KUBE[SLETT == 1, (c("TELLER.f", "RATE.f")) := 1][, SLETT := NULL]
 
-cat("\nSletter bydelsdata med for stor diff mellom ukjent sumTELLER og sumNEVNER")
-
-for (i in 1:nrow(.deletestrata)) {
-   KUBE[GEO %in% bydelsgeo & 
-       grepl(.deletestrata[[".GEOKODE"]][i], GEO) & 
-       AAR == .deletestrata[["AAR"]][i] & 
-       ALDER == .deletestrata[["ALDER"]][i],
-       `:=`  (TELLER = NA_real_,
-              RATE = NA_real_,
-              SMR = NA_real_,
-              MEIS = NA_real_,
-              RATE.n = NA_real_,
-              sumTELLER = NA_real_,
-              sumNEVNER = NA_real_,
-              TELLER.f = 1,
-              RATE.f = 1)]
-}
-
-# Remove unneedet objects
-rm(.deletestrata)
-
-# Hent Steinar sitt STATA-skript
-cat("\n\nSTARTER RSYNT_POSTPROSESS, STATA-SNUTT: Rsynt_Postprosess_TRANGBODDHET_v2.do\n")
-
-# Finner STATA-fil
-sfile <- file.path(getOption("khfunctions.root"), 
-                   getOption("khfunctions.snuttdir"),
-                   "Rsynt_Postprosess_TRANGBODDHET_v2.do")
-synt <- paste0('include "', sfile, '"')
-
-RES <- KjorStataSkript(KUBE, script = synt, tableTYP = "DT", batchdate = batchdate, globs = globs)
-
-if (RES$feil != "") {
-  stop("Noe gikk galt i kj?ring av STATA \n", RES$feil)
-}
-
-KUBE <- RES$TABLE
-
-rm(RES)
+cat("\nSletter tall for BODD=='trangt' for strata med > 10% BODD=='uoppgitt'")
+delete <- KUBE[BODD == "uoppgitt" & sumTELLER/sumNEVNER > 0.10 & GEOniv %in% c("B", "K"), .SD, .SDcols = c("GEO", "AAR", "ALDER", "INNVKAT")]
+delete[, let(BODD = "trangt", SLETT = 1)]
+KUBE <- collapse::join(KUBE, delete, on = c("GEO", "AAR", "ALDER", "INNVKAT", "BODD"), overid = 2, verbose = FALSE)
+KUBE[SLETT == 1, (c("TELLER.f", "RATE.f")) := 1][, SLETT := NULL]
