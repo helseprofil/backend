@@ -39,7 +39,7 @@ if(length(delete) > 0) DT <- DT[-delete]
 # Therefore, all rows with oldCode-values also found in currentCode must be deleted.
 n_old_valid <- DT[oldCode %in% unique(currentCode), .N]
 if(n_old_valid > 0){
-  cat("\nFant", n_old_valid, "koder i oldCode som fremdeles er gyldige, sletter disse radene")
+  cat("\nFant", n_old_valid, "koder i oldCode som fremdeles er gyldige, sletter disse omkodingene")
   old_valid_which <- DT[oldCode %in% unique(currentCode), which = T]
   DT <- DT[-old_valid_which]
   old_valid_ok <- DT[oldCode %in% unique(currentCode), .N] == 0
