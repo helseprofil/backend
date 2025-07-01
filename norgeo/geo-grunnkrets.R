@@ -12,7 +12,7 @@
 # Input object is a data.table named DT
 #
 # For development of this script, start with 
-# DT <- norgeo::track_change("g", 1990, 2024, fix = FALSE)
+# DT <- norgeo::track_change("g", 1990, 2025, fix = FALSE)
 # ------------------------------------------------------
 
 # In some instances, when a grunnkrets is split, the old geographical code is reused
@@ -32,6 +32,27 @@ delete <- DT[oldCode == "03013809" & currentCode != "03013809" |
              which = T]
 
 # To avoid deleting the whole table in cases where length(delete) == 0
-if(length(delete) > 0){
-DT <- DT[-delete]
+if(length(delete) > 0) DT <- DT[-delete]
+
+# July 2025
+# To handle splitting whenever the original code is reused (e.g. A -> A and B), we do not want to recode anything as the old code is still valid
+# Therefore, all rows with oldCode-values also found in currentCode must be deleted.
+n_old_valid <- DT[oldCode %in% unique(currentCode), .N]
+if(n_old_valid > 0){
+  cat("\nFant", n_old_valid, "koder i oldCode som fremdeles er gyldige, sletter disse radene")
+  old_valid_which <- DT[oldCode %in% unique(currentCode), which = T]
+  DT <- DT[-old_valid_which]
+  old_valid_ok <- DT[oldCode %in% unique(currentCode), .N] == 0
+  if(!old_valid_ok) cat("\nOBS! det er fortsatt koder i oldCode som finnes i currentCode, dette må sjekkes og håndteres i geo-grunnkrets.R")
 }
+
+# Some rows are duplicated with different 'validTo'. We only need one row per unique recoding, and select the most recent entry
+n_duplicated_old_current <- DT[duplicated(DT[, .SD, .SDcols = c("oldCode", "currentCode")]), .N]
+if(n_duplicated_old_current > 0){
+  cat("\nFant", n_duplicated_old_current, "rader med duplikater for oldCode og currentCode, beholder bare nyeste oppføring")
+  DT <- unique(DT, by = c("oldCode", "currentCode"), fromLast = TRUE)
+  duplicated_old_current_ok <- DT[duplicated(DT[, .SD, .SDcols = c("oldCode", "currentCode")]), .N] == 0
+  if(!duplicated_old_current_ok) cat("\nOBS! det er fortsatt rader med duplikater av oldCode og currentCode (har sannsynligvis ingen konsekvenser)")
+}
+
+
