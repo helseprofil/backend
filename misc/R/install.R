@@ -148,7 +148,7 @@ get_kh_packages <- function(){
     "DT", "epitools", "forcats", "foreign", "fs", "ggforce", "ggh4x", "ggplot2",
     "ggtext", "httr2", "intervals", "pak", "plyr", "purrr", "readxl", "remotes",
     "rlang", "RODBC", "sas7bdat", "sqldf", "stringr", "usethis", "testthat", "XML", "zoo",
-    "gitcreds", "glue", "haven", "readr", "rmarkdown", "parallel", "qs")
+    "gitcreds", "glue", "haven", "readr", "rmarkdown", "parallel", "arrow")
 }
 
 install_kh_packages <- function(packages = NULL){
