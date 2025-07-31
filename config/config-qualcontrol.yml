@@ -3,6 +3,7 @@ year: 2026
 # Paths
 root: "O:/Prosjekt/FHP/PRODUKSJON"
 output: "VALIDERING/QualControl"
+cubefiles: "PRODUKTER/KUBER/KOMMUNEHELSA"
 files: "PRODUKTER/KUBER"
 mode: 
   kh: "KOMMUNEHELSA"
