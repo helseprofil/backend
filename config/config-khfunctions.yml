@@ -3,15 +3,21 @@ kube.prod: "KOMMUNEHELSA/KH2026NESSTAR"
 
 # Paths 
 root: "O:/Prosjekt/FHP/PRODUKSJON"
-dumps: "RUNTIMEDUMP"
 dumpdir: "RUNTIMEDUMP"
+snuttdir: "BIN/Z_Statasnutter"
+fgdir: "PRODUKTER/MELLOMPROD"
+fg.ny: "R/STABLAORG/NYESTE"
+fg.dat: "R/STABLAORG/DATER"T
+fg.kblogg: "KODEBOK_LOGG"
+fg.fgsjekk: "FILGRUPPE_SJEKK"
+fg.fglogg: "FILGRUPPE_LOGG"
 filegroups.ny: "PRODUKTER/MELLOMPROD/R/STABLAORG/NYESTE"
 filegroups.dat: "PRODUKTER/MELLOMPROD/R/STABLAORG/DATERT"
 filegroups.parquet: "PRODUKTER/MELLOMPROD/R/STABLAORG/PARQUET"
 filegroups.kblogg: "PRODUKTER/MELLOMPROD/KODEBOK_LOGG"
 filegroups.fgsjekk: "PRODUKTER/MELLOMPROD/FILGRUPPE_SJEKK"
+filegroups.fglogg: "PRODUKTER/MELLOMPROD/FILGRUPPE_LOGG"
 kubedir: "PRODUKTER/KUBER"
-snuttdir: "BIN/Z_Statasnutter"
 # Mapper under kubedir for outputfiler
 kube.ny: "KOMMUNEHELSA/NYESTE/R"
 kube.dat: "KOMMUNEHELSA/DATERT"
