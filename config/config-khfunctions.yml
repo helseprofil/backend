@@ -7,7 +7,7 @@ dumpdir: "RUNTIMEDUMP"
 snuttdir: "BIN/Z_Statasnutter"
 fgdir: "PRODUKTER/MELLOMPROD"
 fg.ny: "R/STABLAORG/NYESTE"
-fg.dat: "R/STABLAORG/DATER"T
+fg.dat: "R/STABLAORG/DATERT""
 fg.kblogg: "KODEBOK_LOGG"
 fg.fgsjekk: "FILGRUPPE_SJEKK"
 fg.fglogg: "FILGRUPPE_LOGG"
