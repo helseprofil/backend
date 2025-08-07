@@ -18,11 +18,13 @@ filegroups.kblogg: "PRODUKTER/MELLOMPROD/KODEBOK_LOGG"
 filegroups.fgsjekk: "PRODUKTER/MELLOMPROD/FILGRUPPE_SJEKK"
 filegroups.fglogg: "PRODUKTER/MELLOMPROD/FILGRUPPE_LOGG"
 kubedir: "PRODUKTER/KUBER"
-# Mapper under kubedir for outputfiler
 kube.ny: "KOMMUNEHELSA/NYESTE/R"
 kube.dat: "KOMMUNEHELSA/DATERT"
 kube.specs: "KOMMUNEHELSA/SPECS"
 kube.qc: "KOMMUNEHELSA/QC"
+kube.logg: "KOMMUNEHELSA"
+
+# Friskvikmapper
 fhpF: "FRISKVIK_FYLKE"
 fhpK: "FRISKVIK_KOMM"
 fhpB: "FRISKVIK_BYDEL"
