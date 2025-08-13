@@ -3,16 +3,8 @@ year: 2026
 # Paths
 root: "O:/Prosjekt/FHP/PRODUKSJON"
 output: "VALIDERING/QualControl"
-cubefiles: "PRODUKTER/KUBER/KOMMUNEHELSA"
+cubefiles: "PRODUKTER/KUBER/STATBANK"
 files: "PRODUKTER/KUBER"
-mode: 
-  kh: "KOMMUNEHELSA"
-  nh: "NORGESHELSA"
-  fvb: "FRISKVIK_BYDEL"
-  fvk: "FRISKVIK_KOMM"
-  fvf: "FRISKVIK_FYLKE"
-  ovb: "OVP_BYDEL"
-  ovk: "OVP_KOMM"
  
 # Columns 
 rename:
