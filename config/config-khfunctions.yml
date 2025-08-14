@@ -15,7 +15,7 @@ kubedir: "PRODUKTER/KUBER"
 kube.dat: "STATBANK/DATERT"
 kube.specs: "STATBANK/SPECS"
 kube.qc: "STATBANK/QC"
-kube.logg: "STATBANK/LOGG"
+kube.logg: "STATBANK/KUBELOGG"
 
 # Friskvikmapper
 fhpF: "FRISKVIK_FYLKE"
