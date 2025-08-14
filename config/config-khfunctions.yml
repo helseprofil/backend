@@ -32,55 +32,10 @@ logg: "STYRING/KHlogg.mdb"
 lagkube_guardfile: "helseprofil/lagkube_running.txt"
 
 # columns. 
-standarddimensions:
-  - GEO
-  - AAR
-  - KJONN
-  - ALDER
-  - UTDANN
-  - INNVKAT
-  - LANDBAK
-profilecolumns:
-  - GEO 
-  - AAR
-  - KJONN
-  - ALDER
-  - UTDANN
-  - INNVKAT
-  - LANDBAK
-  - ETAB
-  - sumTELLER
-  - sumNEVNER
-  - RATE
-  - MALTALL
-  - sumPREDTELLER
-  - PREDTELLER
-  - SMR
-  - NORM
-  - MEIS
-  - RATE.n
-kolorgs: 
- - GEO
- - AAR
- - KJONN
- - ALDER
- - UTDANN
- - INNVKAT
- - LANDBAK
- - TAB1
- - TAB2
- - TAB3
- - VAL1
- - VAL2
- - VAL3
-taborgs: 
- - GEO
- - AAR
- - KJONN
- - ALDER
- - TAB1
- - TAB2
- - TAB3
+standarddimensions: [GEO, AAR, KJONN, ALDER, UTDANN, INNVKAT, LANDBAK]
+profilecolumns: [GEO , AAR, KJONN, ALDER, UTDANN, INNVKAT, LANDBAK, ETAB, sumTELLER, sumNEVNER, RATE, MALTALL, sumPREDTELLER, PREDTELLER, SMR, NORM, MEIS, RATE.n]
+kolorgs: [GEO, AAR, KJONN, ALDER, UTDANN, INNVKAT, LANDBAK, TAB1, TAB2, TAB3, VAL1, VAL2, VAL3]
+taborgs: [GEO, AAR, KJONN, ALDER, TAB1, TAB2, TAB3]
 valcols: 
   "MT": "MALTALL"
   "T": "TELLER"
@@ -92,42 +47,10 @@ valcols:
   "SN": "sumNEVNER"
   "SPT": "sumPREDTELLER"
   "RN": "RATE.n"
-khtabs:
-  - GEO
-  - AAR
-  - KJONN
-  - ALDER
-  - UTDANN
-  - INNVKAT
-  - LANDBAK
-profiltabs: 
- - GEO 
- - AAR
- - KJONN
- - ALDER
- - UTDANN
- - INNVKAT
- - LANDBAK
- - ETAB
-profilvals: 
- - sumTELLER
- - sumNEVNER
- - RATE
- - MALTALL
- - sumPREDTELLER
- - PREDTELLER
- - SMR
- - NORM
- - MEIS
- - RATE.n
-qcvals: 
- - TELLER
- - NEVNER
- - sumTELLER
- - sumNEVNER
- - PREDTELLER
- - RATE
- - RATE.n
+khtabs: [GEO, AAR, KJONN, ALDER, UTDANN, INNVKAT, LANDBAK]
+profiltabs: [GEO , AAR, KJONN, ALDER, UTDANN, INNVKAT, LANDBAK, ETAB]
+profilvals: [sumTELLER, sumNEVNER, RATE, MALTALL, sumPREDTELLER, PREDTELLER, SMR, NORM, MEIS, RATE.n]
+qcvals: [TELLER, NEVNER, sumTELLER, sumNEVNER, PREDTELLER, RATE, RATE.n]
  
 # values and other parameters
 totals:
