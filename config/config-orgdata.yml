@@ -62,7 +62,7 @@ geo.digits:
   - kommune : 4
   - bydel : 6
   - delbydel : 8
-  - levekaar : 8
+  - levekaar : 10
 
 # Abbreviation for geo granularities that will be used in AGGREGATE column in
 # tabel FILGRUPPE in MS Access database.
