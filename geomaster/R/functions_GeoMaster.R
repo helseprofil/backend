@@ -2,6 +2,7 @@ library(RODBC)
 library(data.table)
 library(orgdata)
 library(collapse)
+Sys.setlocale("LC_ALL", "nb-NO.UTF-8")
 
 # Update to use correct files, default = production files
 root <- "O:/Prosjekt/FHP/PRODUKSJON/STYRING/"
