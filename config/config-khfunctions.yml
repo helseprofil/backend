@@ -33,7 +33,7 @@ lagkube_guardfile: "helseprofil/lagkube_running.txt"
 
 # Partitioned population dataset names
 pop_alderaargeo: "BEF_GKny_alder_aar_geo"
-pop_aar_geo: "BEF_GKny_aar_geo"
+pop_aargeo: "BEF_GKny_aar_geo"
 
 # column lists: 
 standarddimensions: [GEO, AAR, KJONN, ALDER, UTDANN, INNVKAT, LANDBAK]
