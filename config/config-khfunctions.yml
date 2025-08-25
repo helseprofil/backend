@@ -31,9 +31,12 @@ db: "STYRING/KHelsa.mdb"
 logg: "STYRING/KHlogg.mdb"
 lagkube_guardfile: "helseprofil/lagkube_running.txt"
 
-# columns. 
+# Partitioned population dataset names
+pop_alderaargeo: "BEF_GKny_alder_aar_geo"
+pop_aar_geo: "BEF_GKny_aar_geo"
+
+# column lists: 
 standarddimensions: [GEO, AAR, KJONN, ALDER, UTDANN, INNVKAT, LANDBAK]
-profilecolumns: [GEO , AAR, KJONN, ALDER, UTDANN, INNVKAT, LANDBAK, ETAB, sumTELLER, sumNEVNER, RATE, MALTALL, sumPREDTELLER, PREDTELLER, SMR, NORM, MEIS, RATE.n]
 kolorgs: [GEO, AAR, KJONN, ALDER, UTDANN, INNVKAT, LANDBAK, TAB1, TAB2, TAB3, VAL1, VAL2, VAL3]
 taborgs: [GEO, AAR, KJONN, ALDER, TAB1, TAB2, TAB3]
 valcols: 
