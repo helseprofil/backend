@@ -2,6 +2,7 @@ library(RODBC)
 library(data.table)
 library(orgdata)
 library(collapse)
+Sys.setlocale("LC_ALL", "nb-NO.UTF-8")
 
 # Update to use correct files, default = production files
 root <- "O:/Prosjekt/FHP/PRODUKSJON/STYRING/"
@@ -298,7 +299,7 @@ addleading0 <- function(data){
     }
     
     for(i in 1:length(cols)){
-      data[get(cols[i]) != 0 & nchar(get(cols[i])) %in% c(1,3,5,7), (cols[i]) := paste0("0", get(cols[i]))]
+      data[get(cols[i]) != 0 & nchar(get(cols[i])) %in% c(1,3,5,7,9), (cols[i]) := paste0("0", get(cols[i]))]
     }
     
     return(data)
