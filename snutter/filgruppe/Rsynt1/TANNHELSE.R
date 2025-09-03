@@ -1,3 +1,3 @@
 # Korrigerer ALDERSkolonnen B slik at bare tallet hentes ut. 
-DF[, B := sub(".*(\\d+)-.*", "\\1", B)]
-data.table::setnames(DF, "B", "ALDER")
+DF[, ALDER := sub(".*(\\d+)-.*", "\\1", B)]
+DF[, B := trimws(gsub("[1-9][1-9]?-.ringer", "", B))]
