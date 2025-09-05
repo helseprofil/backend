@@ -1,7 +1,9 @@
 # Les inn nyeste befolkningsfil, genererer alle triangler for land-fylke, fylke-kommune, og kommune-bydel
 # Lager en liste, som manuelt må kopieres inn i config-khfunctions.yml for å brukes i khfunctions
 
-data <- data.table::fread("O:/Prosjekt/FHP/PRODUKSJON/PRODUKTER/KUBER/KOMMUNEHELSA/KH2025NESSTAR/BEFOLK_GK_2024-06-17-14-13.csv")
+d <- data.table::fread("O:/Prosjekt/FHP/PRODUKSJON/PRODUKTER/KUBER/KOMMUNEHELSA/KH2025NESSTAR/BEFOLK_GK_2024-06-17-14-13.csv")
+data <- arrow::open_dataset("O:/Prosjekt/FHP/PRODUKSJON/PRODUKTER/FILGRUPPER/NYESTE/BEF_GKny_aar_geo") |> 
+  dplyr::filter(AARl == 2025) |> dplyr::collect() |> data.table::as.data.table()
 
 update_geonaboprikk_triangel <- function(d = data, aar = 2024){
   
