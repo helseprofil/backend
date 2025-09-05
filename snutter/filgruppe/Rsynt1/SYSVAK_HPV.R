@@ -1,13 +1,8 @@
 # RSYNT1 for HPV-tall fra SYSVAK
-
-# /*	RSYNT1: Omforme SYSVAK fra én vaksine HPV og to kjønn:
+# Omforme SYSVAK fra én vaksine HPV og to kjønn:
 #   - til separate vaksiner HPV og HPV_M 
-# - sette Kjønn lik 0 for HPV_M (som for alle andre), og 2 for HPV.
+#   - sette Kjønn lik 0 for HPV_M (som for alle andre), og 2 for HPV.
 # Det fikses i Rsynt_Postpro i det gamle systemet.
-# 
-# Midlertidig tiltak, inntil vi har fått satt opp behandling av data 
-# levert med teller og nevner - som må bygges fra scratch, så vi kan 
-# ta inn hensynet til kjønn fra starten.
 # 
 # HENSIKT:
 #   Alle andre vaksiner leveres uten Kjønn. HPV telles for gutter og jenter separat.
@@ -21,19 +16,8 @@
 # endres vaksinenavnet til "HPV_M".
 # For jenter lar vi det stå som "HPV".
 # Så settes Kjønn lik 2 for jentene og 0 ellers.
-# 
-# (stbj feb-2024)
-# */
-#   /*	FOR UTVIKLINGEN
-# use "O:/Prosjekt/FHP\PRODUKSJON\RUNTIMEDUMP\SYSVAK_HPV-dekning.dta", clear
-# 
-# */
-#   * Rydde i variabelnavn
-# rename aar AAR
-# rename kjønn KJONN
-# 
-# replace sykdom = "HPV_M" if sykdom == "HPV" & KJONN == "M"
-# replace KJONN = "0" if KJONN == "M"
-# replace KJONN = "2" if KJONN == "K"
-# 
-# *ferdig
+
+data.table::setnames(DF, c("aar", "kjønn"), c("AAR", "KJONN"))
+DF[sykdom == "HPV" & KJONN == "M", let(sykdom = "HPV_M")]
+DF[KJONN == "M", let(KJONN = 0)]
+DF[KJONN == "K", let(KJONN = 2)]
