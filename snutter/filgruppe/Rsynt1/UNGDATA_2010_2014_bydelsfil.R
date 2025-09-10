@@ -1,6 +1,6 @@
 # Rsynt 1 for innlesing av gammel bydelsfil Ungdata
 
-tab1 <- filedescription$TAB1
+tab1 <- unique(DF$tab1_innles) # Kan bruke filedescription$TAB1, men do_special_handling må også kunne ta med filedescription før dette kan brukes
 DF <- DF[get(tab1) < 98, .SD, .SDcols = c(tab1, "Kommune", "AAR", "Tidspunkt", "KJONN", "Klasse", grep("^Bydel", names(DF), value = T))]
 DF <- DF[!((Kommune == 301 & (Bydel_Oslo >= 98 | Bydel_Oslo == 17)) | 
            (Kommune == 1103 & Bydel_Stavanger >= 98) |
