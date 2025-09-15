@@ -1,7 +1,8 @@
 # Rsynt 1 for innlesing av gammel bydelsfil Ungdata
 
 tab1 <- unique(DF$tab1_innles) # Kan bruke filedescription$TAB1, men do_special_handling må også kunne ta med filedescription før dette kan brukes
-DF <- DF[get(tab1) < 98, .SD, .SDcols = c(tab1, "Kommune", "AAR", "Tidspunkt", "KJONN", "Klasse", grep("^Bydel", names(DF), value = T))]
+DF <- DF[, .SD, .SDcols = c(tab1, "Kommune", "AAR", "Tidspunkt", "KJONN", "Klasse", grep("^Bydel", names(DF), value = T))]
+if(is.numeric(DF[[tab1]])) DF <- DF[get(tab1) < 98]
 DF <- DF[!((Kommune == 301 & (Bydel_Oslo >= 98 | Bydel_Oslo == 17)) | 
            (Kommune == 1103 & Bydel_Stavanger >= 98) |
            (Kommune == 1601))] # Trondheim Kan ikke konverteres til de offisielle bydelene, droppes
@@ -50,7 +51,7 @@ for(dim in setdiff(dims, c("klasse_6delt", "AAR"))){
 }
 
 full <- do.call(expand.grid.dt, full)
-data.table::setcolorder(full, c("Kommune", "AAR", "KJONN", "AtfPro6", "klasse_6delt"))
+data.table::setcolorder(full, c("Kommune", "AAR", "KJONN", tab1, "klasse_6delt"))
 DF <- collapse::join(full, DF, multiple = T, overid = 2, verbose = 0)
 DF[is.na(exist), let(teller = 0, vekt2020 = 0)][, let(exist = NULL)]
 
