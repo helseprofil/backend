@@ -40,7 +40,7 @@ bydims <- c("GEOKODE", "AAR", "ALDER", "UTDANN", "INNVKAT")
 deletestrata <- deletestrata[sumTELLER > 0.08 | (DIFF > 0.05 | DIFF < -0.05)][, .SD, .SDcols = bydims]
 delete <- collapse::join(deletestrata, deletebydel, on = "GEOKODE", multiple = TRUE, verbose = FALSE, overid = 2)[, let(GEOKODE = NULL, SLETT = 1)]
 delete <- delete[, .SD, .SDcols = c(bydims, "SLETT")]
-KUBE <- collapse::join(KUBE, delete, on = c(bydims, overid = 2, verbose = 0)
+KUBE <- collapse::join(KUBE, delete, on = bydims, overid = 2, verbose = 0)
 KUBE[SLETT == 1, (c("TELLER.f", "RATE.f")) := 1][, SLETT := NULL]
 
 cat("\nSletter tall for BODD=='trangt' for strata med > 10% BODD=='uoppgitt'")
