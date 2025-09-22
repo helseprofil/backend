@@ -16,7 +16,7 @@ bydelsgeo <- bydelsgeo[!bydelsgeo %in% c(grep("99$", bydelsgeo, value = TRUE), #
 
 cat("\nSletter bydelsdata med >8% ukjent sumTELLER eller >5%-poeng forskjell i ukjent sumTELLER/sumNEVNER")
 keepcols <- c("GEO","AAR","ALDER","UTDANN","LANDBAK","INNVKAT","BODD","sumTELLER","sumNEVNER")
-deletestrata <- data.table::copy(KUBE)[BODD == "trangt" & GEO %in% c(kommunegeo, bydelsgeo), .SD, .SDcols = keepcols]
+deletestrata <- data.table::copy(KUBE)[BODD == "trangt" & (GEOniv == "B" | GEO %in% c("0301", "1103", "4601", "5001")), .SD, .SDcols = keepcols]
 
 deletestrata[, let(GEONIV = "BYDEL", GEOKODE = character())]
 deletestrata[nchar(GEO) == 4, GEONIV := "KOMMUNE"]
@@ -36,14 +36,15 @@ deletestrata <- data.table::dcast(deletestrata, GEOKODE + AAR + ALDER + UTDANN +
 deletestrata[, DIFF := sumTELLER - sumNEVNER]
 
 cat("\nFiltrerer ut rader med > 8 % ukjent sumTELLER eller > 5 %-poeng diff\n")
-deletestrata <- deletestrata[sumTELLER > 0.08 | (DIFF > 0.05 | DIFF < -0.05)][, .SD, .SDcols = c("GEOKODE", "AAR", "ALDER")]
+bydims <- c("GEOKODE", "AAR", "ALDER", "UTDANN", "INNVKAT")
+deletestrata <- deletestrata[sumTELLER > 0.08 | (DIFF > 0.05 | DIFF < -0.05)][, .SD, .SDcols = bydims]
 delete <- collapse::join(deletestrata, deletebydel, on = "GEOKODE", multiple = TRUE, verbose = FALSE, overid = 2)[, let(GEOKODE = NULL, SLETT = 1)]
-
-KUBE <- collapse::join(KUBE, delete, on = c("GEO", "AAR", "ALDER"))
+delete <- delete[, .SD, .SDcols = c(bydims, "SLETT")]
+KUBE <- collapse::join(KUBE, delete, on = c(bydims, overid = 2, verbose = 0)
 KUBE[SLETT == 1, (c("TELLER.f", "RATE.f")) := 1][, SLETT := NULL]
 
 cat("\nSletter tall for BODD=='trangt' for strata med > 10% BODD=='uoppgitt'")
-delete <- KUBE[BODD == "uoppgitt" & sumTELLER/sumNEVNER > 0.10 & GEOniv %in% c("B", "K"), .SD, .SDcols = c("GEO", "AAR", "ALDER", "INNVKAT")]
+delete <- KUBE[BODD == "uoppgitt" & sumTELLER/sumNEVNER > 0.10 & GEOniv %in% c("B", "K"), .SD, .SDcols = bydims]
 delete[, let(BODD = "trangt", SLETT = 1)]
-KUBE <- collapse::join(KUBE, delete, on = c("GEO", "AAR", "ALDER", "INNVKAT", "BODD"), overid = 2, verbose = FALSE)
+KUBE <- collapse::join(KUBE, delete, on = c(bydims, "BODD"), overid = 2, verbose = FALSE)
 KUBE[SLETT == 1, (c("TELLER.f", "RATE.f")) := 1][, SLETT := NULL]
