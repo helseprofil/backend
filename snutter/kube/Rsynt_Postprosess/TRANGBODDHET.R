@@ -9,11 +9,6 @@
 cat("\n\nSTARTER RSYNT_POSTPROSESS, R-SNUTT\n")
 cat("\nIdentifiserer relevante GEO-koder\n")
 
-kommunegeo <- c("0301", "1103", "4601", "5001")
-bydelsgeo <- grep(paste(paste0("^", kommunegeo), collapse = "|"), unique(KUBE[GEOniv == "B", GEO]), value = TRUE)
-bydelsgeo <- bydelsgeo[!bydelsgeo %in% c(grep("99$", bydelsgeo, value = TRUE), # ukjent bydel m? ut f?r beregning
-                                         "030116", "030117")] # Skal ikke vises ut, tas derfor ut av beregningen
-
 cat("\nSletter bydelsdata med >8% ukjent sumTELLER eller >5%-poeng forskjell i ukjent sumTELLER/sumNEVNER")
 keepcols <- c("GEO","AAR","ALDER","UTDANN","LANDBAK","INNVKAT","BODD","sumTELLER","sumNEVNER")
 deletestrata <- data.table::copy(KUBE)[BODD == "trangt" & (GEOniv == "B" | GEO %in% c("0301", "1103", "4601", "5001")), .SD, .SDcols = keepcols]
@@ -35,10 +30,10 @@ deletestrata[, UKJENT := 1 - (BYDEL/KOMMUNE)]
 deletestrata <- data.table::dcast(deletestrata, GEOKODE + AAR + ALDER + UTDANN + LANDBAK + INNVKAT + BODD ~ MALTALL, value.var = "UKJENT")
 deletestrata[, DIFF := sumTELLER - sumNEVNER]
 
-cat("\nFiltrerer ut rader med > 8 % ukjent sumTELLER eller > 5 %-poeng diff\n")
 bydims <- c("GEOKODE", "AAR", "ALDER", "UTDANN", "INNVKAT")
 deletestrata <- deletestrata[sumTELLER > 0.08 | (DIFF > 0.05 | DIFF < -0.05)][, .SD, .SDcols = bydims]
 delete <- collapse::join(deletestrata, deletebydel, on = "GEOKODE", multiple = TRUE, verbose = FALSE, overid = 2)[, let(GEOKODE = NULL, SLETT = 1)]
+bydims <- sub("GEOKODE", "GEO", bydims)
 delete <- delete[, .SD, .SDcols = c(bydims, "SLETT")]
 KUBE <- collapse::join(KUBE, delete, on = bydims, overid = 2, verbose = 0)
 KUBE[SLETT == 1, (c("TELLER.f", "RATE.f")) := 1][, SLETT := NULL]
