@@ -2,7 +2,7 @@
 # Lager samleindikator basert på Depr1-Depr6
 # Videre prosessering i hovedsnuttene
 
-depr_cols <- grep("^Depr[1-6]$", names(DF), value = T)
+depr_cols <- grep("^Depr[1-6]$", names(DF), value = T, ignore.case = TRUE)
 
 DF[, (depr_cols) := lapply(.SD, function(x) data.table::fifelse(x >= 98, NA_real_, x)), .SDcols = depr_cols]
 DF[, let(miss = rowSums(is.na(.SD)),
