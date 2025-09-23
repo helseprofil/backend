@@ -43,20 +43,22 @@ Filgruppe <- collapse::add_vars(g[["groups"]],
 # For 2021 og 2022 lagres ettårige tall pga Covid19
 Fylkeorg <- data.table::copy(Filgruppe)[GEOniv == "K"][, let(ANTALL = VEKT, NEVNER = vNEVNER)][, let(VEKT = NULL, vNEVNER= NULL)]
 Fylkeorg <- khfunctions:::do_harmonize_geo(file = Fylkeorg, vals = list(), rectangularize = F, parameters = parameters)
+data.table::setkeyv(Fylkeorg, c(setdiff(bycols, c("AARl", "AARh")), "AARl", "AARh"))
 sumvars <- c("ANTALL", "NEVNER", grep(".a$", names(Fylkeorg), value = T))
 meanvars <- grep(".f$", names(Fylkeorg), value = T)
+gcols <- c(setdiff(bycols, "GEO"), "TAB1", "TAB2")
 
 # Fylkestall frem til 2015 (med høstundersøkelser)
 fylke2015 <- Fylkeorg[AARl <= 2015]
 
 if(nrow(fylke2015) > 0){
-  g <- collapse::GRP(fylke2015, c(setdiff(bycols, "GEO"), "TAB1", "TAB2"))
+  g <- collapse::GRP(fylke2015, gcols)
   fylke2015 <- collapse::add_vars(g[["groups"]],
                                   collapse::fsum(collapse::get_vars(fylke2015, sumvars), g = g),
                                   collapse::fmean(collapse::get_vars(fylke2015, meanvars), g = g))
   allperiods <- khfunctions:::find_periods(unique(fylke2015$AARh), period = 3)
   fylke2015 <- khfunctions:::extend_to_periods(fylke2015, allperiods)
-  g <- collapse::GRP(fylke2015, c(setdiff(bycols, "GEO"), "TAB1", "TAB2"))
+  g <- collapse::GRP(fylke2015, gcols)
   fylke2015 <- collapse::add_vars(g[["groups"]],
                               collapse::fsum(collapse::get_vars(fylke2015, sumvars), g = g),
                               collapse::fmean(collapse::get_vars(fylke2015, meanvars), g = g))
@@ -66,7 +68,7 @@ if(nrow(fylke2015) > 0){
 # Fylkestall fra 2016 (uten høstundersøkelser for 2014-15)
 fylke2016 <- Fylkeorg[AARl >= 2014]
 fylke2016[ALDERl %in% c(1,3,5), names(.SD) := 0, .SDcols = c("ANTALL", "NEVNER")]
-g <- collapse::GRP(fylke2016, c(setdiff(bycols, "GEO"), "TAB1", "TAB2"))
+g <- collapse::GRP(fylke2016, gcols)
 fylke2016 <- collapse::add_vars(g[["groups"]],
                                 collapse::fsum(collapse::get_vars(fylke2016, sumvars), g = g),
                                 collapse::fmean(collapse::get_vars(fylke2016, meanvars), g = g))
@@ -75,7 +77,7 @@ Fylke2122 <- data.table::copy(fylke2016[AARl %in% c(2021, 2022)]) # Ettårige fy
 fylke2016[AARl == 2021, names(.SD) := 0, .SDcols = c("ANTALL", "NEVNER")] # Disse skal ikke inngå i glidende summer pga Covid19. 2022 skal inngå i 2023-2024-tall. 
 allperiods <- khfunctions:::find_periods(unique(fylke2016$AARh), period = 3)
 fylke2016 <- khfunctions:::extend_to_periods(fylke2016, allperiods)
-g <- collapse::GRP(fylke2016, c(setdiff(bycols, "GEO"), "TAB1", "TAB2"))
+g <- collapse::GRP(fylke2016, gcols)
 fylke2016 <- collapse::add_vars(g[["groups"]],
                             collapse::fsum(collapse::get_vars(fylke2016, sumvars), g = g),
                             collapse::fmean(collapse::get_vars(fylke2016, meanvars), g = g))
@@ -177,8 +179,6 @@ new_bydel[GEO == "1141", let(GEO = "110308")]
 new_bydel[GEO == "1142", let(GEO = "110309")]
 Filgruppe <- data.table::rbindlist(list(Filgruppe, new_bydel), fill = T)
 data.table::setkeyv(Filgruppe, c(bycols, "TAB1", "TAB2"))
-
-Filgruppe[, names(.SD) := lapply(.SD, as.character)]
 
 # Gamle kommentarer
 # /*
