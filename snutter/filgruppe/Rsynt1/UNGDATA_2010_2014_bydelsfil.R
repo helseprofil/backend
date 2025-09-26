@@ -50,7 +50,7 @@ for(dim in setdiff(dims, c("klasse_6delt", "AAR"))){
   full[[dim]] <- unique(DF[, .SD, .SDcols = dim])
 }
 
-full <- do.call(expand.grid.dt, full)
+full <- do.call(khfunctions:::expand.grid.dt, full)
 data.table::setcolorder(full, c("Kommune", "AAR", "KJONN", tab1, "klasse_6delt"))
 DF <- collapse::join(full, DF, multiple = T, overid = 2, verbose = 0)
 DF[is.na(exist), let(teller = 0, vekt2020 = 0)][, let(exist = NULL)]

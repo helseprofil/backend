@@ -1,4 +1,4 @@
-# Preprosessering av TAB1 for UNGDATA_DEPRESJON
+# Preprosessering av TAB1 for DEPRESJON_UNGDATA
 # Lager samleindikator basert på Depr1-Depr6
 # Videre prosessering i hovedsnuttene
 
@@ -7,9 +7,8 @@ depr_cols <- grep("^Depr[1-6]$", names(DF), value = T, ignore.case = TRUE)
 DF[, (depr_cols) := lapply(.SD, function(x) data.table::fifelse(x >= 98, NA_real_, x)), .SDcols = depr_cols]
 DF[, let(miss = rowSums(is.na(.SD)),
          depr = rowMeans(.SD, na.rm = T)), .SDcols = depr_cols]
-
+DF <- DF[miss <= 2] # Fjerner missing for TAB1
 DF[!is.na(depr) & miss <= 2, let(depr_dicS = data.table::fifelse(depr >= 3 & depr <= 4, "Ja_score>=3", "Nei_score<3"))]
-DF <- DF[!is.na(depr_dicS)] # Fjerner missing for TAB1
 
 # Gamle kommentarer fra STATA: 
 #   v03: Byttet til å inkludere de samme 6 items som NOVA. Forskjellen fra NOVA blir 

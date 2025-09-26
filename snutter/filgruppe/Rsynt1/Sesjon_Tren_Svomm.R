@@ -14,7 +14,7 @@ for(dim in dims){
   vals[[dim]] <- unique(DF[, .SD, .SDcols = dim])
 }
 
-rect <- do.call(expand.grid.dt, vals)
+rect <- do.call(khfunctions:::expand.grid.dt, vals)
 DF <- collapse::join(rect, DF, multiple = T, overid = 2, verbose = 0)
 DF[is.na(teller), let(teller = 0)]
 delcols <- setdiff(names(DF), c(dims, "teller"))
