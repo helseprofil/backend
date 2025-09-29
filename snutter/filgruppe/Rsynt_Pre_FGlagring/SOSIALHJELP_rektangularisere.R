@@ -42,5 +42,9 @@ Filgruppe <- collapse::join(full, Filgruppe, multiple = T, overid = 2, verbose =
 # - Fyll inn de nye radene med verdi null for antall.
 # Filgruppe[is.na(exist), let(teller = 0)][, let(exist = NULL)]
 Filgruppe[is.na(exist), let(ANTSOSHJ = 0)][, let(ANTSOSHJ.a = 1)][, let(ANTSOSHJ.f = 0)][, let(exist = NULL)]
+# Nå er også "exist"-kolonnen fjernet.
 
-# Ferdig - nå er også "exist"-kolonnen fjernet.
+# Til slutt: Jeg så at det var flere rader per GEO - gjetter på at grunnkretsene er omkodet men ikke aggregert.
+Filgruppe <- khfunctions:::do_aggregate_file(Filgruppe)
+
+# Ferdig
