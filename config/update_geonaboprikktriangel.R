@@ -34,3 +34,22 @@ update_geonaboprikk_triangel <- function(d = data, aar = 2024){
   
   return(out)
 }
+
+test_lks_triangel <- function(){
+ con <- khfunctions:::connect_khelsa() 
+ lks <- data.table::setDT(RODBC::sqlQuery(con, "SELECT GEO FROM GEOKODER WHERE GEONIV='V'", as.is = T))
+ 
+ lks[, let(kommune = sub("^(\\d{4}).*", "\\1", GEO),
+           bydel = sub("^(\\d{6}).*", "\\1", GEO))]
+ lks[grepl("00$", bydel), let(bydel = NA)]
+ lks[!is.na(bydel), let(kommune = NA)]
+ lks[, let(overkat = ifelse(!is.na(kommune), kommune, bydel))]
+ 
+ LKS <- character()
+ for(top in unique(lks$overkat)){
+   lkskoder <- paste0(lks[overkat == top, unique(GEO)], collapse = ",")
+   LKS <- paste0(LKS, paste0("{", top, ",", lkskoder, "}"))
+ }
+ return(LKS)
+}
+

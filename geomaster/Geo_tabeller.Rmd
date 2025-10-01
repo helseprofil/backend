@@ -15,7 +15,7 @@ geokoder <- "raw-khelse/geo-koder.accdb"
 ```
 
 ```{r}
-con <- RODBC::odbcConnectAccess2007(file.path(root, khelsa))
+con <- khfunctions:::connect_khelsa()
 KnrHarmOld <- RODBC::sqlQuery(con, "SELECT * FROM KnrHarm")
 GeoKoderOld <- RODBC::sqlQuery(con, "SELECT * FROM GeoKoder")
 ```
