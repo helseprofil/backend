@@ -1,3 +1,3 @@
 # Dropp totalverdier for UTDANN, INNVKAT og LANDBAK
 
-FIL <- FIL[UTDANN != "0" & LANDBAK != "0" & INNVKAT != "0"]
+DF <- DF[UTDANN != "0" & LANDBAK != "0" & INNVKAT != "0"]
