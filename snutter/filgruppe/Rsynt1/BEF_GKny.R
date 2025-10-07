@@ -1,7 +1,6 @@
 
-# Slette totalkategorier for INNVKAT og LANDBAK, samt UTDANNING for alle år utenom nyeste som bare har 0
-maxaar <- max(as.integer(collapse::funique(DF$AAR)))
-DF <- DF[LANDBAK != "0" & INNVKAT != "0" & !(as.integer(AAR) < maxaar & UTDANN == "0")]
+# Slette totalkategorier for INNVKAT og LANDBAK
+DF <- DF[LANDBAK != "0" & INNVKAT != "0"]
 
 # Rektangulariser bydeler
 dt_bydel <- DF[LEVEL == "bydel"][, newrow := 0]
