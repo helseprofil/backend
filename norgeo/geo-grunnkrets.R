@@ -24,9 +24,9 @@
 # October 2025
 # Rewrite script to handle the following:
 
-# 1. For duplicated rows on both old and current code, keep only most recent entry
-data.table::setkeyv(DT, c("oldCode", "currentCode", "changeOccurred"))
-DT <- unique(DT, by = c("oldCode", "currentCode"), fromLast = TRUE)
+# # 1. For duplicated rows on both old and current code, keep only most recent entry
+# data.table::setkeyv(DT, c("oldCode", "currentCode", "changeOccurred"))
+# DT <- unique(DT, by = c("oldCode", "currentCode"), fromLast = TRUE)
 
 # 2. Rows where oldCode also exists in currentCode is deleted, as the code is still valid and should not be recoded.
 # To handle splitting whenever the original code is reused (e.g. A -> A and B), we do not want to recode anything as the old code is still valid
@@ -34,7 +34,7 @@ DT <- unique(DT, by = c("oldCode", "currentCode"), fromLast = TRUE)
 old_valid <- DT[oldCode %in% unique(currentCode), unique(oldCode)]
 if(length(old_valid) > 0){
   cat("\nFant", length(old_valid), "koder i oldCode som fremdeles er gyldige, sletter disse omkodingene")
-  DT <- DT[!oldCode %in% old_valid]
+  DT[oldCode %in% old_valid, let(oldCode = NA_character_)]
   old_valid_ok <- DT[oldCode %in% unique(currentCode), .N] == 0
   if(!old_valid_ok) cat("\nOBS! det er fortsatt koder i oldCode som finnes i currentCode, dette må sjekkes og håndteres i geo-grunnkrets.R")
 }
@@ -48,12 +48,13 @@ if(length(duplicated_oldcode) > 0){
   DT_without_duplicates <- DT[!oldCode %in% duplicated_oldcode] # Keep unique oldCodes
   duplicates <- DT[oldCode %in% duplicated_oldcode][order(oldCode, changeOccurred)]
   duplicates[, mostrecent := max(changeOccurred), by = oldCode]
-  duplicates <- duplicates[changeOccurred == mostrecent][, let(mostrecent = NULL)]
+  duplicates[changeOccurred != mostrecent, let(oldCode = NA_character_)][, let(mostrecent = NULL)]
   DT <- data.table::rbindlist(list(DT_without_duplicates, duplicates), use.names = TRUE)
 }
 
 # 4. Check for codes that are still duplicated
 # Keep the numerically smallest, corresponding to what has been practiced in orgdata
+# Set oldCode to NA for the other rows, they cannot be deleted as that would remove valid currentCodes from the table. 
 # Print an informative message, and a list of the codes being split into separate geographical units
 duplicated_oldcode <- DT[duplicated(DT$oldCode)][!is.na(oldCode), unique(oldCode)]
 if(length(duplicated_oldcode) > 0){
@@ -67,11 +68,16 @@ if(length(duplicated_oldcode) > 0){
     cat("\nOBS, følgende grunnkretser er splittet til ulike kommuner, og vil plasseres i den numerisk laveste koden:\n\n")
     print(duplicates[sammekommune == 0, .SD, .SDcols = grep("sammekommune", names(duplicates), value = T, invert = T)])
   }
-
+  
   duplicates[, mincurrentcode := min(currentCode), by = oldCode]
-  duplicates <- duplicates[currentCode == mincurrentcode][, let(kommune = NULL, sammekommune = NULL, mincurrentcode = NULL)]
+  duplicates[currentCode != mincurrentcode, let(oldCode = NA_character_)]
+  duplicates[, let(kommune = NULL, sammekommune = NULL, mincurrentcode = NULL)]
   DT <- data.table::rbindlist(list(DT_without_duplicates, duplicates), use.names = TRUE)
 }
+
+# 5. Some duplicates may have been generated 
+data.table::setkeyv(DT, c("oldCode", "currentCode", "changeOccurred"))
+DT <- unique(DT, by = c("oldCode", "currentCode"), fromLast = TRUE)
 
 onlyunique <- isFALSE(any(duplicated(DT[!is.na(oldCode)]$oldCode)))
 if(!onlyunique){
@@ -81,4 +87,7 @@ if(!onlyunique){
   cat("\n Følgende koder er duplisert: ", paste0(duplicates, collapse = ", "))
 }
 
+# 5. Some duplicates may have been generated 
+data.table::setkeyv(DT, c("currentCode", "oldCode", "changeOccurred"))
+DT <- unique(DT, by = c("oldCode", "currentCode"), fromLast = TRUE)
 
