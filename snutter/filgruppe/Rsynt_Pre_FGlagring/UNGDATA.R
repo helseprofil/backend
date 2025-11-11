@@ -43,21 +43,25 @@ Filgruppe <- collapse::add_vars(g[["groups"]],
 # For 2021 og 2022 lagres ettårige tall pga Covid19
 Fylkeorg <- data.table::copy(Filgruppe)[GEOniv == "K"][, let(ANTALL = VEKT, NEVNER = vNEVNER)][, let(VEKT = NULL, vNEVNER= NULL)]
 Fylkeorg <- khfunctions:::do_harmonize_geo(file = Fylkeorg, vals = list(), rectangularize = F, parameters = parameters)
-data.table::setkeyv(Fylkeorg, c(setdiff(bycols, c("AARl", "AARh")), "AARl", "AARh"))
 sumvars <- c("ANTALL", "NEVNER", grep(".a$", names(Fylkeorg), value = T))
 meanvars <- grep(".f$", names(Fylkeorg), value = T)
 gcols <- c(setdiff(bycols, "GEO"), "TAB1", "TAB2")
+data.table::setkeyv(Fylkeorg, c(setdiff(gcols, c("AARl", "AARh")), "GEO", "AARl", "AARh"))
+Fylkeorg[, let(aar_org = AARl)]
 
 # Fylkestall frem til 2015 (med høstundersøkelser)
 fylke2015 <- Fylkeorg[AARl <= 2015]
 
 if(nrow(fylke2015) > 0){
-  g <- collapse::GRP(fylke2015, gcols)
-  fylke2015 <- collapse::add_vars(g[["groups"]],
-                                  collapse::fsum(collapse::get_vars(fylke2015, sumvars), g = g),
-                                  collapse::fmean(collapse::get_vars(fylke2015, meanvars), g = g))
   allperiods <- khfunctions:::find_periods(unique(fylke2015$AARh), period = 3)
   fylke2015 <- khfunctions:::extend_to_periods(fylke2015, allperiods)
+  # Rense kommuner med flere gjennomføringer i en periode, bare ta med siste i fylkestallet
+  fylke2015[, let(has_data = NEVNER > 0)]
+  fylke2015[, let(n_values = sum(has_data)), by = c(gcols, "GEO")]
+  fylke2015[n_values > 1 & has_data == TRUE, let(max_aar = max(aar_org)), by = c(gcols, "GEO")]
+  fylke2015[n_values > 1 & aar_org != max_aar, names(.SD) := 0, .SDcols = sumvars]
+  fylke2015[n_values > 1 & aar_org != max_aar, names(.SD) := 0, .SDcols = sumvars]
+  
   g <- collapse::GRP(fylke2015, gcols)
   fylke2015 <- collapse::add_vars(g[["groups"]],
                               collapse::fsum(collapse::get_vars(fylke2015, sumvars), g = g),
@@ -67,16 +71,27 @@ if(nrow(fylke2015) > 0){
 
 # Fylkestall fra 2016 (uten høstundersøkelser for 2014-15)
 fylke2016 <- Fylkeorg[AARl >= 2014]
-fylke2016[ALDERl %in% c(1,3,5), names(.SD) := 0, .SDcols = c("ANTALL", "NEVNER")]
-g <- collapse::GRP(fylke2016, gcols)
-fylke2016 <- collapse::add_vars(g[["groups"]],
-                                collapse::fsum(collapse::get_vars(fylke2016, sumvars), g = g),
-                                collapse::fmean(collapse::get_vars(fylke2016, meanvars), g = g))
+fylke2016[ALDERl %in% c(1,3,5), names(.SD) := 0, .SDcols = sumvars]
 
-Fylke2122 <- data.table::copy(fylke2016[AARl %in% c(2021, 2022)]) # Ettårige fylkestall for 2021 og 2022
-fylke2016[AARl == 2021, names(.SD) := 0, .SDcols = c("ANTALL", "NEVNER")] # Disse skal ikke inngå i glidende summer pga Covid19. 2022 skal inngå i 2023-2024-tall. 
+# Hente ut ettårige fylkestall for 2021 og 2022
+fylke2122 <- data.table::copy(fylke2016[AARl %in% c(2021, 2022)])
+g <- collapse::GRP(fylke2122, gcols)
+fylke2122 <- collapse::add_vars(g[["groups"]],
+                                collapse::fsum(collapse::get_vars(fylke2122, sumvars), g = g),
+                                collapse::fmean(collapse::get_vars(fylke2122, meanvars), g = g))
+
+# 2021-tall skal ikke inngå i glidende summer pga Covid19. 2022 skal inngå i 2023-2024-tall. 
+fylke2016[AARl == 2021, names(.SD) := 0, .SDcols = sumvars] 
+
 allperiods <- khfunctions:::find_periods(unique(fylke2016$AARh), period = 3)
 fylke2016 <- khfunctions:::extend_to_periods(fylke2016, allperiods)
+# Rense kommuner med flere gjennomføringer i en periode, bare siste skal inngå i fylkestallet
+fylke2016[, let(has_data = NEVNER > 0)]
+fylke2016[, let(n_values = sum(has_data)), by = c(gcols, "GEO")]
+fylke2016[n_values > 1 & has_data == TRUE, let(max_aar = max(aar_org)), by = c(gcols, "GEO")]
+fylke2016[n_values > 1 & aar_org != max_aar, names(.SD) := 0, .SDcols = sumvars]
+fylke2016[n_values > 1 & aar_org != max_aar, names(.SD) := 0, .SDcols = sumvars]
+
 g <- collapse::GRP(fylke2016, gcols)
 fylke2016 <- collapse::add_vars(g[["groups"]],
                             collapse::fsum(collapse::get_vars(fylke2016, sumvars), g = g),
@@ -92,7 +107,7 @@ for(aar in missingaar){
   new <- data.table::copy(Fylke[AARl == tredjeaar])[, names(.SD) := aar, .SDcols = c("AARl", "AARh")]
   Fylke <- data.table::rbindlist(list(Fylke, new), use.names = TRUE, fill = TRUE)
 }
-Fylke <- data.table::rbindlist(list(Fylke[!AARl %in% c(2021, 2022)], Fylke2122), use.names = TRUE, fill = TRUE)
+Fylke <- data.table::rbindlist(list(Fylke[!AARl %in% c(2021, 2022)], fylke2122), use.names = TRUE, fill = TRUE)
 Fylke[, let(GEO = FYLKE, GEOniv = "F")]
 
 Land <- data.table::copy(Fylke)
