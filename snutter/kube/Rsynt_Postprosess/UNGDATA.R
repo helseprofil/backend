@@ -1,4 +1,4 @@
-Rsynt_postprosess_ungdata
+# Rsynt_postprosess_ungdata
 # Beregner dekningsgrad og sletter tall
 
 # Hente dekningsgradfil for fylkestall (inneholder treårige tall for 14-16-åringer, som skal matches på AARh for å treffe treårige fylkestall)
