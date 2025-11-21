@@ -114,12 +114,12 @@ if("SOES" %in% names(KUBE)){
 
 # Sletter tall på gutter og jenter dersom nevner for KJONN == 0 er lavere enn 80, eller om KJONN==1 eller 2 < 25.
 # Dette samsvarer med NOVA sine kriterier for å vise tall fordelt på kjønn.
-
 kjonnvalues <- KUBE[, unique(KJONN)]
 kjonnnull <- if(is.character(kjonnvalues)) "0" else 0
 tab1 <- parameters$fileinformation[[1]]$TAB1
 bycols <- intersect(names(KUBE), c("GEO", "AARh", "SOES", tab1))
-slett_kjonn_undergrupper <- unique(KUBE[(KJONN == 0 & NEVNER < 80) | (KJONN %in% c(1,2) & NEVNER < 25), .SD, .SDcols = bycols])[, .(KJONN = setdiff(kjonnvalues, kjonnnull)), by = bycols]
+slett_kjonn_undergrupper <- KUBE[(KJONN == 0 & NEVNER < 80) | (KJONN %in% c(1,2) & NEVNER < 25), .SD, .SDcols = bycols]
+slett_kjonn_undergrupper <- slett_kjonn_undergrupper[, .(KJONN = setdiff(kjonnvalues, kjonnnull)), by = bycols]
 
 if(nrow(slett_kjonn_undergrupper) > 0L){
     KUBE[slett_kjonn_undergrupper, on = names(slett_kjonn_undergrupper), let(slettkjonn = 1)]

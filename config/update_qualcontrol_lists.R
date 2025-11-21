@@ -3,7 +3,7 @@
 #' Leser TAB1-3-kolonnene i ACCESS og lager en liste over alle potensielle dimensjonskolonner
 #' Brukes for å identifisere dimensjoner og verdier. Returnerer en liste som kan limes rett inn i `config-qualcontrol.yml`
 #' @noRd
-update_dimlist <- function(){
+update_qualcontrol_dimlist <- function(){
   con <- qualcontrol:::ConnectKHelsa()
   on.exit(RODBC::odbcClose(con), add = TRUE)
   date <- qualcontrol:::SQLdate(Sys.time())
