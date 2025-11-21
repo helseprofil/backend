@@ -112,6 +112,21 @@ if("SOES" %in% names(KUBE)){
   }
 }
 
+# Sletter tall på gutter og jenter dersom nevner for KJONN == 0 er lavere enn 80, eller om KJONN==1 eller 2 < 25.
+# Dette samsvarer med NOVA sine kriterier for å vise tall fordelt på kjønn.
+
+kjonnvalues <- KUBE[, unique(KJONN)]
+kjonnnull <- if(is.character(kjonnvalues)) "0" else 0
+tab1 <- parameters$fileinformation[[1]]$TAB1
+bycols <- intersect(names(KUBE), c("GEO", "AARh", "SOES", tab1))
+slett_kjonn_undergrupper <- unique(KUBE[(KJONN == 0 & NEVNER < 80) | (KJONN %in% c(1,2) & NEVNER < 25), .SD, .SDcols = bycols])[, .(KJONN = setdiff(kjonnvalues, kjonnnull)), by = bycols]
+
+if(nrow(slett_kjonn_undergrupper) > 0L){
+    KUBE[slett_kjonn_undergrupper, on = names(slett_kjonn_undergrupper), let(slettkjonn = 1)]
+    KUBE[KJONN != 0, allmissing := sum(spv_tmp != 0) == .N, by = bycols]
+    KUBE[allmissing == FALSE & slettkjonn == 1, (flaggcols) := 3L][, let(slettkjonn = NULL, allmissing = NULL)]
+}
+
 # Slette Åsane bydel i Bergen (460108) i 2024, pga for lav dekningsgrad
 # (bare 1 av 5 ungdomsskoler er med som utgjør ca 20% av elevene sammenlignet med tidligere år).
 # Sletter også Midt-Telemark (4020) i 2024, pga tekn.probl. på en skole, de ville ikke at tallene skulle vises
