@@ -18,7 +18,7 @@ jobs:
       - name: Generate snutter index
         run: |
           # Finn alle R-filer i snutter-mappen (case-insensitiv)
-          find snutter -type f \( -iname "*.R" \) | sort > backend/snutter/snutter_index.txt
+          find snutter -type f \( -iname "*.R" \) | sort > snutter/snutter_index.txt
 
       - name: Commit and push index
         run: |
