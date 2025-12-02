@@ -2,26 +2,26 @@ name: Update Snutter Index
 
 on:
   push:
-  paths:
-  - 'snutter/**'
-branches:
-  - main
+    paths:
+      - 'snutter/**'
+    branches:
+      - main
 
 jobs:
   build-index:
-  runs-on: ubuntu-latest
-steps:
-  - name: Checkout repo
-uses: actions/checkout@v3
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
-- name: Generate snutter index
-run: |
-  # Finn alle R-filer i snutter-mappen (case-insensitiv)
-  find snutter -type f \( -iname "*.R" \) | sort > backend/snutter/snutter_index.txt
+      - name: Generate snutter index
+        run: |
+          # Finn alle R-filer i snutter-mappen (case-insensitiv)
+          find snutter -type f \( -iname "*.R" \) | sort > backend/snutter/snutter_index.txt
 
-- name: Commit and push index
-run: |
-  git config --global user.name "github-actions"
-git config --global user.email "github-actions@github.com"
-git add backend/snutter/snutter_index.txt
-git diff --cached --quiet || git commit -m "Update snutter index"
+      - name: Commit and push index
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git add backend/snutter/snutter_index.txt
+          git diff --cached --quiet || git commit -m "Update snutter index"
