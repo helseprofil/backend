@@ -21,8 +21,11 @@ jobs:
           find snutter -type f \( -iname "*.R" \) | sort > snutter/snutter_index.txt
 
       - name: Commit and push index
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
-          git add backend/snutter/snutter_index.txt
+          git add snutter/snutter_index.txt
           git diff --cached --quiet || git commit -m "Update snutter index"
+          git push
