@@ -15,6 +15,7 @@ snutter/filgruppe/Rsynt_Pre_FGlagring/SOSIALHJELP_rektangularisere.R
 snutter/filgruppe/Rsynt_Pre_FGlagring/UNGDATA.R
 snutter/filgruppe/Rsynt_Pre_FGlagring/nyebydeler.R
 snutter/kube/Rsynt_Postprosess/DAAR_GK.R
+snutter/kube/Rsynt_Postprosess/EIERSTATUS.R
 snutter/kube/Rsynt_Postprosess/FORSVARET.R
 snutter/kube/Rsynt_Postprosess/HKR.R
 snutter/kube/Rsynt_Postprosess/KREFT.R
