@@ -34,3 +34,4 @@ snutter/kube/Rsynt_Postprosess/UNGDATA.R
 snutter/kube/Rsynt_Postprosess/UTDN.R
 snutter/kube/kladd/Rsynt_Postprosess_ENEFHIB_3.R
 snutter/misc/rect_fg.R
+snutter/misc/testsnutt.R
