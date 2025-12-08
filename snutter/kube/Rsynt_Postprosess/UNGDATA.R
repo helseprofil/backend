@@ -79,7 +79,7 @@ for(i in names(aarlist)){
   fylkedekning[kommune, on = c(setNames("FYLKE", "GEO"), "AARh"), let(DELTATT_KOMMUNE = i.KOMMUNESUM)]
 }
 fylkedekning[DELTATT_KOMMUNE > 0, let(DEKNINGSGRAD = DELTATT_KOMMUNE/FYLKEBEF)]
-slettfylker <- fylkedekning[DEKNINGSGRAD < 0.5, .SD, .SDcols = c("GEO", "AARh")]
+slettfylker <- unique(fylkedekning[DEKNINGSGRAD < 0.5, .SD, .SDcols = c("GEO", "AARh")])
 
 # For førsteperioder er det nødvendig å slette foregående 2 år også. 
 # Unntak: For 2021 og 2022, som er ettårige, skal ikke foregående år slettes, og for 2023 skal bare 2022 slettes. 
@@ -97,35 +97,38 @@ flaggcols <- c("TELLER.f", "NEVNER.f", "RATE.f", "spv_tmp")
 
 KUBE[slettfylker, on = c("GEO", "AARh"), (flaggcols) := 3L]
 
-# Sletter undergrupper av SOES dersom nevner for SOES = 0 er lavere enn valgt cutoff (100)
-# Gjør ingenting om alle undergrupper mangler fra før, f.eks. der alle har SPVFLAGG = 2, slik at de beholder opprinnelig SPVFLAGG
-if("SOES" %in% names(KUBE)){
-  soesvalues <- KUBE[, unique(SOES)]
-  soesnull <- if(is.character(soesvalues)) "0" else 0
-  tab1 <- parameters$fileinformation[[1]]$TAB1
-  bycols <- c("GEO", "AARh", "KJONN", tab1)
-  slett_soes_undergrupper <- KUBE[SOES == 0 & NEVNER < 100, .SD, .SDcols = bycols][, .(SOES = setdiff(soesvalues, soesnull)), by = bycols]
-  if(nrow(slett_soes_undergrupper) > 0L){
-    KUBE[slett_soes_undergrupper, on = names(slett_soes_undergrupper), let(slettsoes = 1)]
-    KUBE[SOES != 0, allmissing := sum(spv_tmp != 0) == .N, by = bycols]
-    KUBE[allmissing == FALSE & slettsoes == 1, (flaggcols) := 3L][, let(slettsoes = NULL, allmissing = NULL)]
-  }
-}
-
-# Sletter tall på gutter og jenter dersom nevner for KJONN == 0 er lavere enn 80, eller om KJONN==1 eller 2 < 25.
-# Dette samsvarer med NOVA sine kriterier for å vise tall fordelt på kjønn.
+# Sletter tall på gutter og jenter dersom nevner for KJONN == 0 er lavere enn 40, eller om KJONN==1 eller 2 < 15.
+# Dette samsvarer med NOVA sine kriterier for å vise tall fordelt på kjønn (mikro).
+# Koden filtrerer ut SOES == 0 dersom kuben har SOES. Dersom kuben har TAB1 med flere nivåer vil NEVNER være den samme for alle nivåer, og tas dermed automatisk hensyn til her.
+# Dersom begge kjønn allerede er prikket vil opprinnelig spvflagg beholdes
+tab1 <- parameters$fileinformation[[1]]$TAB1
 kjonnvalues <- KUBE[, unique(KJONN)]
 kjonnnull <- if(is.character(kjonnvalues)) "0" else 0
-tab1 <- parameters$fileinformation[[1]]$TAB1
-bycols <- intersect(names(KUBE), c("GEO", "AARh", "SOES", tab1))
-slett_kjonn_undergrupper <- KUBE[(KJONN == 0 & NEVNER < 80) | (KJONN %in% c(1,2) & NEVNER < 25), .SD, .SDcols = bycols]
+bycols <- intersect(names(KUBE), c("GEO", "AARh"))
+slett_kjonn_undergrupper <- unique(KUBE[(if("SOES" %in% names(KUBE)) SOES == 0 else rep(TRUE, .N)) & ((KJONN == 0 & NEVNER < 40) | (KJONN %in% c(1,2) & NEVNER < 15)), .SD, .SDcols = bycols])
 slett_kjonn_undergrupper <- slett_kjonn_undergrupper[, .(KJONN = setdiff(kjonnvalues, kjonnnull)), by = bycols]
 
 if(nrow(slett_kjonn_undergrupper) > 0L){
     KUBE[slett_kjonn_undergrupper, on = names(slett_kjonn_undergrupper), let(slettkjonn = 1)]
+    bycols <- intersect(names(KUBE), c("GEO", "AARh", "SOES", tab1))
     KUBE[KJONN != 0, allmissing := sum(spv_tmp != 0) == .N, by = bycols]
     KUBE[allmissing == FALSE & slettkjonn == 1, (flaggcols) := 3L][, let(slettkjonn = NULL, allmissing = NULL)]
 }
+
+# Sletter undergrupper av SOES dersom nevner for SOES = 0 er lavere enn valgt cutoff (100)
+# Gjør ingenting om alle undergrupper mangler fra før, f.eks. der alle har SPVFLAGG = 2, slik at de beholder opprinnelig SPVFLAGG
+# if("SOES" %in% names(KUBE)){
+#   soesvalues <- KUBE[, unique(SOES)]
+#   soesnull <- if(is.character(soesvalues)) "0" else 0
+#   
+#   bycols <- c("GEO", "AARh", "KJONN", tab1)
+#   slett_soes_undergrupper <- KUBE[SOES == 0 & NEVNER < 100, .SD, .SDcols = bycols][, .(SOES = setdiff(soesvalues, soesnull)), by = bycols]
+#   if(nrow(slett_soes_undergrupper) > 0L){
+#     KUBE[slett_soes_undergrupper, on = names(slett_soes_undergrupper), let(slettsoes = 1)]
+#     KUBE[SOES != 0, allmissing := sum(spv_tmp != 0) == .N, by = bycols]
+#     KUBE[allmissing == FALSE & slettsoes == 1, (flaggcols) := 3L][, let(slettsoes = NULL, allmissing = NULL)]
+#   }
+# }
 
 # Slette Åsane bydel i Bergen (460108) i 2024, pga for lav dekningsgrad
 # (bare 1 av 5 ungdomsskoler er med som utgjør ca 20% av elevene sammenlignet med tidligere år).
