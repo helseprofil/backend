@@ -8,6 +8,9 @@ on:
       - main
   workflow_dispatch: 
 
+permissions:
+  contents: write
+  
 jobs:
   build-index:
     runs-on: ubuntu-latest
@@ -26,6 +29,6 @@ jobs:
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
-          git add snutter/snutter_index.txt
+          git add -f snutter/snutter_index.txt
           git diff --cached --quiet || git commit -m "Update snutter index"
           git push
