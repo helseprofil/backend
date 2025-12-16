@@ -25,7 +25,7 @@
 		Lastet ned fra SSB/KLASS.
 	MÅ OPPDATERES - MANGE ENDRINGER SENERE PÅ HØSTEN.
 
-	Oversikt over endringer fra tidligere år:
+	Oversikt over endringer fra tidligere år: (HUSK at samiske navn nå kommer fra tblGeo, og bare evt. må rettes)
 	* for 2014-profilene: * ingenting *	
 	* for 2015-profiler:
 	  - legge til bydeler for 4 byer, OG legge inn "Bydel" i Oslo-navnene. Kilde: Bydeler.dta i \2015.
@@ -61,7 +61,10 @@
 	* For 2025: 
 	  - IKKE OPPDATERT VS SSB (per 29.01.25). Kjører ut filer i hht. geo-koder.accdb/tblGeo slik den er per dato.
 	  Planen er å oppdatere vs. SSB etter publisering av 2025-profilene.
-	  MÅ RETTE i scriptet et par steder.
+	* For 2026:
+	  - KJØRING for å få masterfiler til profil flatfiler foreløpig utgave: 
+	  - tblGeo er oppdatert 1.10.25. MEN IKKE oppdatert til 2026-geo, for den er ikke kommet.
+	  - MÅ BEHOLDE TRIKSING i scriptet et par steder for å få "2025" i tabellinnhentingen.
 	  LAGT INN filtrering av LKS og økonomiske soner fra tblGeo.
 		
 	*/
@@ -79,7 +82,7 @@ pause on
 clear frames
 
 *LEGG INN RETT ÅRSTALL!
-local profilaar "2025"
+local profilaar "2026"
 
 * KJØRING:
 ************************************************************************
@@ -89,7 +92,7 @@ local profilaar "2025"
 ************************************************************************
 local aarstalliFilbanen = real("`profilaar'") //`profilaar' 
 local innevaerendeAar = real(word("`c(current_date)'", 3))
-*assert `aarstalliFilbanen'==`innevaerendeAar' + 1 
+assert `aarstalliFilbanen'==`innevaerendeAar' + 1 
 
 local fjoraar  =  `profilaar'-1
 di `fjoraar'
@@ -124,12 +127,12 @@ cd "O:\Prosjekt\FHP\Masterfiler/`profilaar'"
 	dsn("MS Access Database; DBQ=F:\Prosjekter\Kommunehelsa\PRODUKSJON\STYRING\KHELSA.mdb;")   clear */
 
 	************************************
-	* JAN-25: MIDLERTIDIG FRA 2024-GEO
-	*local MIDLprofilaar = "2024"
+	* DES-25: MIDLERTIDIG FRA 2025-GEO
+	local MIDLprofilaar = "2025"
 	* MÅ RETTES i ODBC-Load-kommandoen nedenfor
 	************************************
 	
-odbc load, exec(`"SELECT t.code, t.name, t.validTo, t.level FROM tblGeo t WHERE t.validTo = '`profilaar'' AND t.level <> 'grunnkrets' AND t.level <> 'levekaar' AND t.level <> 'okonomisk' "') ///
+odbc load, exec(`"SELECT t.code, t.name, t.validTo, t.level FROM tblGeo t WHERE t.validTo = '`MIDLprofilaar'' AND t.level <> 'grunnkrets' AND t.level <> 'levekaar' AND t.level <> 'okonomisk' "') ///
 dsn("MS Access Database; DBQ=O:\Prosjekt\FHP\PRODUKSJON\STYRING\raw-khelse\geo-koder.accdb;")   clear
 rename (code name validTo level) (Sted_kode Sted Aar RegiontypeId)
 
@@ -140,9 +143,14 @@ dsn("MS Access Database; DBQ=O:\Prosjekt\FHP\PRODUKSJON\STYRING\KHELSA.mdb;")   
 
 frame change default
 
-* RETTELSER  - samisk 's med pil ned' mangler
-replace Sted = "Evenes Evenášši" if strmatch(Sted, "Evenes*")
-replace Sted = "Kárášjohka Karasjok" if strmatch(Sted, "*Karasjok")
+* RETTELSER  
+* Nye navn gyldige fra 1.1.26, vil slå inn hos SSB i 2026-geo
+replace Sted = "Oslo Oslove" if strmatch(Sted, "Oslo")
+replace Sted = "Steinkjer Stïentje" if strmatch(Sted, "Steinkjer")
+replace Sted = "Lyngen Ivgu Yykeä" if strmatch(Sted, "Lyngen")
+
+* MIDLERTIDIG INNTIL OVERGANG TIL 2026-GEO
+replace Aar = "`profilaar'"
 
 * RYDDING
 drop if substr(Sted_kode, -2, 2) == "99"
@@ -205,7 +213,8 @@ order Sted_kode Sted
 
 frame change default
 frameappend hreg			// Stata 17: brukte package frameappend from http://fmwww.bc.edu/RePEc/bocode/f.
-							// search i Help for frameappend, klikk lenke, "click here to install". Er tillatt på HDIR.
+							// search i Help for frameappend, klikk lenke, "click here to install". 
+							// Er tillatt på HDIR, og funket på VM (des-25).
 
 * Lage numerisk GEO 
 destring Sted_kode, generate(geo)
@@ -265,16 +274,19 @@ replace Sted = "Eiganes og Våland kommunedel" if Sted_kode == "110303"
 	replace Sted = "Kåfjord"	if strmatch(Sted, "G?ivuotna*")
 	replace Sted = "Lavangen"	if strmatch(Sted, "*Lavangen")
 	replace Sted = "Levanger"	if strmatch(Sted, "Levanger*")
+	replace Sted = "Lyngen"		if strmatch(Sted, "Lyngen*")
 	replace Sted = "Namsos" 	if strmatch(Sted, "Namsos*")
 	replace Sted = "Nesseby"	if strmatch(Sted, "Unj?rga*")
 	replace Sted = "Nordland" 	if strmatch(Sted, "Nordland*")
 	replace Sted = "Nordreisa" 	if strmatch(Sted, "Nordreisa*")
+	replace Sted = "Oslo"		if strmatch(Sted, "Oslo*")
 	replace Sted = "Porsanger"	if strmatch(Sted, "Porsanger*")
 	replace Sted = "Rana"		if strmatch(Sted, "Rana*")
 	replace Sted = "Røros"		if strmatch(Sted, "Røros*")
 	replace Sted = "Røyrvik"	if strmatch(Sted, "*Røyrvik")
 	replace Sted = "Snåsa"		if strmatch(Sted, "Snåase*")
 	replace Sted = "Sortland"	if strmatch(Sted, "Sortland*")
+	replace Sted = "Steinkjer"	if strmatch(Sted, "Steinkjer*")
 	replace Sted = "Storfjord"	if strmatch(Sted, "*Storfjord*")
 	replace Sted = "Sørfold"	if strmatch(Sted, "Sørfold*")
 	replace Sted = "Tana"		if strmatch(Sted, "Deatnu*")
