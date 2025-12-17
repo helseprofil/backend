@@ -14,4 +14,4 @@
 
 data.table::setnames(DF, c("aar", "kjønn"), c("AAR", "KJONN"))
 DF[sykdom == "HPV" & KJONN == "M", let(sykdom = "HPV_M")]
-DF[let(KJONN = 0)]
+DF[, KJONN := 0]
