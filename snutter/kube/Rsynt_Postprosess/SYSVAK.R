@@ -1,12 +1,8 @@
 # Postprosessering av SYSVAK
-# - Håndterer HPV (Beholder bare KJONN == 2, koder om til 0. Sletter deretter alle rader med KJONN = 2 i filen som ikke trengs lenger)
-
-KUBE <- KUBE[!(VAKSINE == "HPV" & KJONN == 0)]
-KUBE[VAKSINE == "HPV" & KJONN == 2, let(KJONN = 0)]
-KUBE <- KUBE[KJONN != 2]
 
 # - Prikke alle data på 2-åringer før 2011 for bydeler i Stavanger og Trondheim
-KUBE[GEOniv == "B" & grepl("^5001|^1103", GEO) & AARl < 2011 & ALDERl == 2, let(TELLER.f = 1, RATE.f = 1)]
+flaggcol <- intersect(c("TELLER.f", "RATE.f", "spv_tmp"), names(KUBE))
+KUBE[GEOniv == "B" & grepl("^5001|^1103", GEO) & AARl < 2011 & ALDERl == 2, (flaggcol) := 1]
 
 # Slette alle tall på Kikhoste for 16-åringer for år før perioden 2014-2018 dersom 5-årig kube. Setter flagg til 1. 
 
@@ -26,13 +22,13 @@ KUBE[GEOniv == "B" & grepl("^5001|^1103", GEO) & AARl < 2011 & ALDERl == 2, let(
 #   - Hepatitt B	:(ny fra mars-20) Data fra 2019. Flagg 1 for tidligere år (delingskommuner hadde fått 3),
 #   				og for andre aldersgrupper enn 2år.
 
-KUBE[VAKSINE %in% c("Difteri", "Stivkrampe", "Polyomyelitt") & ALDERl ==  16 & AARl < 2009, let(TELLER.f = 1, RATE.f = 1)]
-KUBE[VAKSINE == "Kikhoste" & ALDERl == 16 & AARl < 2014, let(TELLER.f = 1, RATE.f = 1)]
-KUBE[VAKSINE == "HIB" & ALDERl %in% c(9, 16), let(TELLER.f = 1, RATE.f = 1)]
-KUBE[VAKSINE == "Pneumokokk" & (ALDERl %in% c(9, 16) | (ALDERl == 2 & AARl <= 2007)), let(TELLER.f = 1, RATE.f = 1)]
-KUBE[VAKSINE %in% c("Meslinger", "Kusma", "Rodehunder")  & AARl < 2009, let(TELLER.f = 1, RATE.f = 1)]
-KUBE[VAKSINE == "MMR" & (AARl > 2008 | ALDERl == 16), let(TELLER.f = 1, RATE.f = 1)]
-KUBE[VAKSINE %in% c("HPV", "HPV_M") & ALDERl %in% c(2,9), let(TELLER.f = 1, RATE.f = 1)]
-KUBE[VAKSINE ==  "HPV" & ALDERl == 16 & AARl < 2013, let(TELLER.f = 1, RATE.f = 1)]
-KUBE[VAKSINE ==  "Rotavirusinfeksjon" & (ALDERl %in% c(9,16) | AARl < 2017) , let(TELLER.f = 1, RATE.f = 1)]
-KUBE[VAKSINE ==  "HepatittB" & (AARl < 2019 | ALDERl != 2), let(TELLER.f = 1, RATE.f = 1)]
+KUBE[VAKSINE %in% c("Difteri", "Stivkrampe", "Polyomyelitt") & ALDERl ==  16 & AARl < 2009, (flaggcol) := 1]
+KUBE[VAKSINE == "Kikhoste" & ALDERl == 16 & AARl < 2014, (flaggcol) := 1]
+KUBE[VAKSINE == "HIB" & ALDERl %in% c(9, 16), (flaggcol) := 1]
+KUBE[VAKSINE == "Pneumokokk" & (ALDERl %in% c(9, 16) | (ALDERl == 2 & AARl <= 2007)), (flaggcol) := 1]
+KUBE[VAKSINE %in% c("Meslinger", "Kusma", "Rodehunder")  & AARl < 2009, (flaggcol) := 1]
+KUBE[VAKSINE == "MMR" & (AARl > 2008 | ALDERl == 16), (flaggcol) := 1]
+KUBE[VAKSINE %in% c("HPV", "HPV_M") & ALDERl %in% c(2,9), (flaggcol) := 1]
+KUBE[VAKSINE ==  "HPV" & ALDERl == 16 & AARl < 2013, (flaggcol) := 1]
+KUBE[VAKSINE ==  "Rotavirusinfeksjon" & (ALDERl %in% c(9,16) | AARl < 2017) , (flaggcol) := 1]
+KUBE[VAKSINE ==  "HepatittB" & (AARl < 2019 | ALDERl != 2), (flaggcol) := 1]
