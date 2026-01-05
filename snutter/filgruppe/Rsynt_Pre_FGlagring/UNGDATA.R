@@ -1,3 +1,6 @@
+# NB! For fylkes- og landstall beholdes bare siste gjennomføring dersom en kommune har flere gjennomføring i perioden
+# UNNTAK: 99-koder, da dette hovedsakelig vil være ulike kommuner.
+
 Filgruppe[GEO == "0217" & AARl == 2017, names(.SD) := 0, .SDcols = c("ANTALL", "NEVNER", "VEKT")] # Slette Oppegård-2017 om det er kommet med ved et uhell. 
 Filgruppe[GEO == "1507" & AARl == 2023, let(GEO = "1508")] # La undersøkelsen for Ålesund + Haram i 2023 representere Ålesund
 
@@ -23,7 +26,7 @@ Filgruppe <- collapse::add_vars(g[["groups"]],
 # Lage samletall for soes
 # Siden tallene i den gamle bydelsfilen i praksis er SOES = 0 må tallene aggregeres på nytt etter at SOES = 0 er sydd på.
 soes0 <- Filgruppe[TAB2 != 0]
-
+  
 g <- collapse::GRP(soes0, c(bycols, "TAB1"))
 sumvars <- c("ANTALL", "NEVNER", "vNEVNER", "VEKT", grep(".a$", names(soes0), value = T))
 meanvars <- grep(".f$", names(soes0), value = T)
@@ -56,11 +59,12 @@ if(nrow(fylke2015) > 0){
   allperiods <- khfunctions:::find_periods(unique(fylke2015$AARh), period = 3)
   fylke2015 <- khfunctions:::extend_to_periods(fylke2015, allperiods)
   # Rense kommuner med flere gjennomføringer i en periode, bare ta med siste i fylkestallet
+  # NB! Dette gjelder ikke for 99-koder, da dette mest sannsynlig vil være ulike kommuner 
+  # (f.eks. 5099 hvor noen av de opprinnelige kommunene gjennomførte i 2017 og andre i 2018)
   fylke2015[, let(has_data = NEVNER > 0)]
   fylke2015[, let(n_values = sum(has_data)), by = c(gcols, "GEO")]
   fylke2015[n_values > 1 & has_data == TRUE, let(max_aar = max(aar_org)), by = c(gcols, "GEO")]
-  fylke2015[n_values > 1 & aar_org != max_aar, names(.SD) := 0, .SDcols = sumvars]
-  fylke2015[n_values > 1 & aar_org != max_aar, names(.SD) := 0, .SDcols = sumvars]
+  fylke2015[n_values > 1 & aar_org != max_aar & !grepl("99$", GEO), names(.SD) := 0, .SDcols = sumvars]
   
   g <- collapse::GRP(fylke2015, gcols)
   fylke2015 <- collapse::add_vars(g[["groups"]],
@@ -86,11 +90,12 @@ fylke2016[AARl == 2021, names(.SD) := 0, .SDcols = sumvars]
 allperiods <- khfunctions:::find_periods(unique(fylke2016$AARh), period = 3)
 fylke2016 <- khfunctions:::extend_to_periods(fylke2016, allperiods)
 # Rense kommuner med flere gjennomføringer i en periode, bare siste skal inngå i fylkestallet
+# NB! Dette gjelder ikke for 99-koder, da dette mest sannsynlig vil være ulike kommuner 
+# (f.eks. 5099 hvor noen av de opprinnelige kommunene gjennomførte i 2017 og andre i 2018)
 fylke2016[, let(has_data = NEVNER > 0)]
 fylke2016[, let(n_values = sum(has_data)), by = c(gcols, "GEO")]
 fylke2016[n_values > 1 & has_data == TRUE, let(max_aar = max(aar_org)), by = c(gcols, "GEO")]
-fylke2016[n_values > 1 & aar_org != max_aar, names(.SD) := 0, .SDcols = sumvars]
-fylke2016[n_values > 1 & aar_org != max_aar, names(.SD) := 0, .SDcols = sumvars]
+fylke2016[n_values > 1 & aar_org != max_aar & !grepl("99$", GEO), names(.SD) := 0, .SDcols = sumvars]
 
 g <- collapse::GRP(fylke2016, gcols)
 fylke2016 <- collapse::add_vars(g[["groups"]],
