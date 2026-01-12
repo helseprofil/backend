@@ -52,8 +52,9 @@ gcols <- c(setdiff(bycols, "GEO"), "TAB1", "TAB2")
 data.table::setkeyv(Fylkeorg, c(setdiff(gcols, c("AARl", "AARh")), "GEO", "AARl", "AARh"))
 Fylkeorg[, let(aar_org = AARl)]
 
-# Fylkestall frem til 2015 (med høstundersøkelser)
+# Fylkestall frem til 2015 (med høstundersøkelser), bare om minst 3 årganger finnes
 fylke2015 <- Fylkeorg[AARl <= 2015]
+if(length(unique(fylke2015$AARl)) < 3) fylke2015 <- fylke2015[0]
 
 if(nrow(fylke2015) > 0){
   allperiods <- khfunctions:::find_periods(unique(fylke2015$AARh), period = 3)
@@ -68,10 +69,10 @@ if(nrow(fylke2015) > 0){
   
   g <- collapse::GRP(fylke2015, gcols)
   fylke2015 <- collapse::add_vars(g[["groups"]],
-                              collapse::fsum(collapse::get_vars(fylke2015, sumvars), g = g),
-                              collapse::fmean(collapse::get_vars(fylke2015, meanvars), g = g))
+                                  collapse::fsum(collapse::get_vars(fylke2015, sumvars), g = g),
+                                  collapse::fmean(collapse::get_vars(fylke2015, meanvars), g = g))
   fylke2015[, let(AARl = AARh)] # Setter AARl = AARh slik at AAR 2014 inneholder 2012_2014 osv. 
-} 
+}
 
 # Fylkestall fra 2016 (uten høstundersøkelser for 2014-15)
 fylke2016 <- Fylkeorg[AARl >= 2014]
@@ -127,7 +128,7 @@ Land <- collapse::add_vars(g[["groups"]],
 Filgruppe <- data.table::rbindlist(list(Filgruppe, Fylke, Land), use.names = T, fill = T)[AARl >= startaar]
 Filgruppe[, let(vNEVNER = NULL)]
 # Gammel kommentar fra Jørgen: 
-# [Aggregering til fylke og land skjer] før kommunesammenslåing av undersøkelser. Burde det ikke vært motsatt rekkefølge? :-()
+# [Aggregering til fylke og land skjer før kommunesammenslåing av undersøkelser. Burde det ikke vært motsatt rekkefølge? :-()
 # Dette burde nok vært gjort i motsatt rekkefølge.Nå vil en undersøkelse telle i fylkes- og landstall for ett år men gå inn i kommunetallet et annet år. 
        
 # Håndtere sammenslåing av kommuner/undersøkelser (slik det var hardkodet i opprinnelig STATA-snutt)
