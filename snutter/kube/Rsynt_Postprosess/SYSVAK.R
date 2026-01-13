@@ -32,3 +32,12 @@ KUBE[VAKSINE %in% c("HPV", "HPV_M") & ALDERl %in% c(2,9), (flaggcol) := 1]
 KUBE[VAKSINE ==  "HPV" & ALDERl == 16 & AARl < 2013, (flaggcol) := 1]
 KUBE[VAKSINE ==  "Rotavirusinfeksjon" & (ALDERl %in% c(9,16) | AARl < 2017) , (flaggcol) := 1]
 KUBE[VAKSINE ==  "HepatittB" & (AARl < 2019 | ALDERl != 2), (flaggcol) := 1]
+
+# Grunnet høy vaksinasjonsdekning er det mange tall som prikkes på grunn av lavt antall uvaksinerte, og dette utløser serieprikking
+# Det vil si at hele tidsserier forsvinner som følge av høy vaksinasjonsdekning over tid. 
+# Derfor besluttes det at serieprikker som ikke er personvernprikker (primærprikker eller naboprikker) avprikkes. 
+# Disse tallene har serieprikket = 1 og pvern = 0. 
+
+flags <- intersect(c("spv_tmp", grep("\\.f$", names(KUBE), value = T)), names(KUBE))
+KUBE[serieprikket == 1 & pvern == 0, 
+     names(.SD) := as.list(c(rep(0L, length(flags)),2L)), .SDcols = c(flags, "serieprikket")]
