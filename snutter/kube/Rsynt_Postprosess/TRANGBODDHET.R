@@ -38,7 +38,7 @@ KUBE <- collapse::join(KUBE, delete, on = bydims, overid = 2, verbose = 0)
 KUBE[spv_tmp == 0 & SLETT == 1, c("TELLER.f", "RATE.f", "spv_tmp") := 1]
 KUBE[, SLETT := NULL]
 
-cat("\**** nSletter tall for BODD=='trangt' for strata med > 10% BODD=='uoppgitt'")
+cat("\n****Sletter tall for BODD=='trangt' for strata med > 10% BODD=='uoppgitt'")
 delete <- KUBE[BODD == "uoppgitt" & sumTELLER/sumNEVNER > 0.10 & GEOniv %in% c("B", "K"), .SD, .SDcols = bydims]
 delete[, let(BODD = "trangt", SLETT = 1)]
 KUBE <- collapse::join(KUBE, delete, on = c(bydims, "BODD"), overid = 2, verbose = FALSE)
@@ -47,11 +47,11 @@ KUBE[, SLETT := NULL]
 
 # januar 2026: 
 # Etter utvidelse med utdann blir det tilfeller hvor UTDANN 1 og 4 får tall, men ikke de andre. 
-# For å unngå forvirring fjerner vi alle tall for UTDANN = 1-4 dersom minst to av disse er prikket. 
+# For å unngå forvirring fjerner vi alle undergrupper av UTDANN dersom minst to av disse er prikket. 
 if(length(unique(KUBE$UTDANN)) > 1){
-  cat("\n**** Sletter tall for undergrupper av UTDANN dersom minst 2 kategorier er prikket i et strata")
+  cat("\n**** Sletter tall for undergrupper av UTDANN dersom minst 2 underkategorier er prikket i et strata")
   bydims <- c(setdiff(bydims, "UTDANN"), "BODD")
-  KUBE[, n_prikk := sum(spv_tmp > 0), by = bydims]
-  KUBE[n_prikk >= 2 & UTDANN %in% c(1,2,3,4) & spv_tmp == 0, c("TELLER.f", "RATE.f", "spv_tmp") := 1]
+  KUBE[UTDANN != 0, n_prikk := sum(spv_tmp > 0), by = bydims]
+  KUBE[n_prikk >= 2 & UTDANN != 0 & spv_tmp == 0, c("TELLER.f", "RATE.f", "spv_tmp") := 1]
   KUBE[, n_prikk := NULL]
 }
