@@ -2,11 +2,15 @@
 # I senere år har denne gruppen blitt større, og vi må derfor gi den ut som egen gruppe. 
 
 # Ettersom UTDANN = 4 har vært veldig liten, blir den stort sett serieprikket. 
-# Siden det er et poeng å vise denne gruppen, vil vi "avprikke" de radene som er serieprikket men IKKE personvernprikket (primær eller naboprikket)
+# Siden det er et poeng å vise denne gruppen, vil vi "avprikke" de radene som er 
+# serieprikket men IKKE personvernprikket (primær eller naboprikket)
 # Disse radene kjennes igjen ved at de har serieprikket == 1 og pvern == 0
+
+# Gjelder også bare rader som har spv_tmp = 4, for å hindre at rader som er satt til 
+# spv_tmp = 1 i andre snutter, # f.eks pga dekningsgrad, blir avprikket dersom denne snutten kommer etterpå.
 
 # Koden under fjerner prikkeflaggene for disse radene.
 
 flags <- intersect(c("spv_tmp", grep("\\.f$", names(KUBE), value = T)), names(KUBE))
-KUBE[UTDANN == 4 & serieprikket == 1 & pvern == 0, 
+KUBE[UTDANN == 4 & serieprikket == 1 & pvern == 0 & spv_tmp == 4, 
      names(.SD) := as.list(c(rep(0L, length(flags)),2L)), .SDcols = c(flags, "serieprikket")]

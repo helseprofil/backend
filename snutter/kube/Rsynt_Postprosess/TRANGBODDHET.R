@@ -1,5 +1,5 @@
 # RSYNT_POSTPROSESS for kube TRANGBODDHET
-# Oppdatert juni 2025 (VL)
+# Oppdatert januar 2026 (VL)
 
 # Sletter tall på bydelsnivå dersom
 # - > 5 %-poeng forskjell mellom ukjent sumTELLER og sumNEVNER for BODD == "trangt"
@@ -35,23 +35,33 @@ delete[, let(GEOKODE = NULL, SLETT = 1)]
 bydims <- sub("GEOKODE", "GEO", bydims)
 delete <- delete[, .SD, .SDcols = c(bydims, "SLETT")]
 KUBE <- collapse::join(KUBE, delete, on = bydims, overid = 2, verbose = 0)
-KUBE[spv_tmp == 0 & SLETT == 1, c("TELLER.f", "RATE.f", "spv_tmp") := 1]
+KUBE[SLETT == 1, c("TELLER.f", "RATE.f", "spv_tmp") := 1]
 KUBE[, SLETT := NULL]
 
 cat("\n****Sletter tall for BODD=='trangt' for strata med > 10% BODD=='uoppgitt'")
 delete <- KUBE[BODD == "uoppgitt" & sumTELLER/sumNEVNER > 0.10 & GEOniv %in% c("B", "K"), .SD, .SDcols = bydims]
 delete[, let(BODD = "trangt", SLETT = 1)]
 KUBE <- collapse::join(KUBE, delete, on = c(bydims, "BODD"), overid = 2, verbose = FALSE)
-KUBE[spv_tmp == 0 & SLETT == 1, c("TELLER.f", "RATE.f", "spv_tmp") := 1]
+KUBE[SLETT == 1, c("TELLER.f", "RATE.f", "spv_tmp") := 1]
 KUBE[, SLETT := NULL]
 
 # januar 2026: 
 # Etter utvidelse med utdann blir det tilfeller hvor UTDANN 1 og 4 får tall, men ikke de andre. 
 # For å unngå forvirring fjerner vi alle undergrupper av UTDANN dersom minst to av disse er prikket. 
+# Fjerner alle tall uavhengig av tidligere spv_tmp, for å hindre avprikking av UTDANN = 4 i annen snutt. 
 if(length(unique(KUBE$UTDANN)) > 1){
   cat("\n**** Sletter tall for undergrupper av UTDANN dersom minst 2 underkategorier er prikket i et strata")
   bydims <- c(setdiff(bydims, "UTDANN"), "BODD")
   KUBE[UTDANN != 0, n_prikk := sum(spv_tmp > 0), by = bydims]
-  KUBE[n_prikk >= 2 & UTDANN != 0 & spv_tmp == 0, c("TELLER.f", "RATE.f", "spv_tmp") := 1]
+  KUBE[n_prikk >= 2 & UTDANN != 0, c("TELLER.f", "RATE.f", "spv_tmp") := 1]
+  KUBE[, n_prikk := NULL]
+}
+
+# Samme logikk for INNVKAT
+if(length(unique(KUBE$INNVKAT)) > 1){
+  cat("\n**** Sletter tall for undergrupper av INNVKAT dersom minst 2 underkategorier er prikket i et strata")
+  bydims <- c(setdiff(bydims, "INNVKAT"), "BODD")
+  KUBE[INNVKAT != 0, n_prikk := sum(spv_tmp > 0), by = bydims]
+  KUBE[n_prikk >= 2 & INNVKAT != 0, c("TELLER.f", "RATE.f", "spv_tmp") := 1]
   KUBE[, n_prikk := NULL]
 }
