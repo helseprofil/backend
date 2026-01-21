@@ -54,15 +54,14 @@ udirprikk[, `:=` (KJONN = data.table::fcase(KjoennKode == "A", "0",
 
 # Identify censored strata kommune
 udirprikk_kommune <- udirprikk[EnhetNivaa == 3 & (AndelSvaralternativ4 == "*" | AndelSvaralternativ5 == "*")]
-udirprikk_kommune[, `:=` (GEO = Kommunekode,
-                          UDIRPRIKK = 1)]
+udirprikk_kommune[, let(GEO = Kommunekode, UDIRPRIKK = 1)]
 udirprikk_kommune <- udirprikk_kommune[, .(GEO, AARl, KJONN, TRINN, UDIRPRIKK)]
 
 # Identify censored strata bydel
 udirprikk_bydel <- udirprikk[EnhetNivaa == 4, .(AARl, KJONN, TRINN, Organisasjonsnummer, EnhetNavn, AndelSvaralternativ4, AndelSvaralternativ5)]
 skolebydel <- data.table::fread("https://raw.githubusercontent.com/helseprofil/backend/refs/heads/main/snutter/misc/SkoleBydel.csv", 
                                 colClasses=list(character=c("OrgNo","GEO")))
-udirprikk_bydel <- udirprikk_bydel[skolebydel, `:=` (GEO = i.GEO), on = c(Organisasjonsnummer = "OrgNo")]
+udirprikk_bydel[skolebydel, GEO := i.GEO, on = c(Organisasjonsnummer = "OrgNo")]
 udirprikk_bydel <- udirprikk_bydel[!is.na(GEO)]
 
 udirprikk_bydel[, prikkskole := 0]
@@ -80,22 +79,13 @@ KUBE <- collapse::join(KUBE, censor, how = "l", on = c("GEO", "AARl", "KJONN", "
 
 # Save object UDIRPRIKKpre
 UDIRPRIKKpre <<- KUBE[UDIRPRIKK == 1]
-cat("\n Object UDIRPRIKKpre saved to environment, showing relevant rows before observations are deleted")
-cat(paste0("\nN prikk pre: ", KUBE[is.na(RATE), .N]))
-cat(paste0("\nAdditional rows to be censored: ", KUBE[!is.na(RATE) & UDIRPRIKK == 1, .N]))
+cat(paste0("\n Allerede prikket: ", KUBE[spv_tmp > 0, .N]))
+cat(paste0("\n Nye prikker: ", KUBE[spv_tmp == 0 & UDIRPRIKK == 1, .N]))
 
 # Delete data for rows where UDIRPRIKK == 1
-KUBE[UDIRPRIKK == 1,
-     `:=` (
-       RATE = NA_real_,
-       SMR = NA_real_,
-       MEIS = NA_real_,
-       TELLER.f = 3,
-       RATE.f = 3
-     )]
+flags <- grep("\\.f$", names(KUBE), value = T)
+KUBE[spv_tmp == 0 & UDIRPRIKK == 1, c("spv_tmp", flags) := 3]
 
 # Save object UDIRPRIKKpost
 UDIRPRIKKpost <<- KUBE[UDIRPRIKK == 1]
-cat("\n Object UDIRPRIKKpost saved to environment, showing relevant rows after observations are deleted")
-cat(paste0("\nN prikk post: ", KUBE[is.na(RATE), .N]))
 cat("\nRSYNT_POSTPROSESS ferdig")

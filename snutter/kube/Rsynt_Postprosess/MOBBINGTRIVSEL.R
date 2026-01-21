@@ -4,6 +4,6 @@
 
 # Remove 3-year data for AAlesund and Haram for periods 2019_2021 and 2021_2023,
 # as they contain data on only one year (2019 and 2023).
-
-KUBE[GEO %in% c("1508", "1580") & AAR %in% c("2019_2021", "2021_2023"),
-     let(RATE.f = 1)]
+flags <- grep("\\.f$", names(KUBE), value = T)
+KUBE[GEO %in% c("1508", "1580") & AAR %in% c("2019_2021", "2021_2023") & spv_tmp == 0,
+     c("spv_tmp", flags) := 1]
