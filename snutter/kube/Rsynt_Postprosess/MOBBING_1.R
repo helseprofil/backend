@@ -20,8 +20,8 @@ filterverdier <- httr2::request(mobbingapi) |>
 aar <- paste(filterverdier$TidID$id, collapse = "_")
 
 # Define query
-qry <- list(filter = I(paste0("TidID(", aar, ")_EierformID(-10)_KjoennID(-10)_SpoersmaalID(334)_TrinnID(6_9)")),
-            format = 0)
+qry <- list(filter = I(paste0("TidID(", aar, ")_EierformID(-10)_SpoersmaalID(334)_TrinnID(6_9)")),
+          format = 0)
 
 # Find number of pages
 pages <- httr2::request(mobbingapi) |>
@@ -32,7 +32,7 @@ pages <- httr2::request(mobbingapi) |>
 pages <- pages$JSONSider
 
 # Get data
-udirprikk <- data.table()
+udirprikk <- data.table::data.table()
 for(i in 1:pages){
   newpage <- httr2::request(mobbingapi) |>
     httr2::req_url_path_append("data") |> 
@@ -45,7 +45,9 @@ for(i in 1:pages){
   udirprikk <- data.table::rbindlist(list(udirprikk,newpage))
 }
 
-udirprikk[, let(KJONN = 0,
+udirprikk[, let(KJONN = data.table::fcase(KjoennKode == "A", "0", # Legge til rette for kjønn
+                                          KjoennKode == "G", "1",
+                                          KjoennKode == "J", "2"),
                 TRINN = TrinnKode,
                 AARl = paste0(substr(Skoleaarnavn, 1,4)))]
 
