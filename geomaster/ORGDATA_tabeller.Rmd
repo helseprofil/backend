@@ -32,6 +32,18 @@ geo_recode("f", from = 1990, to = aargang, write = TRUE, fix = TRUE)
 
 ```
 
+# Lage årgangstabell for bydel
+
+Det finnes ikke noen endringstabell for bydel i SSB KLASS, så koden over fungerer ikke til dette formålet. Derfor må denne lages manuelt for å kunne håndtere inndata på bydelsnivå. 
+
+```{r}
+source("https://raw.githubusercontent.com/helseprofil/backend/main/geomaster/R/bydel_aargangstabell.R")
+
+d <- geo_recode_bydel(year = aargang, write = T)
+```
+
+
+
 # Lage mapping mellom geonivåene for nyeste år
 
 For å lage koblingstabellen som kobler koder fra ulike geonivå sammen (f.eks. grunnkrets -> kommune -> fylke -> bydel) brukes funksjonen geo_map().
