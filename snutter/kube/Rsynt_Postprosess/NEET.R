@@ -54,5 +54,8 @@ KUBE <- collapse::join(KUBE, deletestrata, multiple = "T", on = c("KOMMUNE", "AA
 cat("\nSletter", KUBE[spv_tmp == 0 & SLETT == 1, .N], "rader hvor bydel har > 8% ukjent sumTELLER eller > 5%-poeng absolutt diff mellom ukjent sumTELLER og sumNEVNER")
 
 flags <- c(grep("\\.f$", names(KUBE), value = T), "spv_tmp")
-KUBE[spv_tmp == 0 & SLETT == 1, (flags) := 1]
+# Må sørge for å endre flagg til 1 for rader som er uprikket eller serieprikket
+# Det siste fordi vi også "avprikker" serieprikker for UTDANN = 4 i neste snutt, så da er det viktig
+# at disse radene ikke beholder flagg 4 og dermed avprikkes igjen. Flagg 1-3 beholdes. 
+KUBE[spv_tmp %in% c(0,4) & SLETT == 1, (flags) := 1]
 KUBE[, SLETT := NULL]
