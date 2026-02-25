@@ -53,7 +53,7 @@ if(length(unique(KUBE$UTDANN)) > 1){
   cat("\n**** Sletter tall for undergrupper av UTDANN dersom minst 2 underkategorier er prikket i et strata")
   bydims <- c(setdiff(bydims, "UTDANN"), "BODD")
   KUBE[UTDANN != 0, n_prikk := sum(spv_tmp > 0), by = bydims]
-  KUBE[n_prikk >= 2 & UTDANN != 0, c("TELLER.f", "RATE.f", "spv_tmp") := 1]
+  KUBE[n_prikk >= 3 & UTDANN != 0, c("TELLER.f", "RATE.f", "spv_tmp") := 1]
   KUBE[, n_prikk := NULL]
 }
 
