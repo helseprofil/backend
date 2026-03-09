@@ -8,9 +8,15 @@ Filgruppe[GEO == "1507" & AARl == 2023, let(GEO = "1508")] # La undersøkelsen f
 Filgruppe <- Filgruppe[, let(missing = mean(NEVNER, na.rm = T)), by = AARl][missing != 0][, let(missing = NULL)]
 startaar <- collapse::fmin(Filgruppe$AARl)
 
-# Lage vektet nevner
 bycols <- c("GEOniv", "FYLKE", "GEO", "AARl", "AARh", "KJONN", "ALDERl", "ALDERh", "UTDANN", "INNVKAT", "LANDBAK")
-# Filgruppe[, let(vNEVNER = sum(VEKT, na.rm = T)), by = c(bycols, "TAB2")]
+
+# Aggreger duplikatrader (f.eks. etter omkoding av TAB1 til dikotom variabel)
+g <- collapse::GRP(Filgruppe, c(bycols, "TAB1", "TAB2"))
+sumvars <- c("ANTALL", grep(".a$", names(Filgruppe), value = T))
+meanvars <- c("NEVNER", grep(".f$", names(Filgruppe), value = T))
+Filgruppe <- collapse::add_vars(g[["groups"]],
+                                collapse::fsum(collapse::get_vars(Filgruppe, sumvars), g = g),
+                                collapse::fmean(collapse::get_vars(Filgruppe, meanvars), g = g))
 
 # Aggregere SOES
 soes0 <- Filgruppe[TAB2 != 0]
@@ -23,13 +29,6 @@ soes0 <- collapse::add_vars(g[["groups"]],
 soes0[, let(TAB2 = 0)]
 Filgruppe <- data.table::rbindlist(list(Filgruppe, soes0), use.names = T, fill = T)
 
-# Aggreger duplikatrader (f.eks. etter omkoding av TAB1 til dikotom variabel)
-g <- collapse::GRP(Filgruppe, c(bycols, "TAB1", "TAB2"))
-sumvars <- c("ANTALL", grep(".a$", names(Filgruppe), value = T))
-meanvars <- c("NEVNER", grep(".f$", names(Filgruppe), value = T))
-Filgruppe <- collapse::add_vars(g[["groups"]],
-                                collapse::fsum(collapse::get_vars(Filgruppe, sumvars), g = g),
-                                collapse::fmean(collapse::get_vars(Filgruppe, meanvars), g = g))
 
 # Geoharmonisering
 # Dette kunne vært gjort her, slik at også kommunetallene ble harmonisert. Men da må all flytting og sletting under gjøres først. 
