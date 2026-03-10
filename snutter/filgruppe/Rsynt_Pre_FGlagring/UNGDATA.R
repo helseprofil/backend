@@ -109,9 +109,19 @@ Fylke <- data.table::rbindlist(list(fylke2015, fylke2016), fill = TRUE, use.name
 # For 2021 og 2022 erstattes radene av de ettårige tallene lagret over.
 missingaar <- startaar:(startaar+1)
 tredjeaar <- startaar+2
-for(aar in missingaar){
-  new <- data.table::copy(Fylke[AARl == tredjeaar])[, names(.SD) := aar, .SDcols = c("AARl", "AARh")]
-  Fylke <- data.table::rbindlist(list(Fylke, new), use.names = TRUE, fill = TRUE)
+if(!startaar %in% c(2019, 2020)){
+  for(aar in missingaar){
+    new <- data.table::copy(Fylke[AARl == tredjeaar])[, names(.SD) := aar, .SDcols = c("AARl", "AARh")]
+    Fylke <- data.table::rbindlist(list(Fylke, new), use.names = TRUE, fill = TRUE)
+  }
+} else {
+  for(aar in missingaar){
+    warning(paste0("Første år med data er 2019 eller 2020.\nKan ikke fylle inn fylkestall fra 2021 eller 2022 (ettårige).\n\n",
+                   "Radene settes til missing, vurder å bruke startår 2021 i kuben."))
+    new <- data.table::copy(Fylke[AARl == tredjeaar])[, names(.SD) := aar, .SDcols = c("AARl", "AARh")]
+    new[, let(ANTALL = 0, ANTALL.a = 0, ANTALL.f = 1, NEVNER = 0, NEVNER.a = 0, NEVNER.f = 1)]
+    Fylke <- data.table::rbindlist(list(Fylke, new), use.names = TRUE, fill = TRUE)
+  }
 }
 Fylke <- data.table::rbindlist(list(Fylke[!AARl %in% c(2021, 2022)], fylke2122), use.names = TRUE, fill = TRUE)
 Fylke[, let(GEO = FYLKE, GEOniv = "F")]
