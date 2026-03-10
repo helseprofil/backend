@@ -114,7 +114,7 @@ if(!startaar %in% c(2019, 2020)){
     new <- data.table::copy(Fylke[AARl == tredjeaar])[, names(.SD) := aar, .SDcols = c("AARl", "AARh")]
     Fylke <- data.table::rbindlist(list(Fylke, new), use.names = TRUE, fill = TRUE)
   }
-} else {
+ } else {
   for(aar in missingaar){
     warning(paste0("Første år med data er 2019 eller 2020.\nKan ikke fylle inn fylkestall fra 2021 eller 2022 (ettårige).\n\n",
                    "Radene settes til missing, vurder å bruke startår 2021 i kuben."))
