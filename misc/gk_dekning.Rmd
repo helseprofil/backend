@@ -1,0 +1,47 @@
+---
+title: "GK dekningsgrad-analyse"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(orgdata)
+library(DT)
+source("C:/Rprosjekter/backend/misc/R/lks_gk_dekningsgrad.R")
+indikator <- "UFORE"
+
+d <- format_data(indikator = indikator, koblid = c(974, 956))
+valcols <- grep("^VAL\\d{1}", names(d), value = T)
+tabcols <- grep("^TABS\\d{1}", names(d), value = T)
+dims <- intersect(c("AAR", "ALDER", "UTDANN", "INNVKAT"), names(d))
+```
+
+### Gjennomsnittlig ukjent GK i kommunene (totalt) per år
+
+- Oppgis i prosent for alle verdikolonner, kjønn og landbak er alltid samlet
+- Oppgitt per alders-, utdannings- og innvandringskategorier.
+
+```{r echo = F}
+DT::datatable(d[, lapply(.SD, function(x) round(100*mean(x, na.rm = T), 1)), by = c(dims, tabcols), .SDcols = valcols][order(-VAL1)], filter = "top", rownames = F, options = list(scrollX = T, searchable = FALSE))
+```
+
+### Andel kommuner med > 5% uoppgitt GK
+
+- Oppgitt per alders-, utdannings- og innvandringskategorier.
+
+```{r echo = F}
+DT::datatable(d[, lapply(.SD, function(x) round(100*(sum(x >= 0.05)/.N), 1)), by = c(dims, tabcols), .SDcols = valcols][order(-VAL1)], filter = "top", rownames = F, options = list(scrollX = T, searchable = FALSE))
+```
+### Andel kommuner med > 10% uoppgitt GK
+
+- Oppgitt per alders-, utdannings- og innvandringskategorier.
+
+```{r echo = F}
+DT::datatable(d[, lapply(.SD, function(x) round(100*(sum(x >= 0.10)/.N), 1)), by = c(dims, tabcols), .SDcols = valcols][order(-VAL1)], filter = "top", rownames = F, options = list(scrollX = T, searchable = FALSE))
+```
+
+```{r eval = F, include = F}
+rmarkdown::render(input = "C:/Rprosjekter/backend/misc/gk_dekning.Rmd",
+                  output_file = paste0(indikator, "_gkdekning"),
+                  output_dir = "O:/Prosjekt/FHP/PRODUKSJON/VALIDERING/_ANNET/LKS_GK_DEKNING/2026")
+```
+
