@@ -7,7 +7,7 @@ output: html_document
 library(orgdata)
 library(DT)
 source("C:/Rprosjekter/backend/misc/R/lks_gk_dekningsgrad.R")
-indikator <- "UFORE"
+indikator <- "EIERSTATUS"
 
 d <- format_data(indikator = indikator, koblid = c(974, 956))
 valcols <- grep("^VAL\\d{1}", names(d), value = T)
@@ -21,7 +21,7 @@ dims <- intersect(c("AAR", "ALDER", "UTDANN", "INNVKAT"), names(d))
 - Oppgitt per alders-, utdannings- og innvandringskategorier.
 
 ```{r echo = F}
-DT::datatable(d[, lapply(.SD, function(x) round(100*mean(x, na.rm = T), 1)), by = c(dims, tabcols), .SDcols = valcols][order(-VAL1)], filter = "top", rownames = F, options = list(scrollX = T, searchable = FALSE))
+DT::datatable(d[, lapply(.SD, function(x) round(100*mean(x, na.rm = T), 1)), by = c(dims, tabcols), .SDcols = valcols][order(-VAL1)], filter = "top", rownames = F, options = list(scrollX = T, searching = FALSE))
 ```
 
 ### Andel kommuner med > 5% uoppgitt GK
@@ -29,14 +29,14 @@ DT::datatable(d[, lapply(.SD, function(x) round(100*mean(x, na.rm = T), 1)), by 
 - Oppgitt per alders-, utdannings- og innvandringskategorier.
 
 ```{r echo = F}
-DT::datatable(d[, lapply(.SD, function(x) round(100*(sum(x >= 0.05)/.N), 1)), by = c(dims, tabcols), .SDcols = valcols][order(-VAL1)], filter = "top", rownames = F, options = list(scrollX = T, searchable = FALSE))
+DT::datatable(d[, lapply(.SD, function(x) round(100*(sum(x >= 0.05)/.N), 1)), by = c(dims, tabcols), .SDcols = valcols][order(-VAL1)], filter = "top", rownames = F, options = list(scrollX = T, searching = FALSE))
 ```
 ### Andel kommuner med > 10% uoppgitt GK
 
 - Oppgitt per alders-, utdannings- og innvandringskategorier.
 
 ```{r echo = F}
-DT::datatable(d[, lapply(.SD, function(x) round(100*(sum(x >= 0.10)/.N), 1)), by = c(dims, tabcols), .SDcols = valcols][order(-VAL1)], filter = "top", rownames = F, options = list(scrollX = T, searchable = FALSE))
+DT::datatable(d[, lapply(.SD, function(x) round(100*(sum(x >= 0.10)/.N), 1)), by = c(dims, tabcols), .SDcols = valcols][order(-VAL1)], filter = "top", rownames = F, options = list(scrollX = T, searching = FALSE))
 ```
 
 ```{r eval = F, include = F}
