@@ -2,13 +2,17 @@
 title: "GK dekningsgrad-analyse"
 subtitle: "`r params$indikator`"
 output: html_document
+params:
+  indikator: null
+  koblid: null
 ---
 
 ```{r setup, include=FALSE}
 library(orgdata)
 library(DT)
-source("https://raw.githubusercontent.com/helseprofil/backend/refs/heads/main/misc/R/lks_gk_dekningsgrad.R")
-
+source("https://raw.githubusercontent.com/helseprofil/backend/refs/heads/main/misc/R/lks_gk_dekningsgrad.R", local = TRUE)
+indikator <- params$indikator
+koblid <- params$koblid
 d <- format_data(indikator = indikator, koblid = koblid)
 valcols <- grep("^VAL\\d{1}", names(d), value = T)
 tabcols <- grep("^TABS\\d{1}", names(d), value = T)

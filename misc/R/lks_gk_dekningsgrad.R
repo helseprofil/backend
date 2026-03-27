@@ -89,14 +89,15 @@ format_data <- function(indikator, koblid = NULL){
 
 run_report <- function(indikator, koblid = NULL){
   
-  url <- "https://raw.githubusercontent.com/helseprofil/backend/refs/heads/main/misc/gk_dekning.Rmd"
+  url <- "https://raw.githubusercontent.com/helseprofil/backend/main/misc/gk_dekning.Rmd"
   local <- tempfile(fileext = ".Rmd")
   download.file(url, local)
   
   rmarkdown::render(input = local,
                     output_file = paste0(indikator, "_gkdekning"),
                     output_dir = "O:/Prosjekt/FHP/PRODUKSJON/VALIDERING/_ANNET/LKS_GK_DEKNING/2026", 
-                    params = list(indikator = indikator, koblid = koblid))
+                    params = list(indikator = indikator, koblid = koblid),
+                    envir = new.env(parent = globalenv()))
 }
 
                        
