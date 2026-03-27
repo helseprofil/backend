@@ -6,8 +6,6 @@
 # Summere opp kommunetall med og uten gk_ukjent, beregne % ukjent per strata
 # Gi ut gjennomsnittlig ukjent gk per kommune per år, og andel kommuner > 5,10,15% ukjent gk
 # For dimensjoner, plotte % ukjent (y) per kategori over år (x)
-library(orgdata)
-
 format_data <- function(indikator, koblid = NULL){
   orgdata::debug_opt("geo")
   d <- orgdata::make_file(indikator, koblid = koblid)
@@ -89,3 +87,18 @@ format_data <- function(indikator, koblid = NULL){
   return(d)
 }
 
+run_report <- function(indikator, koblid = NULL){
+  
+  url <- "https://raw.githubusercontent.com/helseprofil/backend/refs/heads/main/misc/gk_dekning.Rmd"
+  local <- tempfile(fileext = ".Rmd")
+  download.file(url, local)
+  
+  rmarkdown::render(input = local,
+                    output_file = paste0(indikator, "_gkdekning"),
+                    output_dir = "O:/Prosjekt/FHP/PRODUKSJON/VALIDERING/_ANNET/LKS_GK_DEKNING/2026", 
+                    params = list(indikator = indikator, koblid = koblid))
+}
+
+                       
+
+  
