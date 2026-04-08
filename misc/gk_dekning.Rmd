@@ -15,7 +15,7 @@ indikator <- params$indikator
 koblid <- params$koblid
 d <- format_data(indikator = indikator, koblid = koblid)
 valcols <- grep("^VAL\\d{1}", names(d), value = T)
-tabcols <- grep("^TABS\\d{1}", names(d), value = T)
+tabcols <- grep("^TAB\\d{1}", names(d), value = T)
 dims <- intersect(c("AAR", "ALDER", "UTDANN", "INNVKAT"), names(d))
 ```
 
