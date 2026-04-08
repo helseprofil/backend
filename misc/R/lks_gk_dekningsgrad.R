@@ -83,7 +83,7 @@ format_data <- function(indikator, koblid = NULL){
     data.table::setnames(d, "prop", paste0(val))
   }
   
-  d[, names(.SD) := lapply(.SD, factor), .SDcols = setdiff(dims, c("kommune", "AAR"))]
+  d[, names(.SD) := lapply(.SD, factor), .SDcols = c(setdiff(dims, c("kommune", "AAR")), tabcols)]
   return(d)
 }
 
