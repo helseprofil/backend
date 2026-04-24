@@ -64,6 +64,7 @@ valcols:
 profiltabs: [GEO , AAR, KJONN, ALDER, UTDANN, INNVKAT, LANDBAK, ETAB]
 profilvals: [sumTELLER, sumNEVNER, RATE, MALTALL, sumPREDTELLER, PREDTELLER, SMR, NORM, MEIS, RATE.n]
 qcvals: [TELLER, NEVNER, sumTELLER, sumNEVNER, PREDTELLER, RATE, RATE.n]
+prikkeinfo: [pvern, orgprikket, serieprikket, naboprikket, dekningprikket]
  
 # values and other parameters
 totals:
