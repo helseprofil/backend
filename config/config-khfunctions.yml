@@ -37,6 +37,7 @@ pop_aargeo: "BEF_GKny_aar_geo"
 
 # column lists: 
 standarddimensions: [GEO, AAR, KJONN, ALDER, UTDANN, INNVKAT, LANDBAK]
+standarddimensions_full: [GEO, AARl, AARh, KJONN, ALDERl, ALDERh, UTDANN, INNVKAT, LANDBAK]
 khtabs: [GEO, AAR, KJONN, ALDER, UTDANN, INNVKAT, LANDBAK]
 
 alldimensions: [GEOniv, GEO, FYLKE, AAR, AARl, AARh, ALDER, ALDERl, ALDERh, KJONN, 
