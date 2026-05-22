@@ -90,6 +90,10 @@ anon_svakandel: 0.5
 anon_hullandel: 0.2
 anon_tot_tol: 0.2
 
+# Dekningsgrad for bydel og LKS, maks akseptert ukjent sumTELLER eller diff sumTELLER/NEVNER
+dekning_sumteller: 0.08
+dekning_diff: 0.05
+
 # GEOnaboprikking, se update_geonaboprikktriangel.R
 geoprikk: 
   "LF": "{0,32,03,46,11,50,34,42,31,15,33,39,18,40,55,56}"
