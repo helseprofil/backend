@@ -12,7 +12,7 @@
 # Input object is a data.table named DT
 #
 # For development of this script, start with 
-# DT <- norgeo::track_change("k", 1990, 2024, fix = FALSE)
+# DT <- norgeo::track_change("k", 1990, 2026, fix = FALSE)
 # ------------------------------------------------------
 
 # Handle previous splitting of Snillfjord and Tysfjord
@@ -73,10 +73,9 @@ if(nrow(anywrong3) > 0){
   print(anywrong3)
 }
 
-DT[oldCode == "1534" & currentCode == "1508" | # Haram -> Aalesund
-   oldCode %in% c("1504", "1523", "1529", "1546") & currentCode == "1580", # Others -> Haram
-   let(currentCode = "DELETE")]
-DT <- DT[currentCode != "DELETE"]
+idx_pre <- which((DT[["oldCode"]] == "1534" & DT[["currentCode"]] != "1580") | 
+             (DT[["oldCode"]] %in% c("1504", "1523", "1529", "1546") & DT[["currentCode"]] != "1508"))
+DT <- DT[!idx_pre]
 
 # Geographical code 1507 in data files must be deemed invalid and recoded to 1599, as this represents the sum of AAlesund (1508) + Haram (1580)
 DT[oldCode == "1507" & currentCode %in% c("1508", "1580"), 
@@ -93,15 +92,31 @@ if(nrow(anywrong4) > 0){
 ## 0114 Varteig should only be recoded to 3105 Sarpsborg, not to 3120 Rakkestad (only 1 house)
 ## 0412 Ringsaker should only be recoded to 3411 Ringsaker, not to Hamar 3403
 ## 0720 Stokke should only be recoded to 3907 Sandefjord, not to 3905 Tønsberg ()
-DT[(oldCode == "0114" & currentCode == "3120") |
-   (oldCode == "0412" & currentCode == "3403") |
-   (oldCode == "0720" & currentCode == "3905"), currentCode := "DELETE"]
-DT <- DT[currentCode != "DELETE"]
 
+idx <- which(DT[["oldCode"]] == "0114" & DT[["currentCode"]] == "3120" | 
+             DT[["oldCode"]] == "0412" & DT[["currentCode"]] == "3403" |
+             DT[["oldCode"]] == "0720" & DT[["currentCode"]] == "3905")
+
+DT <- DT[!idx]
 anywrong5 <- DT[oldCode %in% c("0114", "0412", "0720") & !currentCode %in% c("3105", "3411", "3907")]
 if(nrow(anywrong5) > 0){
   cat("OBS! Splitting av Varteig/Ringsaker/Stokke er ikke håndtert korrekt.\nHar Sarpsborg/Ringsaker/Sandefjord fått nye koder?\nDette må håndteres i `geo-kommune.R`")
   print(anywrong5)
+}
+
+# Changes 2026
+# Changes occuring in 2026 due to updates in KLASS
+## 0122 Trøgstad, 0123 Spydeberg, 0124 Askim, 0125 Eidsberg, 1038 Hobøl, 3014 Indre Østfold
+## Disse skal bare kodes om til 3118 Indre Østfold
+## 3118 Indre Østfold kan ikke kodes om til 3207/3216, siden 3118 fortsatt er gyldig
+oldcodewrong <- c("0122", "0123", "0124", "0125", "0138", "3014", "3118")
+idx <- which(DT[["oldCode"]] %in% oldcodewrong & DT[["currentCode"]] != 3118)
+DT <- DT[!idx]
+
+anywrong6 <- DT[oldCode %in% oldcodewrong & !currentCode %in% "3118"]
+if(nrow(anywrong5) > 0){
+  cat("OBS! Splittinger mellom Trøgstad/Spydeberg/Askim/Eidsberg/Hobøl/Indre Østfold er ikke håndtert korrekt.\nHar Indre Østfold fått ny kode?\nDette må håndteres i `geo-kommune.R`")
+  print(anywrong6)
 }
 
 # Test whether any geographical code in oldCode is duplicated
@@ -109,5 +124,5 @@ duplicated <-  DT[!is.na(oldCode)][duplicated(oldCode) | duplicated(oldCode, fro
 
 if(nrow(duplicated) > 0){
   message("The following lines contains duplicated oldCodes, and must be handled in the config script to avoid recoding errors")
-  print(duplicated)
+  print(duplicated[order(oldCode)])
 }
