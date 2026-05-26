@@ -10,7 +10,7 @@ Alle norgeo-mekanismene er bygget inn i kommandoer i orgdata.
 # Last inn funksjoner og sett årgang
 ```{r}
 library(orgdata)
-aargang <- 2025
+aargang <- 2026
 ```
 
 
@@ -26,9 +26,9 @@ Må kjøres eksplisitt for hvert geonivå - g, k, f, da dette lagres som tre uli
 NB: Vi må ta "from" så langt tilbake som vi har data på grunnkrets.
 
 ```{r}
-geo_recode("g", from = 1990, to = aargang, write = TRUE, fix = TRUE)
-geo_recode("k", from = 1990, to = aargang, write = TRUE, fix = TRUE)
-geo_recode("f", from = 1990, to = aargang, write = TRUE, fix = TRUE)
+dg <- geo_recode("g", from = 1990, to = aargang, write = TRUE, fix = TRUE)
+dk <- geo_recode("k", from = 1990, to = aargang, write = TRUE, fix = TRUE)
+df <- geo_recode("f", from = 1990, to = aargang, write = TRUE, fix = TRUE)
 
 ```
 
@@ -67,7 +67,45 @@ geo_map(year = aargang,
 Du kan også lage hele tabellen fra bunnen, for flere årganger, ved å bruke `geo_map_multi()`. Her setter du de årgangene du vil inkludere med argumentene `from` og `to`, og `write` = TRUE indikerer at hele tabellen skal overskrives. 
 
 ```{r}
-geo_map_multi(from = 2024,
-              to = 2025,
+d <- geo_map_multi(from = 2026,
+              to = 2026,
               write = T) # DETTE OVERSKRIVER EKSISTERENDE TABELL
 ```
+
+# Merge på levekårssoner
+## Må gjøres manuelt for 2026, bør fungere som vanlig fra 2027
+```{r}
+Sys.setlocale("LC_ALL", "nb-NO.UTF-8")
+# Hente korrespondansetabell for gk -> lks (fra 1.1.2027, ettersom lks er gyldig først fra mai 2026 og korrespondansen er til gk2026)
+lks <- norgeo::get_correspond("levekaar", "grunnkrets", from = 2027)[, .SD, .SDcols = c("sourceCode", "sourceName", "targetCode")]
+data.table::setnames(lks, c("levekaar", "lksnavn", "grunnkrets"))
+
+# Finn gk 2024->2025 for å kode om grunnkrets
+# gkrecode <- norgeo::track_change("grunnkrets", 2024, 2026, fix = T)[!is.na(oldCode)][, .SD, .SDcols = c("currentCode", "oldCode")]
+# lks2 <- collapse::join(lks, gkrecode, on = setNames("oldCode", "grunnkrets"), multiple = T)
+# lks[!is.na(currentCode), grunnkrets := currentCode][, currentCode := NULL]
+data.table::fwrite(lks, "lks_gk_2026.csv", encoding = "UTF-8")
+
+# merge på tblGeo
+tbl <- orgdata::geo_merge(id.table = "grunnkrets",
+                          id.file = "grunnkrets", 
+                          geo.col = "levekaar",
+                          geo.level = "levekaar",
+                          geo.name = "lksnavn",
+                          file = file.path(getwd(), "lks_gk_2026.csv"),
+                          year = 2026, write = TRUE)
+
+# merge på lokalt generert omkodingstabell
+tbl <- geo_map_multi(2026, 2026, write = F)
+
+tblfull <- orgdata::geo_merge(id.table = "grunnkrets",
+                          id.file = "grunnkrets", 
+                          geo.col = "levekaar",
+                          geo.level = "levekaar",
+                          geo.name = "lksnavn",
+                          localtable = tbl,
+                          file = file.path(getwd(), "lks_gk_2026.csv"),
+                          year = 2026, write = F)
+
+```
+
