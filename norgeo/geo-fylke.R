@@ -15,8 +15,17 @@
 # Input object is a data.table named DT
 #
 # For development of this script, start with 
-# DT <- norgeo::track_change("f", 1990, 2024, fix = FALSE)
+# DT <- norgeo::track_change("f", 1990, 2026, fix = FALSE)
 # ------------------------------------------------------
+
+# Slette omkodinger av koder som fortsatt er gyldige
+old_valid <- DT[oldCode %in% unique(currentCode), unique(oldCode)]
+if(length(old_valid) > 0){
+  cat("\nFant", length(old_valid), "koder i oldCode som fremdeles er gyldige, sletter disse omkodingene")
+  DT[oldCode %in% old_valid, let(oldCode = NA_character_)]
+  old_valid_ok <- DT[oldCode %in% unique(currentCode), .N] == 0
+  if(!old_valid_ok) cat("\nOBS! det er fortsatt koder i oldCode som finnes i currentCode, dette må sjekkes og håndteres i geo-grunnkrets.R")
+}
 
 # Changes October 2023:
 ## In 2020, Østfold (01), Akershus (02), and Buskerud (06) was joined into Viken (30)
@@ -48,7 +57,7 @@ DT[oldCode %in% c("30", "38", "54") &
 DT <- unique(DT)
 
 # Test whether any geographical code in oldCode is duplicated
-duplicated <-  DT[!is.na(oldCode)][duplicated(oldCode) | duplicated(oldCode, fromLast = T)]
+duplicated <- DT[!is.na(oldCode)][duplicated(oldCode) | duplicated(oldCode, fromLast = T)]
 
 if(nrow(duplicated) > 0){
   message("The following lines contains duplicated oldCodes, and must be handled in the config script to avoid recoding errors")
@@ -57,3 +66,8 @@ if(nrow(duplicated) > 0){
 
 rm(duplicated)
 rm(delete)
+
+# Final formatting. Find unique rows based on oldcode/currentCode, keeping the first occurrence of any duplicated rows
+data.table::setkeyv(DT, c("currentCode", "oldCode", "changeOccurred"))
+DT <- unique(DT, by = c("oldCode", "currentCode"), fromLast = T)
+

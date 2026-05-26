@@ -15,6 +15,15 @@
 # DT <- norgeo::track_change("k", 1990, 2026, fix = FALSE)
 # ------------------------------------------------------
 
+# Slette omkodinger av koder som fortsatt er gyldige
+old_valid <- DT[oldCode %in% unique(currentCode), unique(oldCode)]
+if(length(old_valid) > 0){
+  cat("\nFant", length(old_valid), "koder i oldCode som fremdeles er gyldige, sletter disse omkodingene")
+  DT[oldCode %in% old_valid, let(oldCode = NA_character_)]
+  old_valid_ok <- DT[oldCode %in% unique(currentCode), .N] == 0
+  if(!old_valid_ok) cat("\nOBS! det er fortsatt koder i oldCode som finnes i currentCode, dette må sjekkes og håndteres i geo-grunnkrets.R")
+}
+
 # Handle previous splitting of Snillfjord and Tysfjord
 
 ## Snillfjord (1613/5012) split into Heim (5055), Hitra (5056) and Orkland (5059),
@@ -126,3 +135,9 @@ if(nrow(duplicated) > 0){
   message("The following lines contains duplicated oldCodes, and must be handled in the config script to avoid recoding errors")
   print(duplicated[order(oldCode)])
 }
+
+rm(duplicated)
+
+# Final formatting. Find unique rows based on oldcode/currentCode, keeping the last occurrence of any duplicated rows
+data.table::setkeyv(DT, c("currentCode", "oldCode", "changeOccurred"))
+DT <- unique(DT, by = c("oldCode", "currentCode"), fromLast = TRUE)

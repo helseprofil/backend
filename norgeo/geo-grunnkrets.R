@@ -12,7 +12,7 @@
 # Input object is a data.table named DT
 #
 # For development of this script, start with 
-# DT <- norgeo::track_change("g", 1990, 2025, fix = FALSE)
+# DT <- norgeo::track_change("g", 1990, 2026, fix = FALSE)
 # ------------------------------------------------------
 
 # In some instances, when a grunnkrets is split, the old geographical code is reused
