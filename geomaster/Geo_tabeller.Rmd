@@ -16,8 +16,8 @@ geokoder <- "raw-khelse/geo-koder.accdb"
 
 ```{r}
 con <- khfunctions:::connect_khelsa()
-KnrHarmOld <- RODBC::sqlQuery(con, "SELECT * FROM KnrHarm")
-GeoKoderOld <- RODBC::sqlQuery(con, "SELECT * FROM GeoKoder")
+KnrHarmOld <- data.table::setDT(RODBC::sqlQuery(con, "SELECT * FROM KnrHarm", as.is = TRUE))
+GeoKoderOld <- data.table::setDT(RODBC::sqlQuery(con, "SELECT * FROM GeoKoder", as.is = TRUE))
 ```
 
 
@@ -42,7 +42,7 @@ KnrHarmNew <- KnrHarmUpdate(year = 2026,
                             basepath = root,
                             khelsapath = khelsa,
                             geokoderpath = geokoder,
-                            write = FALSE)
+                            write = TRUE)
 ```
 
 ## Update GeoKoder
@@ -52,5 +52,5 @@ GeoKoderNew <- GeoKoderUpdate(year = 2026,
                               basepath = root,
                               khelsapath = khelsa,
                               geokoderpath = geokoder,
-                              write = FALSE)
+                              write = TRUE)
 ```
