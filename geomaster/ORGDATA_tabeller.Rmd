@@ -80,13 +80,17 @@ Sys.setlocale("LC_ALL", "nb-NO.UTF-8")
 lks <- norgeo::get_correspond("levekaar", "grunnkrets", from = 2027)[, .SD, .SDcols = c("sourceCode", "sourceName", "targetCode")]
 data.table::setnames(lks, c("levekaar", "lksnavn", "grunnkrets"))
 
+
+
+
 # Finn gk 2024->2025 for å kode om grunnkrets
 # gkrecode <- norgeo::track_change("grunnkrets", 2024, 2026, fix = T)[!is.na(oldCode)][, .SD, .SDcols = c("currentCode", "oldCode")]
 # lks2 <- collapse::join(lks, gkrecode, on = setNames("oldCode", "grunnkrets"), multiple = T)
 # lks[!is.na(currentCode), grunnkrets := currentCode][, currentCode := NULL]
-data.table::fwrite(lks, "lks_gk_2026.csv", encoding = "UTF-8")
 
-# merge på tblGeo
+
+# merge på tblGeo (må endre encoding-csv til UTF8 for å få riktige navn)
+options(orgdata.encoding.csv = "UTF-8") 
 tbl <- orgdata::geo_merge(id.table = "grunnkrets",
                           id.file = "grunnkrets", 
                           geo.col = "levekaar",
@@ -94,6 +98,7 @@ tbl <- orgdata::geo_merge(id.table = "grunnkrets",
                           geo.name = "lksnavn",
                           file = file.path(getwd(), "lks_gk_2026.csv"),
                           year = 2026, write = TRUE)
+options(orgdata.encoding.csv = "Latin-1") 
 
 # merge på lokalt generert omkodingstabell
 tbl <- geo_map_multi(2026, 2026, write = F)

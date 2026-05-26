@@ -1,11 +1,12 @@
 library(RODBC)
+library(DBI)
 library(data.table)
 library(orgdata)
 library(collapse)
 Sys.setlocale("LC_ALL", "nb-NO.UTF-8")
 
 # Update to use correct files, default = production files
-root <- "O:/Prosjekt/FHP/PRODUKSJON/STYRING/"
+root <- "O:/Prosjekt/FHP/PRODUKSJON/STYRING"
 khelsa <- "KHELSA.mdb"
 geokoder <- "raw-khelse/geo-koder.accdb"
 # Functions used to update geo tables
@@ -30,8 +31,8 @@ KnrHarmUpdate <- function(year = 2024,
     
     # Connect to databases
     cat("\n Connecting to databases")
-    .KHELSA <- RODBC::odbcConnectAccess2007(paste0(basepath, khelsapath))
-    .GEOtables <- RODBC::odbcConnectAccess2007(paste0(basepath, geokoderpath))
+    .KHELSA <- RODBC::odbcConnectAccess2007(file.path(basepath, khelsapath))
+    .GEOtables <- RODBC::odbcConnectAccess2007(file.path(basepath, geokoderpath))
     
     # Read and format original tables
     cat("\n Read, format, and combine original tables")
@@ -39,13 +40,14 @@ KnrHarmUpdate <- function(year = 2024,
         setDT(sqlQuery(.KHELSA, "SELECT * FROM KnrHarm"))
     )
     
-    kommunefylke <- addleading0(
-        data.table::rbindlist(list(setDT(sqlQuery(.GEOtables, paste0("SELECT oldCode, currentCode, changeOccurred FROM kommune", year))),
+    bydelkommunefylke <- addleading0(
+        data.table::rbindlist(list(setDT(sqlQuery(.GEOtables, paste0("SELECT oldCode, currentCode, changeOccurred FROM bydel", year))),
+                                   setDT(sqlQuery(.GEOtables, paste0("SELECT oldCode, currentCode, changeOccurred FROM kommune", year))),
                                    setDT(sqlQuery(.GEOtables, paste0("SELECT oldCode, currentCode, changeOccurred FROM fylke", year)))
         )
         )
     )
-    setnames(kommunefylke, 
+    setnames(bydelkommunefylke, 
              c("oldCode", "currentCode", "changeOccurred"),
              c("GEO", "GEO_omk", "HARMstd"))
     
@@ -54,7 +56,7 @@ KnrHarmUpdate <- function(year = 2024,
     )
     
     # Join the existing KnrHarm and orgdata tables
-    comb <- rbindlist(list(KnrHarm, kommunefylke))
+    comb <- rbindlist(list(KnrHarm, bydelkommunefylke))
     
     # Remove rows where GEO == GEO_omk (which doesn't make sense)
     # Also removes rows where GEO = NA
@@ -170,7 +172,7 @@ KnrHarmUpdate <- function(year = 2024,
 #' @param write option to overwrite the table in khelsa database
 #'
 #' @examples  GeoKoderUpdate(year = 2024, basepath = root, khelsapath = "KHELSA.mdb", geokoderpath = "raw-khelse/geo-koder.accdb", write = FALSE)
-GeoKoderUpdate <- function(year = 2025,
+GeoKoderUpdate <- function(year = 2026,
                            basepath = root,
                            khelsapath = khelsa,
                            geokoderpath = geokoder,
@@ -179,17 +181,25 @@ GeoKoderUpdate <- function(year = 2025,
     # Connect to databases
     cat("\n Connecting to databases")
     .KHELSA <- RODBC::odbcConnectAccess2007(file.path(basepath, khelsapath))
-    .GEOtables <- RODBC::odbcConnectAccess2007(file.path(basepath, geokoderpath))
+    .GEOtables <- DBI::dbConnect(
+        odbc::odbc(),
+        .connection_string = paste0(
+          "Driver={Microsoft Access Driver (*.mdb, *.accdb)};",
+          "DBQ=", file.path(basepath, geokoderpath), ";"
+        ),
+        encoding = "UTF-8"
+      )
     
     on.exit(RODBC::odbcClose(.KHELSA), add = T)
-    on.exit(RODBC::odbcClose(.GEOtables), add =T)
+    on.exit(DBI::dbDisconnect(.GEOtables), add =T)
     
     # Read and format original tables
     cat("\n Read, format, and combine original tables")
     GeoKoder <- addleading0(setDT(sqlQuery(.KHELSA, "SELECT * FROM GeoKoder WHERE GEOniv NOT IN ('S', 'V', 'G')")))
     
     tblGeo <- addleading0(
-        setDT(sqlQuery(.GEOtables, paste0("SELECT [code], [name], [validTo], [level] FROM tblGeo WHERE validTo = '", year, "' AND level NOT IN ('grunnkrets', 'okonomisk')")))
+      data.table::setDT(DBI::dbGetQuery(.GEOtables, 
+                                        paste0("SELECT [code], [name], [validTo], [level] FROM tblGeo WHERE validTo = '", year, "' AND level NOT IN ('grunnkrets', 'okonomisk')")))
     )
     
     ## Change column names of tblGeo to comply with GeoKoder
@@ -222,10 +232,22 @@ GeoKoderUpdate <- function(year = 2025,
     # Add new codes to list
     comb <- data.table::rbindlist(list(GeoKoder, newrows))
     
+    # Handle levekaar, exclude lks from list if only 1 lks in overniv (kommune or bydel) 
+    if("V" %in% unique(comb[["GEOniv"]])){
+      utenlks <- comb[GEOniv != "V"]
+      lks <- comb[GEOniv == "V"]
+      lks[, overniv := substr(GEO, 1, 6)]
+      lks[, n_lks := .N, by = overniv]
+      only_1_lks <- lks[n_lks == 1, unique(GEO)]
+      lks <- lks[n_lks > 1]
+      comb <- data.table::rbindlist(list(utenlks, lks[, .SD, .SDcols = names(utenlks)]), use.names = TRUE)
+    }
+    
     # generate rows with GEOniv = S
     sone <- comb[GEOniv %in% c("B", "K") & GEO != "999999"]
     sone[, GEOniv := "S"]
     sone[nchar(GEO) == 4, GEO := paste0(GEO, "00")]
+    
     
     # Generate final output, and add ID column
     out <- data.table::rbindlist(list(comb, sone))[order(GEO)]
@@ -247,10 +269,15 @@ GeoKoderUpdate <- function(year = 2025,
     ## Check that all valid GEO-codes are included in GeoKoder with TIL == 9999
     validincluded <- tblGeo$GEO[!tblGeo$GEO %in% out[TIL == "9999", GEO]]
     if(length(validincluded) > 0){
+      validincluded_excl_lks <- setdiff(validincluded, only_1_lks)
+      if(length(validincluded_excl_lks) > 0){
         message(" - The following valid GEO codes for ", year, " are not included in GeoKoder, or have TIL != 9999")
-        validincluded
+        validincluded_excl_lks
+      } else {
+        " - All valid GEO codes, except LKS when only 1 zone, are included in table GeoKoder"
+      }
     } else {
-        message(" - All valid GEO codes for ", year, " are included in GeoKoder")
+      message(" - All valid GEO codes for ", year, " are included in table GeoKoder")
     }
     
     # Write to Access    
@@ -276,7 +303,6 @@ GeoKoderUpdate <- function(year = 2025,
             cat(paste0("\nYou cancelled, and the table was not overwritten! Puh!\n"))
         }
     }
-    
    
     return(out)
 }

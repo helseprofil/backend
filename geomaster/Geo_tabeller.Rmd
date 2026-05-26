@@ -38,7 +38,7 @@ The following codes are used to generate updated versions of the tables `GeoKode
     - This will replace the original table, so first make sure that the table is correct by running the code with `write = FALSE`
 
 ```{r}
-KnrHarmNew <- KnrHarmUpdate(year = 2025,
+KnrHarmNew <- KnrHarmUpdate(year = 2026,
                             basepath = root,
                             khelsapath = khelsa,
                             geokoderpath = geokoder,
@@ -48,9 +48,9 @@ KnrHarmNew <- KnrHarmUpdate(year = 2025,
 ## Update GeoKoder
 
 ```{r}
-GeoKoderNew <- GeoKoderUpdate(year = 2025,
+GeoKoderNew <- GeoKoderUpdate(year = 2026,
                               basepath = root,
                               khelsapath = khelsa,
                               geokoderpath = geokoder,
-                              write = TRUE)
+                              write = FALSE)
 ```
