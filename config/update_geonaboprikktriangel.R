@@ -1,11 +1,11 @@
 # Les inn nyeste befolkningsfil, genererer alle triangler for land-fylke, fylke-kommune, og kommune-bydel
 # Lager en liste, som manuelt må kopieres inn i config-khfunctions.yml for å brukes i khfunctions
 
-d <- data.table::fread("O:/Prosjekt/FHP/PRODUKSJON/PRODUKTER/KUBER/KOMMUNEHELSA/KH2025NESSTAR/BEFOLK_GK_2024-06-17-14-13.csv")
-data <- arrow::open_dataset("O:/Prosjekt/FHP/PRODUKSJON/PRODUKTER/FILGRUPPER/NYESTE/BEF_GKny_aar_geo") |> 
-  dplyr::filter(AARl == 2025) |> dplyr::collect() |> data.table::as.data.table()
+# d <- data.table::fread("O:/Prosjekt/FHP/PRODUKSJON/PRODUKTER/KUBER/KOMMUNEHELSA/KH2025NESSTAR/BEFOLK_GK_2024-06-17-14-13.csv")
+# data <- arrow::open_dataset("O:/Prosjekt/FHP/PRODUKSJON/PRODUKTER/FILGRUPPER/NYESTE/BEF_GKny_aar_geo") |> 
+#   dplyr::filter(AARl == 2025) |> dplyr::collect() |> data.table::as.data.table()
 
-update_geonaboprikk_triangel <- function(d = data, aar = 2024){
+update_geonaboprikk_triangel <- function(d = data, cpo = 2024){
   
   out <- list()
   dt <- d[grepl(aar, AAR) & KJONN == 0 & ALDER == "0_120"][, .(GEO, TELLER)][order(-TELLER)]
@@ -37,17 +37,13 @@ update_geonaboprikk_triangel <- function(d = data, aar = 2024){
 
 test_lks_triangel <- function(){
  con <- khfunctions:::connect_khelsa() 
+ on.exit(RODBC::odbcCloseAll())
  lks <- data.table::setDT(RODBC::sqlQuery(con, "SELECT GEO FROM GEOKODER WHERE GEONIV='V'", as.is = T))
- 
- lks[, let(kommune = sub("^(\\d{4}).*", "\\1", GEO),
-           bydel = sub("^(\\d{6}).*", "\\1", GEO))]
- lks[grepl("00$", bydel), let(bydel = NA)]
- lks[!is.na(bydel), let(kommune = NA)]
- lks[, let(overkat = ifelse(!is.na(kommune), kommune, bydel))]
+ lks[, overniv := sub("00$", "", substr(GEO, 1, 6))]
  
  LKS <- character()
- for(top in unique(lks$overkat)){
-   lkskoder <- paste0(lks[overkat == top, unique(GEO)], collapse = ",")
+ for(top in unique(lks$overniv)){
+   lkskoder <- paste0(lks[overniv == top, unique(GEO)], collapse = ",")
    LKS <- paste0(LKS, paste0("{", top, ",", lkskoder, "}"))
  }
  return(LKS)
