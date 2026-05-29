@@ -6,6 +6,7 @@ output: "VALIDERING/QualControl"
 cubefiles: "PRODUKTER/KUBER/STATBANK"
 files: "PRODUKTER/KUBER"
 db: "STYRING/KHELSA_backend/KHELSA_BE.accdb"
+dbgeo: "STYRING/raw-khelse/geo-koder.accdb"
  
 # Columns 
 rename:
