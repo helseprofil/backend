@@ -27,8 +27,8 @@ ovpB: "OVP_BYDEL"
 
 # Scripts, databases and files
 stataprikkfile: "BIN/Z_Statasnutter/StataPrikking_MASTER.do"
-db: "STYRING/KHelsa.mdb"
-logg: "STYRING/KHlogg.mdb"
+db: "STYRING/KHELSA_backend/KHELSA_BE.accdb"
+logg: "STYRING/KHlogg, kopier/KHlogg.mdb"
 lagkube_guardfile: "helseprofil/lagkube_running.txt"
 
 # Partitioned population dataset names
