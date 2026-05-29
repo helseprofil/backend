@@ -5,6 +5,7 @@ root: "O:/Prosjekt/FHP/PRODUKSJON"
 output: "VALIDERING/QualControl"
 cubefiles: "PRODUKTER/KUBER/STATBANK"
 files: "PRODUKTER/KUBER"
+db: "STYRING/KHELSA_backend/KHELSA_BE.accdb"
  
 # Columns 
 rename:
