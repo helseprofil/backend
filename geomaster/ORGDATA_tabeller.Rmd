@@ -26,9 +26,9 @@ Må kjøres eksplisitt for hvert geonivå - g, k, f, da dette lagres som tre uli
 NB: Vi må ta "from" så langt tilbake som vi har data på grunnkrets.
 
 ```{r}
-dg <- geo_recode("g", from = 1990, to = aargang, write = TRUE, fix = TRUE)
-dk <- geo_recode("k", from = 1990, to = aargang, write = TRUE, fix = TRUE)
-df <- geo_recode("f", from = 1990, to = aargang, write = TRUE, fix = TRUE)
+dg <- geo_recode("g", from = 1980, to = aargang, write = TRUE, fix = TRUE)
+dk <- geo_recode("k", from = 1980, to = aargang, write = TRUE, fix = TRUE)
+df <- geo_recode("f", from = 1980, to = aargang, write = TRUE, fix = TRUE)
 
 ```
 
@@ -79,9 +79,7 @@ Sys.setlocale("LC_ALL", "nb-NO.UTF-8")
 # Hente korrespondansetabell for gk -> lks (fra 1.1.2027, ettersom lks er gyldig først fra mai 2026 og korrespondansen er til gk2026)
 lks <- norgeo::get_correspond("levekaar", "grunnkrets", from = 2027)[, .SD, .SDcols = c("sourceCode", "sourceName", "targetCode")]
 data.table::setnames(lks, c("levekaar", "lksnavn", "grunnkrets"))
-
-
-
+data.table::fwrite(lks, file.path(getwd(), "tabeller/lks_gk_2026.csv"), encoding = "UTF-8")
 
 # Finn gk 2024->2025 for å kode om grunnkrets
 # gkrecode <- norgeo::track_change("grunnkrets", 2024, 2026, fix = T)[!is.na(oldCode)][, .SD, .SDcols = c("currentCode", "oldCode")]
@@ -96,7 +94,7 @@ tbl <- orgdata::geo_merge(id.table = "grunnkrets",
                           geo.col = "levekaar",
                           geo.level = "levekaar",
                           geo.name = "lksnavn",
-                          file = file.path(getwd(), "lks_gk_2026.csv"),
+                          file = file.path(getwd(), "tabeller/lks_gk_2026.csv"),
                           year = 2026, write = TRUE)
 options(orgdata.encoding.csv = "Latin-1") 
 
@@ -112,5 +110,11 @@ tblfull <- orgdata::geo_merge(id.table = "grunnkrets",
                           file = file.path(getwd(), "lks_gk_2026.csv"),
                           year = 2026, write = F)
 
+```
+
+```{r}
+source("https://raw.githubusercontent.com/helseprofil/backend/main/geomaster/R/lks_startaar.R")
+lks_startaar <- get_lks_startaar(bef_datotag = "2026-05-27-12-21", max_endring = 0.15)
+data.table::fwrite(lks, file.path(getwd(), "tabeller/lks_startaar.csv"), encoding = "UTF-8")
 ```
 
