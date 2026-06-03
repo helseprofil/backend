@@ -11,9 +11,13 @@ geo_recode_bydel <- function(year, write = FALSE){
   bydeler <- norgeo::get_code("bydel", from = year, names = T)[, .(code, name)]
   batch = Sys.Date()
   data.table::setnames(bydeler, old = c("code", "name"), new = c("currentCode", "newName"))
-  bydeler[, let(oldCode = NA_character_, oldName = NA_character_, changeOccurred = aargang, batch = batch)]
+  bydeler[, let(oldCode = NA_character_, oldName = NA_character_, changeOccurred = year, batch = batch)]
   colorder <- c("oldCode", "oldName", "currentCode", "newName", "changeOccurred", "batch")
   data.table::setcolorder(bydeler, colorder)
+  
+  uoppgitt <- data.table::copy(bydeler)[1]
+  uoppgitt[, let(currentCode = 999999, newName = "Uoppgitt")]
+  bydeler <- data.table::rbindlist(list(bydeler, uoppgitt), use.names = T, fill = T)
   
   geo$tblvalue <- bydeler
   geo$tblname <- paste0("bydel", year)

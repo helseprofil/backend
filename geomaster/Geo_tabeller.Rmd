@@ -54,3 +54,16 @@ GeoKoderNew <- GeoKoderUpdate(year = 2026,
                               geokoderpath = geokoder,
                               write = TRUE)
 ```
+
+## Update lks_startaar
+
+- Kan skrives til ACCESS og brukes derfra
+- Må tilpasse funksjonen til å skrive til ACCESS
+```{r}
+source("https://raw.githubusercontent.com/helseprofil/backend/main/geomaster/R/lks_startaar.R")
+d <- get_lks_startaar(bef_datotag = "2026-05-27-12-21", max_endring = 0.15)
+
+
+```
+
+

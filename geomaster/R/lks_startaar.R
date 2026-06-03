@@ -8,12 +8,12 @@ get_lks_startaar <- function(bef_datotag = "2026-05-27-12-21", max_endring = 0.1
   out <- data.table::copy(unique(d[, .(GEO)]))
   out[, lks_startaar := 0L]
 
-  d[, endring := (data.table::shift(TELLER, type = "lag")/TELLER) - 1, by = GEO]
-  d <- d[abs(endring) > max_endring]
-  d <- d[, maxaar := max(AAR), by = GEO][AAR == maxaar]
-  d <- d[, startaar := as.integer(substr(AAR, 1, 4))][, .(GEO, startaar)]
+  d[, endring := (TELLER / data.table::shift(TELLER, type = "lag")) - 1, by = GEO]
+  d2 <- d[abs(endring) > max_endring]
+  d2 <- d2[, maxaar := max(AAR), by = GEO][AAR == maxaar]
+  d2 <- d2[, startaar := as.integer(substr(AAR, 1, 4))][, .(GEO, startaar, endring)]
   
-  out[d, on = "GEO", lks_startaar := i.startaar]
+  out[d2, on = "GEO", let(lks_startaar = i.startaar, endring = i.endring)]
   
   return(out)  
 }

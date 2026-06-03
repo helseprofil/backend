@@ -29,8 +29,8 @@ KnrHarmUpdate <- function(year = 2026,
                           geokoderpath = geokoder,
                           write = FALSE){
     
-    # Connect to databases
-    cat("\n Connecting to databases")
+  # Connect to databases
+  cat("\n Connecting to databases")
   .KHELSA <- DBI::dbConnect(
     odbc::odbc(),
     .connection_string = paste0(
@@ -48,131 +48,133 @@ KnrHarmUpdate <- function(year = 2026,
     ),
     encoding = "UTF-8"
   )
-    # Read and format original tables
-    cat("\n Read, format, and combine original tables")
-    KnrHarm <- addleading0(
-        data.table::setDT(DBI::dbGetQuery(.KHELSA, "SELECT * FROM KnrHarm"))
-    )
-    
-    bydelkommunefylke <- addleading0(
-        data.table::rbindlist(list(data.table::setDT(DBI::dbGetQuery(.GEOtables, paste0("SELECT oldCode, currentCode, changeOccurred FROM bydel", year))),
-                                   data.table::setDT(DBI::dbGetQuery(.GEOtables, paste0("SELECT oldCode, currentCode, changeOccurred FROM kommune", year))),
-                                   data.table::setDT(DBI::dbGetQuery(.GEOtables, paste0("SELECT oldCode, currentCode, changeOccurred FROM fylke", year)))
-        )
-        )
-    )
-    data.table::setnames(bydelkommunefylke, 
-             c("oldCode", "currentCode", "changeOccurred"),
-             c("GEO", "GEO_omk", "HARMstd"))
-    
-    tblGeo <- addleading0(
-        data.table::setDT(DBI::dbGetQuery(.GEOtables, paste0("SELECT * FROM tblGeo WHERE validTo = '", year, "' AND level <> 'grunnkrets'")))
-    )
-    
-    # Join the existing KnrHarm and orgdata tables
-    comb <- data.table::rbindlist(list(KnrHarm, bydelkommunefylke))
-    
-    # Remove rows where GEO == GEO_omk (which doesn't make sense)
-    # Also removes rows where GEO = NA
-    comb <- comb[GEO != GEO_omk]
-    
-    # Remove rows where GEO_omk reappears in GEO due to future recoding
-    # e.g. 02 (Akershus) -> 30 (Viken) -> 32 (Akershus)
-    cat("\n\n Extracting rows with final recoding (no future recoding)")
-    valid_idx <- which(!(comb[["GEO_omk"]] %in% unique(comb[["GEO"]])))
-    validrecode <- comb[valid_idx][order(GEO)]
-    
-    ### Check invalid recode, including the current recoding of GEO and GEO_omk
-    cat("\n For rows with future subsequent recoding, identify the correct current code\n\n")
-    invalidrecode <- comb[GEO_omk %in% GEO]
-    invalidrecode[validrecode, correct_omk := i.GEO_omk, on = .(GEO = GEO)]
-    invalidrecode[validrecode, subsequent_omk := i.GEO_omk, on = .(GEO_omk = GEO)]
-    
-    ### check if all GEO-codes in invalidrecode does have a correct_omk
-    missingrecode <- invalidrecode[is.na(correct_omk)]
-    
-    if(nrow(missingrecode) > 0){
-        
-        message(" - The following rows do not have a valid GEO_omk, and missing correct_omk")
-        
-        print(missingrecode)
-        
-        addrows <- data.table::data.table(GEO = missingrecode$GEO,
-                                          GEO_omk = missingrecode$subsequent_omk,
-                                          HARMstd = missingrecode$HARMstd)
-        
-        validrecode <- data.table::rbindlist(list(validrecode, addrows))
-        
-        message(" - The following rows are added to final table, where GEO_omk is replaced with subsequent_omk")
-        print(addrows)
-        
-    }
-    
-    # Only keep unique combinations of GEO and GEO_omk, remove orig column
-    out <- unique(validrecode, by = c("GEO", "GEO_omk"))
-    
-    # Quality control
-    
-    cat("\n--\nQuality control\n--\n\n")
-    
-    ### Check whether any rows from the original KnrHarm table is removed and not properly replaced
-    KnrHarmRemoved <- KnrHarm[!GEO %in% validrecode$GEO & GEO != GEO_omk]
-    
-    if(nrow(KnrHarmRemoved) > 0){
-        message(" - The following rows are removed from the original KnrHarm table, and not properly replaced")
-        KnrHarmRemoved
-    } else {
-        message(" - All original rows in KnrHarm are kept or properly updated")
-    }
-    
-    ### Check for any missing values in GEO or GEO_omk
-    missinggeo <- out[is.na(GEO) | is.na(GEO_omk)]
-    if(nrow(missinggeo) > 0){
-        message(" - The following rows contain missing values for GEO or GEO_omk")
-        missinggeo
-    } else {
-        message(" - No missing values for GEO and GEO_omk in output table")
-    }
-    
-    # Check that all values in GEO_omk are valid
-    # validcodes are fetched from tblGeo, where validTo = year
-    validcodes <- tblGeo[validTo == year, (code)]
-    if(nrow(out[!GEO_omk %in% validcodes]) > 1){
-        message(" - The following rows contain invalid values in GEO_omk")
-        print(out[!GEO_omk %in% validcodes])
-    } else {
-        message(" - All values in GEO_omk are valid for ", year)
-    }
+  
+  on.exit(DBI::dbDisconnect(.KHELSA), add = T)
+  on.exit(DBI::dbDisconnect(.GEOtables), add =T)
+  
+  # Read and format original tables
+  cat("\n Read, format, and combine original tables")
+  KnrHarm <- addleading0(
+      data.table::setDT(DBI::dbGetQuery(.KHELSA, "SELECT * FROM KnrHarm"))
+  )
+  
+  bydelkommunefylke <- addleading0(
+      data.table::rbindlist(list(data.table::setDT(DBI::dbGetQuery(.GEOtables, paste0("SELECT oldCode, currentCode, changeOccurred FROM bydel", year))),
+                                 data.table::setDT(DBI::dbGetQuery(.GEOtables, paste0("SELECT oldCode, currentCode, changeOccurred FROM kommune", year))),
+                                 data.table::setDT(DBI::dbGetQuery(.GEOtables, paste0("SELECT oldCode, currentCode, changeOccurred FROM fylke", year)))
+      )
+      )
+  )
+  data.table::setnames(bydelkommunefylke, 
+           c("oldCode", "currentCode", "changeOccurred"),
+           c("GEO", "GEO_omk", "HARMstd"))
+  
+  tblGeo <- addleading0(
+      data.table::setDT(DBI::dbGetQuery(.GEOtables, paste0("SELECT * FROM tblGeo WHERE validTo = '", year, "' AND level <> 'grunnkrets'")))
+  )
+  
+  # Join the existing KnrHarm and orgdata tables
+  comb <- data.table::rbindlist(list(KnrHarm, bydelkommunefylke))
+  
+  # Remove rows where GEO == GEO_omk (which doesn't make sense)
+  # Also removes rows where GEO = NA
+  comb <- comb[GEO != GEO_omk]
+  
+  # Remove rows where GEO_omk reappears in GEO due to future recoding
+  # e.g. 02 (Akershus) -> 30 (Viken) -> 32 (Akershus)
+  cat("\n\n Extracting rows with final recoding (no future recoding)")
+  valid_idx <- which(!(comb[["GEO_omk"]] %in% unique(comb[["GEO"]])))
+  validrecode <- comb[valid_idx][order(GEO)]
+  
+  ### Check invalid recode, including the current recoding of GEO and GEO_omk
+  cat("\n For rows with future subsequent recoding, identify the correct current code\n\n")
+  invalidrecode <- comb[GEO_omk %in% GEO]
+  invalidrecode[validrecode, correct_omk := i.GEO_omk, on = .(GEO = GEO)]
+  invalidrecode[validrecode, subsequent_omk := i.GEO_omk, on = .(GEO_omk = GEO)]
+  
+  ### check if all GEO-codes in invalidrecode does have a correct_omk
+  missingrecode <- invalidrecode[is.na(correct_omk)]
+  
+  if(nrow(missingrecode) > 0){
+      
+      message(" - The following rows do not have a valid GEO_omk, and missing correct_omk")
+      
+      print(missingrecode)
+      
+      addrows <- data.table::data.table(GEO = missingrecode$GEO,
+                                        GEO_omk = missingrecode$subsequent_omk,
+                                        HARMstd = missingrecode$HARMstd)
+      
+      validrecode <- data.table::rbindlist(list(validrecode, addrows))
+      
+      message(" - The following rows are added to final table, where GEO_omk is replaced with subsequent_omk")
+      print(addrows)
+      
+  }
+  
+  # Only keep unique combinations of GEO and GEO_omk, remove orig column
+  out <- unique(validrecode, by = c("GEO", "GEO_omk"))
+  
+  # Quality control
+  
+  cat("\n--\nQuality control\n--\n\n")
+  
+  ### Check whether any rows from the original KnrHarm table is removed and not properly replaced
+  KnrHarmRemoved <- KnrHarm[!GEO %in% validrecode$GEO & GEO != GEO_omk]
+  
+  if(nrow(KnrHarmRemoved) > 0){
+      message(" - The following rows are removed from the original KnrHarm table, and not properly replaced")
+      KnrHarmRemoved
+  } else {
+      message(" - All original rows in KnrHarm are kept or properly updated")
+  }
+  
+  ### Check for any missing values in GEO or GEO_omk
+  missinggeo <- out[is.na(GEO) | is.na(GEO_omk)]
+  if(nrow(missinggeo) > 0){
+      message(" - The following rows contain missing values for GEO or GEO_omk")
+      missinggeo
+  } else {
+      message(" - No missing values for GEO and GEO_omk in output table")
+  }
+  
+  # Check that all values in GEO_omk are valid
+  # validcodes are fetched from tblGeo, where validTo = year
+  validcodes <- tblGeo[validTo == year, (code)]
+  if(nrow(out[!GEO_omk %in% validcodes]) > 1){
+      message(" - The following rows contain invalid values in GEO_omk")
+      print(out[!GEO_omk %in% validcodes])
+  } else {
+      message(" - All values in GEO_omk are valid for ", year)
+  }
 
 
-    # Write to Access    
-    if(write){
-        
-        # Ask for confirmation before writing
-        opts <- c("Overwrite", "Cancel")
-        answer <- utils::menu(choices = opts, 
-                              title = paste0("Whoops!! You are now replacing the table KnrHarm in:\n\n", 
-                                             basepath, khelsapath, 
-                                             "\n\nPlease confirm or cancel:"))
+  # Write to Access    
+  if(write){
+      
+      # Ask for confirmation before writing
+      opts <- c("Overwrite", "Cancel")
+      answer <- utils::menu(choices = opts, 
+                            title = paste0("Whoops!! You are now replacing the table KnrHarm in:\n\n", 
+                                           basepath, khelsapath, 
+                                           "\n\nPlease confirm or cancel:"))
+     if(answer == 1){
+         cat("\nUpdating the KnrHarm table in KHELSA...\n")
+       
+       DBI::dbWriteTable(conn = .KHELSA,
+                         name = "KnrHarm",
+                         value = out,
+                         batch_rows = 1,
+                         overwrite = TRUE,
+                         append = FALSE)
+       
+       cat(paste0("\nDONE! New table written to:\n", basepath, khelsapath, "\n\n"))
+       } else {
+       cat(paste0("\nYou cancelled, and the table was not overwritten! Puh!\n"))
+       }
+  }
     
-       if(opts[answer] == "Overwrite"){
-           cat("\nUpdating the KnrHarm table in KHELSA...\n")
-           RODBC::sqlSave(channel = .KHELSA, 
-                          dat = out, 
-                          tablename = "KnrHarm", 
-                          append = FALSE, 
-                          rownames = FALSE, 
-                          safer = FALSE)
-           cat(paste0("\nDONE! New table written to:\n", basepath, khelsapath, "\n\n"))
-           } else {
-               cat(paste0("\nYou cancelled, and the table was not overwritten! Puh!\n"))
-               }
-    }
-    
-    RODBC::odbcClose(.KHELSA)
-    RODBC::odbcClose(.GEOtables)
-
-    return(out)
+  return(out)
 }
 
 
@@ -192,7 +194,7 @@ GeoKoderUpdate <- function(year = 2026,
                            khelsapath = khelsa,
                            geokoderpath = geokoder,
                            write = FALSE){
-    
+  
   # Connect to databases
   cat("\n Connecting to databases")
   .KHELSA <- DBI::dbConnect(
@@ -203,7 +205,7 @@ GeoKoderUpdate <- function(year = 2026,
     ),
     encoding = "UTF-8"
   )
-
+  
   .GEOtables <- DBI::dbConnect(
     odbc::odbc(),
     .connection_string = paste0(
@@ -212,78 +214,75 @@ GeoKoderUpdate <- function(year = 2026,
     ),
     encoding = "UTF-8"
   )
-    
+  
   on.exit(DBI::dbDisconnect(.KHELSA), add = T)
   on.exit(DBI::dbDisconnect(.GEOtables), add =T)
-    
+  
   # Read and format original tables
   # Get all valid geocodes  
-  tblGeo <- addleading0(
+  validgeo <- addleading0(
     data.table::setDT(DBI::dbGetQuery(.GEOtables, 
-                                      paste0("SELECT [code], [name], [validTo], [level] FROM tblGeo WHERE validTo = '", year, "' AND level NOT IN ('grunnkrets', 'okonomisk')")))
+                                      paste0("SELECT [code] AS GEO, [name] AS NAVN, [validTo] AS TIL, [level] AS GEOniv FROM tblGeo WHERE validTo = '", year, "' AND level NOT IN ('grunnkrets', 'okonomisk')")))
   )
-  ## Change column names of tblGeo to comply with GeoKoder
-  data.table::setnames(tblGeo, old = c("code", "level", "name"), new = c("GEO", "GEOniv", "NAVN"), skip_absent = T)
   
   ## Change GEOniv to F/K/B, add ID and TYP columns
-  tblGeo[, let(GEOniv = data.table::fcase(GEOniv == "fylke", "F",
-                                          GEOniv == "kommune", "K",
-                                          GEOniv == "bydel", "B",
-                                          GEOniv == "levekaar", "V"),
-               ID = 1,
-               TYP = ifelse(grepl("99$", GEO), "U", "O"))]
+  validgeo[, let(GEOniv = data.table::fcase(GEOniv == "fylke", "F",
+                                            GEOniv == "kommune", "K",
+                                            GEOniv == "bydel", "B",
+                                            GEOniv == "levekaar", "V"),
+                 ID = 1, TIL = 9999, TYP = ifelse(grepl("99$", GEO), "U", "O"))]
   cat("\n Read, format, and combine original tables")
   
-  
-  
+  land <- data.table::copy(validgeo)[1]
+  land[, let(ID = 1, GEO = 0, NAVN = "Hele landet", FRA = 0, TIL = 9999, GEOniv = "L", TYP = "O")]
   
   oldkommune <- data.table::setDT(DBI::dbGetQuery(.GEOtables,
-                                               paste0("SELECT [oldCode] AS GEO, [changeOccurred] as validTo FROM kommune", year, " WHERE oldCode IS NOT NULL"), as.is = TRUE))
+                                                  paste0("SELECT [oldCode] AS GEO, [oldName] AS NAVN, [changeOccurred] AS TIL FROM kommune", year, " WHERE oldCode IS NOT NULL"), as.is = TRUE))
+  if(9999 %in% oldkommune$GEO) oldkommune <- oldkommune[GEO != 9999]
+  oldkommune[, let(GEOniv = "K", ID = 1, TYP = "U")]
   
+  oldfylke <- data.table::setDT(DBI::dbGetQuery(.GEOtables,
+                                                paste0("SELECT [oldCode] AS GEO, [oldName] AS NAVN, [changeOccurred] AS TIL FROM fylke", year, " WHERE oldCode IS NOT NULL"), as.is = TRUE))
+  if(99 %in% unique(oldfylke$GEO)) oldfylke <- oldfylke[GEO != 99]
+  oldfylke[, let(GEOniv = "F", ID = 1, TYP = "U")]
   
+  oldbydel <- data.table::fread("https://raw.githubusercontent.com/helseprofil/backend/refs/heads/main/geomaster/tabeller/gamlebydeler.csv")
+  oldbydel[, let(ID = 1, TYP = "U")]
   
+  orgcolnames <- DBI::dbListFields(.KHELSA, "GeoKoder")
   
-  GeoKoder <- addleading0(data.table::setDT(DBI::dbGetQuery(.KHELSA, 
-                                                            "SELECT * FROM GeoKoder WHERE GEOniv NOT IN ('S', 'V', 'G')")))
+  out <- data.table::rbindlist(list(land, validgeo, oldkommune, oldfylke, oldbydel), use.names = TRUE, fill = TRUE)
+  out[, FRA := 0]
+  data.table::setcolorder(out, orgcolnames)
   
+  if(any(is.na(out$GEOniv))){
+    stop("FEIL i angivelse av GEOniv")
+    # out[is.na(GEOniv) & nchar(GEO) == 1, GEOniv == "L"]
+    # out[is.na(GEOniv) & nchar(GEO) == 2, GEOniv == "F"]
+    # out[is.na(GEOniv) & nchar(GEO) == 4, GEOniv == "K"]
+    # out[is.na(GEOniv) & nchar(GEO) == 6, GEOniv == "B"]
+    # out[is.na(GEOniv) & nchar(GEO) == 10, GEOniv == "V"]
+  }
   
-  
-  
-  # Identify rows with expired GEO-codes, and set TIL = year - 1
-  # Exception for 99, 9999, and 999999
-  GeoKoder[(!grepl("99$", GEO) & !GEO %in% tblGeo$GEO & GEOniv %in% c("F", "K", "B") & TIL == 9999) | (GEOniv == "G" & TIL == 9999),
-           TIL := year - 1]    
-  
-  # Identify rows in tblGeo not existing in GeoKoder, based on GEOniv + GEO
-  geoexist <- GeoKoder[, .(GEOniv, GEO)][, let(exist = 1)]
-  newrows <- collapse::join(tblGeo, geoexist, on = c("GEOniv", "GEO"), how = "left")
-  newrows <- newrows[is.na(exist)][, let(exist = NULL)]
-  data.table::setnames(newrows, old = "validTo", new = "FRA")
-  newrows[, TIL := 9999]
-  data.table::setcolorder(newrows, names(GeoKoder))
-  
-  # Add new codes to list
-  comb <- data.table::rbindlist(list(GeoKoder, newrows))
-  
-  # Handle levekaar, exclude lks from list if only 1 lks in overniv (kommune or bydel) 
-  # TYP is set to "U", to indicate that these LKS are invalid.
-
-  if("V" %in% unique(comb[["GEOniv"]])){
-    lks <- comb[GEOniv == "V"]
+  # Håndtere levekårssoner
+  # I kommuner/Bydeler hvor det bare finnes 1 sone settes denne til "U" for å ikke bli med ut eller i naboprikking
+  if("V" %in% unique(out[["GEOniv"]])){
+    lks <- out[GEOniv == "V"]
     lks[, overniv := substr(GEO, 1, 6)]
     lks[, n_lks := .N, by = overniv]
     only_1_lks <- lks[n_lks == 1, unique(GEO)]
-    comb[GEO %in% only_1_lks, TYP := "U"]
+    out[GEO %in% only_1_lks, TYP := "U"]
   }
+  # Levekårssone 15 i Drammen har bare 1 innbygger, og settes til "U"
+  out[GEO == 3301000015, TYP := "U"]
   
   # generate rows with GEOniv = S
-  sone <- comb[GEOniv %in% c("B", "K") & GEO != "999999"]
+  sone <- out[GEOniv %in% c("B", "K") & GEO != "999999"]
   sone[, GEOniv := "S"]
   sone[nchar(GEO) == 4, GEO := paste0(GEO, "00")]
   
-  
   # Generate final output, and add ID column
-  out <- data.table::rbindlist(list(comb, sone))[order(GEO)]
+  out <- data.table::rbindlist(list(out, sone))[order(GEO)]
   out[, ID := .I]
   
   # Quality control
@@ -291,16 +290,16 @@ GeoKoderUpdate <- function(year = 2026,
   cat("\n--\nQuality control\n--\n\n")
   
   ## Check that all values of GEO (F, K, B) with TYP == "O" are valid codes for current year according to tblGeo
-  allvalid <- out[TIL == 9999 & TYP == "O" & GEOniv %in% c("F", "K", "B") & !GEO %in% tblGeo$GEO]
+  allvalid <- out[TIL == 9999 & TYP == "O" & GEOniv %in% c("F", "K", "B", "V") & !GEO %in% validgeo$GEO]
   if(nrow(allvalid) > 0){
-      message(" - The following rows contain invalid GEO codes for ", year)
-      allvalid
+    message(" - The following rows contain invalid GEO codes for ", year)
+    allvalid
   } else {
-      message(" - All GEO codes with TYP = 'O' and TIL == 9999 are valid for ", year)
+    message(" - All GEO codes with TYP = 'O' and TIL == 9999 are valid for ", year)
   }
   
   ## Check that all valid GEO-codes are included in GeoKoder with TIL == 9999
-  validincluded <- tblGeo$GEO[!tblGeo$GEO %in% out[TIL == "9999", GEO]]
+  validincluded <- setdiff(validgeo$GEO, out[TIL == "9999", GEO])
   if(length(validincluded) > 0){
     validincluded_excl_lks <- setdiff(validincluded, only_1_lks)
     if(length(validincluded_excl_lks) > 0){
@@ -315,30 +314,31 @@ GeoKoderUpdate <- function(year = 2026,
   
   # Write to Access    
   if(write){
-      
-      # Ask for confirmation before writing
-      opts <- c("Overwrite", "Cancel")
-      answer <- utils::menu(choices = opts, 
-                            title = paste0("Whoops!! You are now replacing the table GeoKoder in:\n\n", 
-                                           basepath, khelsapath, 
-                                           "\n\nPlease confirm or cancel:"))
-      
-      if(opts[answer] == "Overwrite"){
-          cat("\nUpdating the GeoKoder table in KHELSA...\n")
-          RODBC::sqlSave(channel = .KHELSA, 
-                         dat = out, 
-                         tablename = "GeoKoder", 
-                         append = FALSE, 
-                         rownames = FALSE, 
-                         safer = FALSE)
-          cat(paste0("\nDONE! New table written to:\n", basepath, khelsapath, "\n\n"))
-      } else {
-          cat(paste0("\nYou cancelled, and the table was not overwritten! Puh!\n"))
-      }
+    
+    # Ask for confirmation before writing
+    opts <- c("Overwrite", "Cancel")
+    answer <- utils::menu(choices = opts, 
+                          title = paste0("Whoops!! You are now replacing the table GeoKoder in:\n\n", 
+                                         basepath, khelsapath, 
+                                         "\n\nPlease confirm or cancel:"))
+    
+    if(answer == 1){
+      cat("\nUpdating the GeoKoder table in KHELSA...\n")
+      DBI::dbWriteTable(conn = .KHELSA,
+                        name = "GeoKoder",
+                        value = out,
+                        batch_rows = 1,
+                        overwrite = TRUE,
+                        append = FALSE)
+      cat(paste0("\nDONE! New table written to:\n", basepath, khelsapath, "\n\n"))
+    } else {
+      cat(paste0("\nYou cancelled, and the table was not overwritten! Puh!\n"))
+    }
   }
-   
-    return(out)
+  
+  return(out)
 }
+
 
 # Helper function to convert GEO columns to character and add leading 0
 addleading0 <- function(data){
