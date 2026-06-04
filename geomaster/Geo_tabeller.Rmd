@@ -5,6 +5,16 @@ date: "2023-10-13"
 output: html_document
 ---
 
+# Prosedyre for å oppdatere geotabeller i khelsa
+
+1. Tabellene i geodatabasen må være oppdatert først, se eget dokument. 
+2. Oppdater tabellene KnrHarm og GeoKoder, se egne koder under
+3. Befolkningsfilen må kjøres, for å kunne oppdatere LKS_STARTAAR
+4. Oppdater LKS_startaar, egen funksjon under.
+5. Gå til `config/config-khfunctions.yml`, og oppdater GEO-prikketrianglene dersom geokodene er endret. Bruk befolkning 2024 for rangering. Det er en egen funksjon for å oppdatere trianglene, som deretter må limes inn i config-filen.
+6. Endringene må pushes til github for å slå inn i løypen.
+
+
 ```{r setup, include=FALSE}
 source("https://raw.githubusercontent.com/helseprofil/backend/main/geomaster/R/functions_GeoMaster.R")
 
@@ -14,28 +24,12 @@ khelsa <- "KHELSA_backend/KHELSA_BE.accdb"
 geokoder <- "raw-khelse/geo-koder.accdb"
 ```
 
-```{r}
-con <- khfunctions:::connect_khelsa()
-KnrHarmOld <- data.table::setDT(RODBC::sqlQuery(con, "SELECT * FROM KnrHarm", as.is = TRUE))
-GeoKoderOld <- data.table::setDT(RODBC::sqlQuery(con, "SELECT * FROM GeoKoder", as.is = TRUE))
-```
+
+OBS! 
+- `write = TRUE` vil overskrive eksisterende tabell, så det kan være greit å kjøre med `write = FALSE` først
 
 
-# Update GEO-tables for KHELSA
-
-The following codes are used to generate updated versions of the tables `GeoKoder` and `KnrHarm` in `KHELSA` (KHELSA.mdb)
-
-## Update KnrHarm table
-
-- Connects to the databases and read relevant tables
-- Update recoding table according to selected year
-- Perform quality control to see if
-    - All existing rows are kept or correctly updated
-    - There are any missing values in the `GEO` or `GEO_omk` columns
-    - All values in `GEO_omk` are valid according to `tblGeo` for the selected year
-    
-- Set `write = TRUE` to overwrite the table in Access. 
-    - This will replace the original table, so first make sure that the table is correct by running the code with `write = FALSE`
+## Oppdater KnrHarm
 
 ```{r}
 KnrHarmNew <- KnrHarmUpdate(year = 2026,
@@ -45,7 +39,7 @@ KnrHarmNew <- KnrHarmUpdate(year = 2026,
                             write = TRUE)
 ```
 
-## Update GeoKoder
+## Oppdater GeoKoder
 
 ```{r}
 GeoKoderNew <- GeoKoderUpdate(year = 2026,
@@ -55,15 +49,17 @@ GeoKoderNew <- GeoKoderUpdate(year = 2026,
                               write = TRUE)
 ```
 
-## Update lks_startaar
+## Oppdater LKS_STARTAAR
 
-- Kan skrives til ACCESS og brukes derfra
-- Må tilpasse funksjonen til å skrive til ACCESS
+- max_endring = maks tolerert endring i totalbefolkningen fra forrige år
+    - 15% er foreløpig grensen vi har landet på. 
 ```{r}
 source("https://raw.githubusercontent.com/helseprofil/backend/main/geomaster/R/lks_startaar.R")
-d <- get_lks_startaar(bef_datotag = "2026-05-27-12-21", max_endring = 0.15)
-
-
+d <- get_lks_startaar(bef_datotag = "2026-05-27-12-21", 
+                      max_endring = 0.15, 
+                      basepath = root,
+                      dbpath = khelsa,
+                      write = TRUE)
 ```
 
 
