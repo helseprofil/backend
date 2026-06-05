@@ -1,8 +1,8 @@
 # Postprosessering av SYSVAK
 
-# - Prikke alle data på 2-åringer før 2011 for bydeler i Stavanger og Trondheim
-flaggcol <- intersect(c("TELLER.f", "RATE.f", "spv_tmp"), names(KUBE))
-KUBE[GEOniv == "B" & grepl("^5001|^1103", GEO) & AARl < 2011 & ALDERl == 2, (flaggcol) := 1]
+# - Prikke alle data på 2-åringer før 2011 for bydeler i Stavanger og Trondheim, uavhengig av eksisterende flagging
+flags <- c(grep("\\.f$", names(KUBE), value = T), "spv_tmp", "manuellprikket")
+KUBE[GEOniv == "B" & grepl("^5001|^1103", GEO) & AARl < 2011 & ALDERl == 2, (flags) := 1L]
 
 # Slette alle tall på Kikhoste for 16-åringer for år før perioden 2014-2018 dersom 5-årig kube. Setter flagg til 1. 
 
@@ -22,22 +22,24 @@ KUBE[GEOniv == "B" & grepl("^5001|^1103", GEO) & AARl < 2011 & ALDERl == 2, (fla
 #   - Hepatitt B	:(ny fra mars-20) Data fra 2019. Flagg 1 for tidligere år (delingskommuner hadde fått 3),
 #   				og for andre aldersgrupper enn 2år.
 
-KUBE[VAKSINE %in% c("Difteri", "Stivkrampe", "Polyomyelitt") & ALDERl ==  16 & AARl < 2009, (flaggcol) := 1]
-KUBE[VAKSINE == "Kikhoste" & ALDERl == 16 & AARl < 2014, (flaggcol) := 1]
-KUBE[VAKSINE == "HIB" & ALDERl %in% c(9, 16), (flaggcol) := 1]
-KUBE[VAKSINE == "Pneumokokk" & (ALDERl %in% c(9, 16) | (ALDERl == 2 & AARl <= 2007)), (flaggcol) := 1]
-KUBE[VAKSINE %in% c("Meslinger", "Kusma", "Rodehunder")  & AARl < 2009, (flaggcol) := 1]
-KUBE[VAKSINE == "MMR" & (AARl > 2008 | ALDERl == 16), (flaggcol) := 1]
-KUBE[VAKSINE %in% c("HPV", "HPV_M") & ALDERl %in% c(2,9), (flaggcol) := 1]
-KUBE[VAKSINE ==  "HPV" & ALDERl == 16 & AARl < 2013, (flaggcol) := 1]
-KUBE[VAKSINE ==  "Rotavirusinfeksjon" & (ALDERl %in% c(9,16) | AARl < 2017) , (flaggcol) := 1]
-KUBE[VAKSINE ==  "HepatittB" & (AARl < 2019 | ALDERl != 2), (flaggcol) := 1]
+KUBE[VAKSINE %in% c("Difteri", "Stivkrampe", "Polyomyelitt") & ALDERl ==  16 & AARl < 2009, (flags) := 1L]
+KUBE[VAKSINE == "Kikhoste" & ALDERl == 16 & AARl < 2014, (flags) := 1L]
+KUBE[VAKSINE == "HIB" & ALDERl %in% c(9, 16), (flags) := 1L]
+KUBE[VAKSINE == "Pneumokokk" & (ALDERl %in% c(9, 16) | (ALDERl == 2 & AARl <= 2007)), (flags) := 1L]
+KUBE[VAKSINE %in% c("Meslinger", "Kusma", "Rodehunder")  & AARl < 2009, (flags) := 1L]
+KUBE[VAKSINE == "MMR" & (AARl > 2008 | ALDERl == 16), (flags) := 1L]
+KUBE[VAKSINE %in% c("HPV", "HPV_M") & ALDERl %in% c(2,9), (flags) := 1L]
+KUBE[VAKSINE ==  "HPV" & ALDERl == 16 & AARl < 2013, (flags) := 1L]
+KUBE[VAKSINE ==  "Rotavirusinfeksjon" & (ALDERl %in% c(9,16) | AARl < 2017) , (flags) := 1L]
+KUBE[VAKSINE ==  "HepatittB" & (AARl < 2019 | ALDERl != 2), (flags) := 1L]
 
 # Grunnet høy vaksinasjonsdekning er det mange tall som prikkes på grunn av lavt antall uvaksinerte, og dette utløser serieprikking
 # Det vil si at hele tidsserier forsvinner som følge av høy vaksinasjonsdekning over tid. 
 # Derfor besluttes det at serieprikker som ikke er personvernprikker (primærprikker eller naboprikker) avprikkes. 
-# Disse tallene har serieprikket = 1 og pvern = 0. 
+# Disse tallene har serieprikket = 1 og pvern = 0. Setter serieprikket = 2L og manuellprikket = -1L for å indikere at disse er avprikket.
 
-flags <- intersect(c("spv_tmp", grep("\\.f$", names(KUBE), value = T)), names(KUBE))
-KUBE[serieprikket == 1 & pvern == 0, 
-     names(.SD) := as.list(c(rep(0L, length(flags)),2L)), .SDcols = c(flags, "serieprikket")]
+flags <- c(grep("\\.f$", names(KUBE), value = T), "spv_tmp")
+idx <- which(KUBE[["serieprikket"]] == 1 & KUBE[["pvern"]] == 0)
+data.table::set(KUBE, i = idx, j = flags, value = 0L)
+data.table::set(KUBE, i = idx, j = "manuellprikket", value = -1L)
+data.table::set(KUBE, i = idx, j = "serieprikket", value = 2L)

@@ -1,4 +1,4 @@
-flags <- c(grep("\\.f$", names(KUBE), value = T), "spv_tmp")
+flags <- c(grep("\\.f$", names(KUBE), value = T), "spv_tmp", "manuellprikket")
 
 # Sette flagg for stavangerbydelene til 1 siden de er missing pga tknr ikke kan mappes til bydel. 
 # Finnøy og Rennessøy har brukbare tall, så flagger bare dersom radene ikke skulle fått tall. 

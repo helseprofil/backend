@@ -11,6 +11,11 @@
 
 # Koden under fjerner prikkeflaggene for disse radene.
 
-flags <- intersect(c("spv_tmp", grep("\\.f$", names(KUBE), value = T)), names(KUBE))
-KUBE[UTDANN == 4 & serieprikket == 1 & pvern == 0 & spv_tmp == 4, 
-     names(.SD) := as.list(c(rep(0L, length(flags)),2L)), .SDcols = c(flags, "serieprikket")]
+# Setter alle flaggkolonner og spv_tmp = 0. Serieprikket settes til 2 og manuellprikket settes til -1 for å indikere manuell avprikking. 
+
+flags <- c(grep("\\.f$", names(KUBE), value = T), "spv_tmp")
+idx <- which(KUBE[["UTDANN"]] == 4 & KUBE[["serieprikket"]] == 1 & KUBE[["pvern"]] == 0 & KUBE[["spv_tmp"]] == 4)
+
+data.table::set(KUBE, i = idx, j = flags, value = 0L)
+data.table::set(KUBE, i = idx, j = "serieprikket", value = 2L)
+data.table::set(KUBE, i = idx, j = "manuellprikket", value = -1L)

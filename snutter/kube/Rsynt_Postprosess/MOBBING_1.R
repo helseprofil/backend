@@ -79,9 +79,11 @@ UDIRPRIKKpre <<- KUBE[UDIRPRIKK == 1]
 cat(paste0("\n Allerede prikket: ", KUBE[spv_tmp > 0, .N]))
 cat(paste0("\n Nye prikker: ", KUBE[spv_tmp == 0 & UDIRPRIKK == 1, .N]))
 
-# Delete data for rows where UDIRPRIKK == 1
-flags <- grep("\\.f$", names(KUBE), value = T)
-KUBE[spv_tmp == 0 & UDIRPRIKK == 1, c("spv_tmp", flags) := 3]
+# Flag data for rows where UDIRPRIKK == 1 and values were not previously censored
+flags <- c(grep("\\.f$", names(KUBE), value = T), "spv_tmp")
+idx <- which(KUBE[["spv_tmp"]] == 0 & KUBE[["UDIRPRIKK"]] == 1)
+data.table::set(KUBE, i = idx, j = flags, value = 3L)
+data.table::set(KUBE, i = idx, j = c("manuellprikket", "pvern"), value = 1L)
 
 UDIRPRIKKpost <<- KUBE[UDIRPRIKK == 1]
 cat("\nRSYNT_POSTPROSESS ferdig")
