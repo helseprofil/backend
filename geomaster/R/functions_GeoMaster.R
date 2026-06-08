@@ -264,6 +264,9 @@ GeoKoderUpdate <- function(year = 2026,
     # out[is.na(GEOniv) & nchar(GEO) == 10, GEOniv == "V"]
   }
   
+  # Håndtere Marka/Sentrum
+  out[GEO %in% c("030116", "030117"), TYP := "U"]
+  
   # Håndtere levekårssoner
   # I kommuner/Bydeler hvor det bare finnes 1 sone settes denne til "U" for å ikke bli med ut eller i naboprikking
   if("V" %in% unique(out[["GEOniv"]])){
