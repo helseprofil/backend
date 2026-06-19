@@ -33,6 +33,7 @@ ULIK_MAAL, Utdanning, UTDANNING, VAKSINE, VEKT, VURDERING, YTELSE, AARSAK, STILL
 
 friskvikcols: [GEO , AAR, KJONN, ALDER, UTDANN, INNVKAT, LANDBAK, ETAB, sumTELLER, 
 sumNEVNER, RATE, MALTALL, sumPREDTELLER, PREDTELLER, SMR, NORM, MEIS, RATE.n]
+prikkeinfo: [pvern, orgprikket, serieprikket, naboprikket, dekningprikket, geoprikket, manuellprikket]
 
 # Filedumps
 dumps: [comparecube, newcube_flag]
