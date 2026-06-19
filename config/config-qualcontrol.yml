@@ -1,4 +1,4 @@
-year: 2026
+year: 2027
 
 # Paths
 root: "O:/Prosjekt/FHP/PRODUKSJON"
@@ -33,7 +33,9 @@ ULIK_MAAL, Utdanning, UTDANNING, VAKSINE, VEKT, VURDERING, YTELSE, AARSAK, STILL
 
 friskvikcols: [GEO , AAR, KJONN, ALDER, UTDANN, INNVKAT, LANDBAK, ETAB, sumTELLER, 
 sumNEVNER, RATE, MALTALL, sumPREDTELLER, PREDTELLER, SMR, NORM, MEIS, RATE.n]
+
 prikkeinfo: [pvern, orgprikket, serieprikket, naboprikket, dekningprikket, geoprikket, manuellprikket]
+misccols: [origgeo, GEOniv, KOMMUNE, WEIGHTS, any_diffs, newrow, exprow]
 
 # Filedumps
 dumps: [comparecube, newcube_flag]
