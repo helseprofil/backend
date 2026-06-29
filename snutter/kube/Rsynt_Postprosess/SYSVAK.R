@@ -1,5 +1,16 @@
 # Postprosessering av SYSVAK
 
+# Grunnet høy vaksinasjonsdekning er det mange tall som prikkes på grunn av lavt antall uvaksinerte, og dette utløser serieprikking
+# Det vil si at hele tidsserier forsvinner som følge av høy vaksinasjonsdekning over tid. 
+# Derfor besluttes det at serieprikker som ikke er personvernprikker (primærprikker eller naboprikker) avprikkes. 
+# Disse tallene har serieprikket = 1 og pvern = 0. Setter serieprikket = 2L og manuellprikket = -1L for å indikere at disse er avprikket.
+
+flags <- c(grep("\\.f$", names(KUBE), value = T), "spv_tmp")
+idx <- which(KUBE[["serieprikket"]] == 1 & KUBE[["pvern"]] == 0)
+data.table::set(KUBE, i = idx, j = flags, value = 0L)
+data.table::set(KUBE, i = idx, j = "manuellprikket", value = -1L)
+data.table::set(KUBE, i = idx, j = "serieprikket", value = 2L)
+
 # - Prikke alle data på 2-åringer før 2011 for bydeler i Stavanger og Trondheim, uavhengig av eksisterende flagging
 flags <- c(grep("\\.f$", names(KUBE), value = T), "spv_tmp", "manuellprikket")
 KUBE[GEOniv == "B" & grepl("^5001|^1103", GEO) & AARl < 2011 & ALDERl == 2, (flags) := 1L]
@@ -32,14 +43,3 @@ KUBE[VAKSINE %in% c("HPV", "HPV_M") & ALDERl %in% c(2,9), (flags) := 1L]
 KUBE[VAKSINE ==  "HPV" & ALDERl == 16 & AARl < 2013, (flags) := 1L]
 KUBE[VAKSINE ==  "Rotavirusinfeksjon" & (ALDERl %in% c(9,16) | AARl < 2017) , (flags) := 1L]
 KUBE[VAKSINE ==  "HepatittB" & (AARl < 2019 | ALDERl != 2), (flags) := 1L]
-
-# Grunnet høy vaksinasjonsdekning er det mange tall som prikkes på grunn av lavt antall uvaksinerte, og dette utløser serieprikking
-# Det vil si at hele tidsserier forsvinner som følge av høy vaksinasjonsdekning over tid. 
-# Derfor besluttes det at serieprikker som ikke er personvernprikker (primærprikker eller naboprikker) avprikkes. 
-# Disse tallene har serieprikket = 1 og pvern = 0. Setter serieprikket = 2L og manuellprikket = -1L for å indikere at disse er avprikket.
-
-flags <- c(grep("\\.f$", names(KUBE), value = T), "spv_tmp")
-idx <- which(KUBE[["serieprikket"]] == 1 & KUBE[["pvern"]] == 0)
-data.table::set(KUBE, i = idx, j = flags, value = 0L)
-data.table::set(KUBE, i = idx, j = "manuellprikket", value = -1L)
-data.table::set(KUBE, i = idx, j = "serieprikket", value = 2L)
