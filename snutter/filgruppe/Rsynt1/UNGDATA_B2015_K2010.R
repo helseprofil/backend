@@ -1,21 +1,23 @@
 # Rsynt 1 for innlesing av vanlige ungdataindikatorer
 # Bydelstall fra 2015 og kommunetall fra 2010
 
-tab1 <- unique(DF$tab1_innles) # Kan bruke filedescription$TAB1, men do_special_handling må også kunne ta med filedescription før dette kan brukes
+tab1 <- filedescription$TAB1 # Kan bruke filedescription$TAB1, men do_special_handling må også kunne ta med filedescription før dette kan brukes
+data.table::setnames(DF, c("klasse", "kommune", "tidspunkt"), c("Klasse", "Kommune", "Tidspunkt"), skip_absent = T)
+bydelcols <- grep("^Bydel", names(DF), ignore.case = TRUE, value = T)
+isbydel <- length(bydelcols) > 0
+keepcols <- c(tab1, "Kommune", "AAR", "Tidspunkt", "KJONN", "Klasse", "SOES", "vekt2020", bydelcols)
+keepcols <- intersect(keepcols, names(DF))
+DF <- DF[, .SD, .SDcols = keepcols]
+DF[, names(.SD) := lapply(.SD, as.numeric)]
+
 minaar <- collapse::fmin(unique(DF$AAR))
 if(minaar > 2012) minaar <- 2012 # rektangulariser minst tilbake til 2012
 maxaar <- collapse::fmax(unique(DF$AAR))
-if(is.numeric(DF[[tab1]])) DF <- DF[get(tab1) < 98]
-data.table::setnames(DF, c("klasse", "kommune", "tidspunkt"), c("Klasse", "Kommune", "Tidspunkt"), skip_absent = T)
+idx_keep <- which(DF[[tab1]] < 98)
+DF <- DF[idx_keep]
 DF[is.na(SOES), let(SOES = 99)]
 
-bydelcols <- grep("^Bydel", names(DF), ignore.case = TRUE, value = T)
-isbydel <- length(bydelcols) > 0
-keepcols <- c(tab1, "Kommune", "AAR", "Tidspunkt", "KJONN", "Klasse", "SOES", "vekt2020")
-
 if(isbydel){
-  keepcols_bydel <- c(intersect(keepcols, names(DF)), bydelcols)
-  DF <- DF[, .SD, .SDcols = keepcols_bydel]
   DF[, let(nonmiss = rowSums(!is.na(.SD)),
            miss = Reduce(`+`, lapply(.SD, function(x) x %in% c(98, 99)))), .SDcols = bydelcols]
   DF <- DF[nonmiss == 1 & miss == 0 & !(Kommune %in% c(1601, 5001) & AAR == 2013)][, let(nonmiss = NULL, miss = NULL)]
@@ -26,7 +28,6 @@ if(isbydel){
   DF[, (bydelcols) := NULL]
   if(!"vekt2020" %in% names(DF)) DF[, let(vekt2020 = 1)]
 }
-DF <- DF[, .SD, .SDcols = keepcols]
 allgeos <- unique(DF$Kommune)
 DF <- DF[!is.na(Klasse) & !is.na(KJONN)]
 

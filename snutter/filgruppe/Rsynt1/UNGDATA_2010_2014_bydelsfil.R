@@ -1,10 +1,17 @@
 # Rsynt 1 for innlesing av gammel bydelsfil Ungdata
 
-tab1 <- unique(DF$tab1_innles) # Kan bruke filedescription$TAB1, men do_special_handling må også kunne ta med filedescription før dette kan brukes
+tab1 <- filedescription$TAB1 # Kan bruke filedescription$TAB1, men do_special_handling må også kunne ta med filedescription før dette kan brukes
+keepcols <- c(tab1, "Kommune", "AAR", "Tidspunkt", "KJONN", "Klasse", grep("^Bydel", names(DF), value = T))
+DF <- DF[, .SD, .SDcols = keepcols]
+# Gjør alt til numerisk for at resten av koden skal fungere
+DF[, names(.SD) := lapply(.SD, as.numeric)]
+
 DF <- DF[, .SD, .SDcols = c(tab1, "Kommune", "AAR", "Tidspunkt", "KJONN", "Klasse", grep("^Bydel", names(DF), value = T))]
-if(is.numeric(DF[[tab1]])) DF <- DF[get(tab1) < 98]
+idx_keep <- which(as.numeric(DF[[tab1]]) < 98)
+DF <- DF[idx_keep]
+# if(is.numeric(DF[[tab1]])) DF <- DF[get(tab1) < 98]
 DF <- DF[!((Kommune == 301 & (Bydel_Oslo >= 98 | Bydel_Oslo == 17)) | 
-           (Kommune == 1103 & Bydel_Stavanger >= 98) |
+             (Kommune == 1103 & Bydel_Stavanger >= 98) |
            (Kommune == 1601))] # Trondheim Kan ikke konverteres til de offisielle bydelene, droppes
 
 DF[Kommune == 301, Kommune := data.table::fcase(Bydel_Oslo == 1, 30107,
