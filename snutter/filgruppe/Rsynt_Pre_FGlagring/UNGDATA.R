@@ -79,11 +79,15 @@ fylke2016 <- Fylkeorg[AARl >= 2014]
 fylke2016[ALDERl %in% c(1,3,5), names(.SD) := 0, .SDcols = sumvars]
 
 # Hente ut ettårige fylkestall for 2021 og 2022
-fylke2122 <- data.table::copy(fylke2016[AARl %in% c(2021, 2022)])
-g <- collapse::GRP(fylke2122, gcols)
-fylke2122 <- collapse::add_vars(g[["groups"]],
-                                collapse::fsum(collapse::get_vars(fylke2122, sumvars), g = g),
-                                collapse::fmean(collapse::get_vars(fylke2122, meanvars), g = g))
+if(startaar < 2023){
+  fylke2122 <- data.table::copy(fylke2016[AARl %in% c(2021, 2022)])
+  g <- collapse::GRP(fylke2122, gcols)
+  fylke2122 <- collapse::add_vars(g[["groups"]],
+                                  collapse::fsum(collapse::get_vars(fylke2122, sumvars), g = g),
+                                  collapse::fmean(collapse::get_vars(fylke2122, meanvars), g = g))
+} else {
+  fylke2122 <- data.table::copy(fylke2016[0])
+}
 
 # 2021-tall skal ikke inngå i glidende summer pga Covid19. 2022 skal inngå i 2023-2024-tall. 
 fylke2016[AARl == 2021, names(.SD) := 0, .SDcols = sumvars] 
@@ -211,6 +215,11 @@ new_bydel[GEO == "1142", let(GEO = "110309")]
 Filgruppe <- data.table::rbindlist(list(Filgruppe, new_bydel), fill = T)
 data.table::setkeyv(Filgruppe, c(bycols, "TAB1", "TAB2"))
 
+# For kuber med startaar 2017 dukket det opp rader med 2016 fordi kommunetall flyttes fra 
+# 2017 til 2016. For dette og tilsvarende tilfeller legge sdet inn et sikkerhetsfilter til slutt. 
+if(any(unique(Filgruppe$AARl) < startaar)){
+  Filgruppe <- Filgruppe[AARl >= startaar]
+}
 # Gamle kommentarer
 # /*
 #   <STATA>
