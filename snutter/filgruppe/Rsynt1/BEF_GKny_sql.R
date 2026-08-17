@@ -1,18 +1,37 @@
 # Fjerne totalverdier for LANDBAK og INNVKAT
-# Rektangularisere bydeler for AAR og KJONN
+# Rektangularisere bydeler og levekårssoner for AAR og KJONN
 
 DBI::dbExecute(
   conn = duckdb_con,
   statement = sprintf("
     -- Fjern totalkategorier
-    DELETE FROM %s 
+    DELETE FROM %s
     WHERE LANDBAK = '0'
        OR INNVKAT = '0';
 
-    -- Opprett manglende bydelsrader
+    -- Opprett manglende rader for bydel/levekårssone
+    WITH komb AS (
+        SELECT
+            g.GEO,
+            a.AAR,
+            k.KJONN
+        FROM (
+            SELECT DISTINCT GEO
+            FROM %s
+            WHERE LENGTH(CAST(GEO AS VARCHAR)) BETWEEN 5 AND 6
+               OR LENGTH(CAST(GEO AS VARCHAR)) BETWEEN 9 AND 10
+        ) g
+        CROSS JOIN (
+            SELECT DISTINCT AAR
+            FROM %s
+        ) a
+        CROSS JOIN (
+            SELECT DISTINCT KJONN
+            FROM %s
+        ) k
+    )
     INSERT INTO %s (
         GEO,
-        LEVEL,
         AAR,
         KJONN,
         ALDER,
@@ -23,7 +42,6 @@ DBI::dbExecute(
     )
     SELECT
         komb.GEO,
-        'bydel' AS LEVEL,
         komb.AAR,
         komb.KJONN,
         '1' AS ALDER,
@@ -31,22 +49,17 @@ DBI::dbExecute(
         '1' AS LANDBAK,
         '8' AS INNVKAT,
         '0' AS BEF
-    FROM (
-        SELECT DISTINCT
-            GEO,
-            AAR,
-            KJONN
-        FROM %s
-    ) komb
+    FROM komb
     WHERE NOT EXISTS (
         SELECT 1
         FROM %s t
         WHERE t.GEO   = komb.GEO
           AND t.AAR   = komb.AAR
           AND t.KJONN = komb.KJONN
-          AND t.LEVEL = 'bydel'
     );
   ",
+                      tablename,
+                      tablename,
                       tablename,
                       tablename,
                       tablename,

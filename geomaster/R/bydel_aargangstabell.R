@@ -9,6 +9,11 @@ geo_recode_bydel <- function(year, write = FALSE){
   }
   
   bydeler <- norgeo::get_code("bydel", from = year, names = T)[, .(code, name)]
+  if(!"999999" %in% bydeler$code){
+    # Legge til helt uoppgitt
+    uoppgitt <- data.table::copy(bydeler[1])[, let(code = "999999", name = "Uoppgitt")]
+    bydeler <- data.table::rbindlist(list(bydeler,uoppgitt))
+  }
   batch = Sys.Date()
   data.table::setnames(bydeler, old = c("code", "name"), new = c("currentCode", "newName"))
   bydeler[, let(oldCode = NA_character_, oldName = NA_character_, changeOccurred = year, batch = batch)]
