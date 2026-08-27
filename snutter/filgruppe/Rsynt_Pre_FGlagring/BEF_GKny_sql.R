@@ -15,6 +15,7 @@ invisible(DBI::dbExecute(duckdb_con, sql))
 # Hent max år
 aar_max <- DBI::dbGetQuery(duckdb_con, sprintf("SELECT MAX(AARl) AS aar_max FROM %s", tablename))$aar_max
 
+khfunctions:::print_console_message("\n - Aggregerer BEF")
 # Første aggregering, lage sum av BEF for alle kombinasjoner av dims, lagres som mellomtabell bef_grunnlag
 invisible(DBI::dbExecute(duckdb_con,
   sprintf('
@@ -27,6 +28,7 @@ invisible(DBI::dbExecute(duckdb_con,
   )
 ))
 
+khfunctions:::print_console_message("\n - Lager grunnlag for BEF-varianter")
 # Legge til forskjøvet BEF med tre selvjoins, lagres i mellomtabell bef_lexis
 # am1/ap1 = alder minus/pluss 1
 # aam1/aap1 = aar minus/pluss 1
@@ -63,6 +65,7 @@ LEFT JOIN bef_grunnlag aap1
 
 invisible(DBI::dbExecute(duckdb_con, sql2))
 
+khfunctions:::print_console_message("\n - Beregner ulike BEF-varianter")
 # Beregne de ulike befolkningsvariantene, og sette siste år til NA for de ulike befolkningskolonnene utenom BEF0101
 # Overskrive den originale tabellen.
 sql3 <- sprintf(
