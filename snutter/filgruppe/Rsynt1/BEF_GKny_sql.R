@@ -5,7 +5,7 @@ DBI::dbExecute(
   conn = duckdb_con,
   statement = sprintf("
     -- Fjern totalkategorier
-    DELETE FROM %s
+    DELETE FROM %1$s
     WHERE LANDBAK = '0'
        OR INNVKAT = '0';
 
@@ -17,20 +17,20 @@ DBI::dbExecute(
             k.KJONN
         FROM (
             SELECT DISTINCT GEO
-            FROM %s
+            FROM %1$s
             WHERE LENGTH(CAST(GEO AS VARCHAR)) BETWEEN 5 AND 6
                OR LENGTH(CAST(GEO AS VARCHAR)) BETWEEN 9 AND 10
         ) g
         CROSS JOIN (
             SELECT DISTINCT AAR
-            FROM %s
+            FROM %1$s
         ) a
         CROSS JOIN (
             SELECT DISTINCT KJONN
-            FROM %s
+            FROM %1$s
         ) k
     )
-    INSERT INTO %s (
+    INSERT INTO %1$s (
         GEO,
         AAR,
         KJONN,
@@ -52,17 +52,12 @@ DBI::dbExecute(
     FROM komb
     WHERE NOT EXISTS (
         SELECT 1
-        FROM %s t
+        FROM %1$s t
         WHERE t.GEO   = komb.GEO
           AND t.AAR   = komb.AAR
           AND t.KJONN = komb.KJONN
-    );
-  ",
+    );",
                       tablename,
-                      tablename,
-                      tablename,
-                      tablename,
-                      tablename,
-                      tablename
+                     
   )
 )
