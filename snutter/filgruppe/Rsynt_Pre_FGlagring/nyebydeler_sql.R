@@ -26,4 +26,4 @@ sql <- sprintf(
   WHERE GEO IN ('5030', '1662', '1141', '1142');",
   tablename)
 
-invisible(DBI::dbExecute(duckdb_conn, sql))
+invisible(DBI::dbExecute(duckdb_con, sql))
