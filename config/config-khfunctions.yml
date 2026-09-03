@@ -1,5 +1,6 @@
+# Verdier for produksjonsår (hvor friskvikfiler havner og aktiv prodmappe)
 year: 2027
-kube.prod: "STATBANK/STATBANK_2026"
+kube.prod: "STATBANK/STATBANK_2027"
 
 # Paths 
 root: "O:/Prosjekt/FHP/PRODUKSJON"
