@@ -10,7 +10,7 @@ Alle norgeo-mekanismene er bygget inn i kommandoer i orgdata.
 # Last inn funksjoner og sett årgang
 ```{r}
 library(orgdata)
-aargang <- 2026
+aargang <- 2027
 ```
 
 
@@ -69,15 +69,18 @@ Du kan også lage hele tabellen fra bunnen, for flere årganger, ved å bruke `g
 ```{r}
 d <- geo_map_multi(from = 2026,
               to = 2026,
-              write = T) # DETTE OVERSKRIVER EKSISTERENDE TABELL
+              write = T)# DETTE OVERSKRIVER EKSISTERENDE TABELL
 ```
 
 # Merge på levekårssoner
 ## Må gjøres manuelt for 2026, bør fungere som vanlig fra 2027
+### September 2026: get_correspond fungerer ikke med from = 2027, men får riktige tall ved to = 2027. Her skiller SSB KLASS sin API seg fra de andre geonivåene. Det kan være det håndteres korrekt fra og med 2027, men hvis ikke må vi ta kontakt med SSB eller endre koden i norgeo for å håndtere dette. 
+- from = 2026 fungerer ikke for lks fordi koden endres til 2026-01-01, og listen er ikke gyldig før 1.mai 2026. 
+
 ```{r}
 Sys.setlocale("LC_ALL", "nb-NO.UTF-8")
 # Hente korrespondansetabell for gk -> lks (fra 1.1.2027, ettersom lks er gyldig først fra mai 2026 og korrespondansen er til gk2026)
-lks <- norgeo::get_correspond("levekaar", "grunnkrets", from = 2027)[, .SD, .SDcols = c("sourceCode", "sourceName", "targetCode")]
+lks <- norgeo::get_correspond("levekaar", "grunnkrets", to = 2027)[, .SD, .SDcols = c("sourceCode", "sourceName", "targetCode")]
 data.table::setnames(lks, c("levekaar", "lksnavn", "grunnkrets"))
 data.table::fwrite(lks, file.path(getwd(), "tabeller/lks_gk_2026.csv"), encoding = "UTF-8")
 
@@ -85,7 +88,7 @@ data.table::fwrite(lks, file.path(getwd(), "tabeller/lks_gk_2026.csv"), encoding
 # gkrecode <- norgeo::track_change("grunnkrets", 2024, 2026, fix = T)[!is.na(oldCode)][, .SD, .SDcols = c("currentCode", "oldCode")]
 # lks2 <- collapse::join(lks, gkrecode, on = setNames("oldCode", "grunnkrets"), multiple = T)
 # lks[!is.na(currentCode), grunnkrets := currentCode][, currentCode := NULL]
-
+ddd <- data.table::fread(file.path(getwd(), "tabeller/lks_gk_2026.csv"))
 
 # merge på tblGeo (må endre encoding-csv til UTF8 for å få riktige navn)
 options(orgdata.encoding.csv = "UTF-8") 
