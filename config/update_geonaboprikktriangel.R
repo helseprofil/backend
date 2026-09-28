@@ -10,18 +10,53 @@ update_geonaboprikk_triangel <- function(refaar = 2024){
   folder <- "O:/Prosjekt/FHP/PRODUKSJON/PRODUKTER/KUBER/STATBANK/DATERT/parquet"
   files <- list.files(folder, pattern = "^BEFOLK_GK_\\d{4}-\\d{2}-\\d{2}-\\d{2}-\\d{2}\\.parquet$")
   
+  # Hent gyldige geokoder
+  con <- qualcontrol:::ConnectKHelsa()
+  on.exit(RODBC::odbcCloseAll(), add = TRUE)
+  g <- RODBC::sqlQuery(con, "SELECT GEO FROM GeoKoder WHERE TIL = '9999' AND TYP = 'O'", as.is = TRUE)$GEO
+  idx <- g != 0 & nchar(g) %in% c(1,3,5,7,9)
+  g[idx] <- paste0("0", g[idx])
+  
   file <- file.path(folder, max(files))
-  d <- data.table::setDT(arrow::read_parquet(file))
+  d_org <- data.table::setDT(arrow::read_parquet(file, col_select = c("GEO", "AAR", "KJONN", "ALDER", "TELLER")))[KJONN == 0 & ALDER == "0_120"][, .(AAR, GEO, TELLER)]
+  d_org[GEO != 0 & nchar(GEO) %in% c(1,3,5,7), let(GEO = paste0("0", GEO))]
+  
+  # Bare inkluder gyldige geokoder i trianglene, single og ugyldige LKS-koder inkluderes etter prikking.
+  d_org <- d_org[GEO %in% g]
+  max_aar <- as.integer(max(gsub("(^\\d{4})_\\d{4}$", "\\1", d_org$AAR)))
   
   out <- list()
-  d <- d[grepl(refaar, AAR) & KJONN == 0 & ALDER == "0_120"][, .(GEO, TELLER)][order(-TELLER)]
+  d <- d_org[grepl(refaar, AAR)]
+  
+  # Dersom noen geokoder ikke har teller (LKS-startår > refaar), hent disse fra første tilgjengelige
+  mangler_teller <- d[is.na(TELLER), unique(GEO)]
+  testaar <- refaar + 1
+  while(length(mangler_teller) > 0 && testaar <= max_aar){
+    dd <- d_org[GEO %in% mangler_teller & grepl(testaar, AAR) & !is.na(TELLER)]
+    d <- d[!GEO %in% unique(dd$GEO)]
+    d <- data.table::rbindlist(list(d, dd))
+    testaar <- testaar + 1
+    mangler_teller <- d[is.na(TELLER), unique(GEO)]
+  }
+  
+  if(any(is.na(d$TELLER))){
+    warning("Noen rader kommer ut med missing teller, setter disse til 0 i trianglene")
+    d[is.na(TELLER), TELLER := 0]
+  }
+  
+  
   d[, GEOniv := data.table::fcase(as.numeric(GEO) == 0, "L",
-                                  as.numeric(GEO) <= 99, "F",
-                                  as.numeric(GEO) <= 9999, "K",
-                                  as.numeric(GEO) <= 999999, "B",
-                                  default = "V")]
-  # dt[qualcontrol:::.popinfo, let(GEOniv = i.GEOniv), on = "GEO"][, GEO := as.character(GEO)]
-  d[GEO != 0 & nchar(GEO) %in% c(1,3,5,7), let(GEO = paste0("0", GEO))]
+                                  nchar(GEO) == 2, "F",
+                                  nchar(GEO) == 4, "K",
+                                  nchar(GEO) == 6, "B",
+                                  nchar(GEO) == 10, "V",
+                                  default = NA_character_)]
+  
+  if(any(is.na(d$GEOniv))) stop("GEOniv ikke riktig definert, sjekk i funksjonen")  
+  d <- d[order(-TELLER)]
+  
+  cat("Antall koder fra ulike år brukt til triangler:\n") 
+  print(d[, .N, by = c("GEOniv", "AAR")])
   
   out[["LF"]] <- paste0("{0,", paste0(unique(d[GEOniv == "F"]$GEO), collapse = ","), "}")
   FK <- character()
