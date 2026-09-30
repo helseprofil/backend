@@ -25,12 +25,14 @@
 #' 
 #' Install to other path than `C:/Users/name/helseprofil`
 #' ProfileSystem(path = "Your/Preferred/Path)
-ProfileSystems <- function(path = NULL, all = TRUE, packages = FALSE, norgeo = FALSE, orgdata = FALSE, khfunctions = FALSE, qualcontrol = FALSE, produksjon = FALSE){
-  # 
+ProfileSystems <- function(path = NULL, all = TRUE, packages = FALSE, khtools = FALSE, norgeo = FALSE, orgdata = FALSE, khfunctions = FALSE, qualcontrol = FALSE, produksjon = FALSE){
+  oldwd <- getwd()
+  on.exit(setwd(oldwd), add = TRUE)
   check_R_version()
   
   if(isTRUE(all)){
     packages <- TRUE
+    khtools <- TRUE
     norgeo <- TRUE
     orgdata <- TRUE
     khfunctions <- TRUE
@@ -39,33 +41,28 @@ ProfileSystems <- function(path = NULL, all = TRUE, packages = FALSE, norgeo = F
   }
   
   if(isTRUE(packages)){
-    packages <- get_kh_packages()
-    install_kh_packages(packages)
-    check_package_versions(packages)
+    pgnames <- get_kh_packages()
+    install_kh_packages(pgnames)
+    check_package_versions(pgnames)
   }
   
   # Install packages from GitHub
-  if(isTRUE(norgeo)){
-    message("\nInstalling norgeo...")
-    remotes::install_github("helseprofil/norgeo")
+  if(isTRUE(khtools)){
+    remotes::install_github("helseprofil/khtools", upgrade = "never")
+  }
+  repos <- c()
+  if(isTRUE(norgeo)) repos <- c(repos, "helseprofil/norgeo")
+  if(isTRUE(orgdata)) repos <- c(repos, "helseprofil/orgdata")
+  if(isTRUE(khfunctions)) repos <- c(repos, "helseprofil/khfunctions@master")
+  if(isTRUE(qualcontrol)) repos <- c(repos, "helseprofil/qualcontrol")
+  
+  for(repo in repos){
+    message("Installing ", repo, "...")
+    remotes::install_github(repo)
   }
   
-  if(isTRUE(orgdata)){
-    message("\nInstalling orgdata...")
-    remotes::install_github("helseprofil/orgdata")
-  }
-  
-  if(isTRUE(khfunctions)){
-    message("\nInstalling khfunctions...")
-    remotes::install_github("helseprofil/khfunctions@master")
-  }
-  
-  if(isTRUE(qualcontrol)){
-    message("\nInstalling qualcontrol...")
-    remotes::install_github("helseprofil/qualcontrol")
-  }
-  
-  # Set base folder for installing projects. Always create the helseprofil folder as well.
+
+    # Set base folder for installing projects. Always create the helseprofil folder as well.
   helseprofil <- file.path(fs::path_home(), "helseprofil")
   if(!fs::dir_exists(helseprofil)){
     fs::dir_create(helseprofil)
@@ -81,16 +78,16 @@ ProfileSystems <- function(path = NULL, all = TRUE, packages = FALSE, norgeo = F
 
   if(isTRUE(produksjon)){
     message("\nInstalling produksjon (main branch) into ", path)
-      repo <- paste0("https://github.com/helseprofil/produksjon.git")
+      repo <- "https://github.com/helseprofil/produksjon.git"
       dir <- file.path(path, "produksjon")
       if(fs::dir_exists(dir)){
         setwd(dir)
         message("\n", dir, " already exists, updating main branch to current GitHub version...")
-        invisible(system("git fetch origin main"))
-        invisible(system("git reset --hard origin/main"))
-        invisible(system("git pull"))
+        invisible(system2("git", c("fetch", "origin", "main")))
+        invisible(system2("git", c("reset", "--hard", "origin/main")))
+        invisible(system2("git", "pull"))
       } else {
-        invisible(system(paste("git clone", repo, dir)))
+        invisible(system2("git", c("clone", repo, dir)))
       }
     }  
   message("\nWOHOO, done! \n\nOpen the .Rproj file in the produksjon project to use the systems")
@@ -109,6 +106,7 @@ DevelopSystems <- function(path = NULL, getupdates = FALSE){
 
   projects <- c("produksjon",
                 "backend",
+                "khtools",
                 "norgeo", 
                 "orgdata", 
                 "khfunctions", 
@@ -140,7 +138,7 @@ DevelopSystems <- function(path = NULL, getupdates = FALSE){
 }
 
 check_R_version <- function(){
-  if(version$major <= 4 & version$minor < 4) stop("Du bruker en gammel versjon av R, installer versjon 4.4.0 eller nyere")
+  if(getRversion() < "4.4.0") stop("Du bruker en gammel versjon av R, installer versjon 4.4.0 eller nyere")
 }
 
 get_kh_packages <- function(){
@@ -157,13 +155,23 @@ install_kh_packages <- function(packages = NULL){
   
   if (length(missingpackages) > 0) {
     message(paste("Installing missing packages:", paste(missingpackages, collapse = ", ")))
-    for(pkg in missingpackages) try(install.packages(pkg))
+    for(pkg in missingpackages){
+      tryCatch(
+        install.packages(pkg),
+        error = function(e)
+          warning(sprintf("Kunne ikke installere %s: %s", pkg, e$message))
+      )
+    }
   }
   check_package_versions(packages)
 }
 
 check_package_versions <- function(packages){
-  outdated <- packages[packages %in% as.character(old.packages()[, 1])]
+  old <- old.packages()
+  if(is.null(old)) return(invisible(NULL)) 
+  
+  outdated <- packages[packages %in% rownames(old)]
+  
   if(length(outdated) > 0){
     pkglist <- paste0(outdated, collapse = ", ")
     message(paste0("The following packages have newer versions: ", 

@@ -1,4 +1,4 @@
-get_lks_startaar <- function(bef_datotag = "2026-06-03-13-22", 
+get_lks_startaar <- function(bef_datotag = "2026-09-28-14-22", 
                              max_endring = 0.15, 
                              basepath = root,
                              dbpath = khelsa,
@@ -15,7 +15,7 @@ get_lks_startaar <- function(bef_datotag = "2026-06-03-13-22",
   )
   on.exit(DBI::dbDisconnect(con), add = T)
   
-  file <- file.path("O:/Prosjekt/FHP/PRODUKSJON/PRODUKTER/KUBER/STATBANK/DATERT/parquet", 
+  file <- file.path("O:/Prosjekt/FHP/PRODUKSJON/PRODUKTER/KUBER/STATBANK/DATERT/R", 
                     paste0("BEFOLK_GK_", bef_datotag, ".parquet"))
   d <- data.table::setDT(arrow::read_parquet(file))
   d <- d[as.numeric(GEO) > 999999 & as.numeric(substr(AAR, 1,4)) >= 2002 & KJONN == 0 & ALDER == "0_120"]
