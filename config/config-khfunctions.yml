@@ -4,21 +4,23 @@ kube.prod: "STATBANK/STATBANK_2027"
 
 # Paths 
 root: "O:/Prosjekt/FHP/PRODUKSJON"
+
 dumpdir: "RUNTIMEDUMP"
 snuttdir: "BIN/Z_Statasnutter"
+## Filgruppemapper
 fgdir: "PRODUKTER/FILGRUPPER"
 fg.ny: "NYESTE"
 fg.dat: "DATERT"
 fg.kblogg: "KODEBOK_LOGG"
 fg.sjekk: "FILGRUPPE_SJEKK"
 fg.logg: "FILGRUPPE_LOGG"
+## Kubemapper
 kubedir: "PRODUKTER/KUBER"
 kube.dat: "STATBANK/DATERT"
 kube.specs: "STATBANK/SPECS"
 kube.qc: "STATBANK/QC"
 kube.logg: "STATBANK/KUBELOGG"
-
-# Friskvikmapper
+## Friskvikmapper
 fhpF: "FRISKVIK_FYLKE"
 fhpK: "FRISKVIK_KOMM"
 fhpB: "FRISKVIK_BYDEL"
@@ -29,7 +31,6 @@ ovpB: "OVP_BYDEL"
 # Scripts, databases and files
 stataprikkfile: "BIN/Z_Statasnutter/StataPrikking_MASTER.do"
 db: "STYRING/KHELSA_backend/KHELSA_BE.accdb"
-logg: "STYRING/KHlogg, kopier/KHlogg.mdb"
 lagkube_guardfile: "helseprofil/lagkube_running.txt"
 
 # Partitioned population dataset names
@@ -49,6 +50,8 @@ LOKALTILBUD, MANED, MEDIEBRUK, MAAL, NIVA, NIVA_PLAGET, POL, PROGNOSEAAR, REGELB
 Sivilstand, SKJERMTID, SOES, SPM_ID, STATUS, STONADSLENGDE, STOTTE, STOYKILDE, 
 SVOMMEFERD, TRINN, TYPE_VALG, ULIK_MAAL, Utdanning, UTDANNING, VAKSINE, VEKT, 
 VURDERING, YTELSE, AARSAK, STILLINGSANDEL]
+
+
 
 kolorgs: [GEO, AAR, KJONN, ALDER, UTDANN, INNVKAT, LANDBAK, TAB1, TAB2, TAB3, VAL1, VAL2, VAL3]
 taborgs: [GEO, AAR, KJONN, ALDER, TAB1, TAB2, TAB3]
