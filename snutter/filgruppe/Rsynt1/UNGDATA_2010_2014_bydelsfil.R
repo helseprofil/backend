@@ -4,12 +4,15 @@ tab1 <- filedescription$TAB1 # Kan bruke filedescription$TAB1, men do_special_ha
 keepcols <- c(tab1, "Kommune", "AAR", "Tidspunkt", "KJONN", "Klasse", grep("^Bydel", names(DF), value = T))
 DF <- DF[, .SD, .SDcols = keepcols]
 # Gjør alt til numerisk for at resten av koden skal fungere
-DF[, names(.SD) := lapply(.SD, as.numeric)]
+DF[, names(.SD) := lapply(.SD, as.numeric), .SDcols = setdiff(keepcols, tab1)]
 
-DF <- DF[, .SD, .SDcols = c(tab1, "Kommune", "AAR", "Tidspunkt", "KJONN", "Klasse", grep("^Bydel", names(DF), value = T))]
-idx_keep <- which(as.numeric(DF[[tab1]]) < 98)
-DF <- DF[idx_keep]
-# if(is.numeric(DF[[tab1]])) DF <- DF[get(tab1) < 98]
+x <- DF[[tab1]]
+x_num <- suppressWarnings(as.numeric(x))
+if(all(is.na(x) | !is.na(x_num))) {
+  idx_keep <- which(x_num < 98)
+  DF <- DF[idx_keep]
+} 
+
 DF <- DF[!((Kommune == 301 & (Bydel_Oslo >= 98 | Bydel_Oslo == 17)) | 
              (Kommune == 1103 & Bydel_Stavanger >= 98) |
            (Kommune == 1601))] # Trondheim Kan ikke konverteres til de offisielle bydelene, droppes

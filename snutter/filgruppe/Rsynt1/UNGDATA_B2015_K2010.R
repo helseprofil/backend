@@ -8,13 +8,19 @@ isbydel <- length(bydelcols) > 0
 keepcols <- c(tab1, "Kommune", "AAR", "Tidspunkt", "KJONN", "Klasse", "SOES", "vekt2020", bydelcols)
 keepcols <- intersect(keepcols, names(DF))
 DF <- DF[, .SD, .SDcols = keepcols]
-DF[, names(.SD) := lapply(.SD, as.numeric)]
+DF[, names(.SD) := lapply(.SD, as.numeric), .SDcols = setdiff(keepcols, tab1)]
 
 minaar <- collapse::fmin(unique(DF$AAR))
 if(minaar > 2012) minaar <- 2012 # rektangulariser minst tilbake til 2012
 maxaar <- collapse::fmax(unique(DF$AAR))
-idx_keep <- which(DF[[tab1]] < 98)
-DF <- DF[idx_keep]
+
+x <- DF[[tab1]]
+x_num <- suppressWarnings(as.numeric(x))
+if(all(is.na(x) | !is.na(x_num))) {
+  idx_keep <- which(x_num < 98)
+  DF <- DF[idx_keep]
+} 
+
 DF[is.na(SOES), let(SOES = 99)]
 
 if(isbydel){

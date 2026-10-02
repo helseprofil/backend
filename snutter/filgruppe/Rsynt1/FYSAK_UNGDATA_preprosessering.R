@@ -3,6 +3,7 @@
 # Videre prosessering i hovedsnuttene
 
 tren_col <- grep("Trener9", names(DF), ignore.case = TRUE, value = T)
+DF[, (depr_cols) := lapply(.SD, as.numeric), .SDcols = tren_col]
 DF[, trener_1_9_dicS := data.table::fifelse(get(tren_col) <= 3, "TrSjelden, trener9=1 2 3", "TrUkentlig, trener9=4 5 6")]
 DF <- DF[!is.na(trener_1_9_dicS) & AAR >= 2014]
 
