@@ -1,0 +1,24 @@
+# Årgang - styrer hvilke mapper friskvikfiler og kvalitetskontrolloutput havner
+profileyear: 2027
+
+# Filstier
+root: "O:/Prosjekt/FHP/PRODUKSJON"
+
+# databaser
+db_khelsa: "STYRING/KHELSA_backend/KHELSA_BE.accdb"
+db_geo: "STYRING/raw-khelse/geo-koder.accdb"
+
+# Kolonner
+prikkeinfo: [pvern, orgprikket, serieprikket, naboprikket, dekningprikket, geoprikket, manuellprikket]
+
+val.standard: [TELLER, sumTELLER, NEVNER, sumNEVNER, MEIS, RATE, SMR]
+
+dim.interval: [AARl, AARh, ALDERl, ALDERh]
+dim.standard: [GEO, AAR, KJONN, ALDER, UTDANN, INNVKAT, LANDBAK]
+dim.tab: [TAB1, TAB2, TAB3, ANTALL_GANGER, ANTALLGANGER, BH_NORM, BODD, DATAKILDE, DELTARNAA, DEPRESJON, 
+FERDNIVAA, FERIE, FORNOYD, FORNOYDHET, GRENSE, HAR_POL, HARVENN, HYPPIGHET_TRENING, ICD, 
+INDIKATOR, INNTAK, JA_NEI, KMI_KAT, KODEGRUPPE, LIVSKVALITET, LOKALTILBUD, MANED, 
+MEDIEBRUK, MAAL, NIVA, NIVA_PLAGET, POL, PROGNOSEAAR, REGELBRUDD, Sivilstand, SKJERMTID, 
+SOES, SPM_ID, STATUS, STONADSLENGDE, STOTTE, STOYKILDE, SVOMMEFERD, TRINN, TYPE_VALG, 
+ULIK_MAAL, Utdanning, UTDANNING, VAKSINE, VEKT, VURDERING, YTELSE, AARSAK, STILLINGSANDEL]
+
