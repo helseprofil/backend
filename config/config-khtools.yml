@@ -1,13 +1,17 @@
 # Felles-options som skal brukes på tvers i alle pakker og ikke trenger å dupliseres
+# Leses bare inn som khtools.navn
 
 # Kolonnelister
 prikkeinfo: [pvern, orgprikket, serieprikket, naboprikket, dekningprikket, geoprikket, manuellprikket]
 
 val.standard: [TELLER, sumTELLER, NEVNER, sumNEVNER, MEIS, RATE, SMR]
 
-dim.standard: [GEO, AAR, KJONN, ALDER, UTDANN, INNVKAT, LANDBAK]
+dim.standard: [GEO, AAR, KJONN, ALDER, UTDANN, INNVKAT, LANDBAK, TAB1, TAB2, TAB3]
 dim.interval: [AARl, AARh, ALDERl, ALDERh]
 ## dim.tab settes dynamisk ved lasting av khtools og leser alle unike verdier av TAB1-3
 
 cols.friskvik: [GEO , AAR, KJONN, ALDER, UTDANN, INNVKAT, LANDBAK, ETAB, sumTELLER, 
 sumNEVNER, RATE, MALTALL, sumPREDTELLER, PREDTELLER, SMR, NORM, MEIS, RATE.n]
+
+# Demping av konsolloutput med msg() og header()
+silent: FALSE

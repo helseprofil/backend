@@ -58,7 +58,7 @@ udirprikk_kommune[, let(GEO = Kommunekode, UDIRPRIKK = 1)]
 udirprikk_kommune <- udirprikk_kommune[, .(GEO, AARl, KJONN, TRINN, UDIRPRIKK)]
 
 # Identify censored strata bydel
-udirprikk_bydel <- udirprikk[EnhetNivaa == 4, .(AARl, KJONN, TRINN, Organisasjonsnummer, EnhetNavn, AndelSvaralternativ4, AndelSvaralternativ5)]
+udirprikk_bydel <- udirprikk[EnhetNivaa == 4, .(AARl, KJONN, TRINN, Organisasjonsnummer, AndelSvaralternativ4, AndelSvaralternativ5)]
 skolebydel <- data.table::fread("https://raw.githubusercontent.com/helseprofil/backend/refs/heads/main/snutter/misc/SkoleBydel.csv", 
                                 colClasses=list(character=c("OrgNo","GEO")))
 udirprikk_bydel[skolebydel, GEO := i.GEO, on = c(Organisasjonsnummer = "OrgNo")]
@@ -73,6 +73,10 @@ udirprikk_bydel <- udirprikk_bydel[UDIRPRIKK == 1]
 # Combine lists of strata to censor
 censor <- data.table::rbindlist(list(udirprikk_kommune,
                                      udirprikk_bydel))
+
+## Omskriving til SQL-snutt: 
+## HER kan censor skrives til duckdb, og så merges til KUBE
+## Så må alle rader med UDIRPRIKK == 1 og spv_tmp == 1 få flagg = 3 og manuellprikket + pvern = 1. 
 
 # Merge udirdata
 KUBE <- collapse::join(KUBE, censor, how = "l", on = c("GEO", "AARl", "KJONN", "TRINN"))
