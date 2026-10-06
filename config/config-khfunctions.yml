@@ -107,10 +107,10 @@ geoprikk:
 
 # Forventet antall unike koder på hvert nivå
 forventet:
-  "F": 15
-  "K": 327
-  "B": 36
-  "V": 1137
+  "F": "15"
+  "K": "327"
+  "B": "36"
+  "V": "1137"
 
 # testing
 test.db: "STYRING/test/KHELSAtest.mdb"
