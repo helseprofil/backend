@@ -3,7 +3,7 @@
 # Hensikt:
 # -Lager middelfolkemengde
 
-dims <- khfunctions:::get_dimension_columns(DBI::dbListFields(duckdb_con, tablename))
+dims <- khfunctions:::identify_nonvalues(khtools::duckdb_get_columns(duckdb_con, tablename))
 dims_sql <- paste(dims, collapse = ", ")
 # Fjern BEF.a og BEF.f
 sql <- paste0(sprintf('ALTER TABLE "%s" DROP COLUMN IF EXISTS "%s"',

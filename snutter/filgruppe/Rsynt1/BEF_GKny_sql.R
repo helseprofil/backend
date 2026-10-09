@@ -1,7 +1,7 @@
 # Fjerne totalverdier for LANDBAK og INNVKAT
 # Rektangularisere bydeler og levekårssoner for AAR og KJONN
-
-DBI::dbExecute(
+khtools::msg("-- Rektangulariserer bydeler/levekårssoner for AAR og KJONN")
+invisible(DBI::dbExecute(
   conn = duckdb_con,
   statement = sprintf("
     -- Fjern totalkategorier
@@ -55,9 +55,6 @@ DBI::dbExecute(
         FROM %1$s t
         WHERE t.GEO   = komb.GEO
           AND t.AAR   = komb.AAR
-          AND t.KJONN = komb.KJONN
-    );",
-                      tablename,
-                     
-  )
-)
+          AND t.KJONN = komb.KJONN);",
+                      khtools::sql_quote_I(duckdb_con, tablename))
+))
