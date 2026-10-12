@@ -10,8 +10,8 @@ dim.standard: [GEO, AAR, KJONN, ALDER, UTDANN, INNVKAT, LANDBAK, TAB1, TAB2, TAB
 dim.interval: [AARl, AARh, ALDERl, ALDERh]
 ## dim.tab settes dynamisk ved lasting av khtools og leser alle unike verdier av TAB1-3
 
-cols.friskvik: [GEO , AAR, KJONN, ALDER, UTDANN, INNVKAT, LANDBAK, ETAB, sumTELLER, 
-sumNEVNER, RATE, MALTALL, sumPREDTELLER, PREDTELLER, SMR, NORM, MEIS, RATE.n]
+friskvik.tabs: [GEO , AAR, KJONN, ALDER, UTDANN, INNVKAT, LANDBAK, ETAB]
+friskvik.vals: [sumTELLER, sumNEVNER, RATE, MALTALL, sumPREDTELLER, PREDTELLER, SMR, NORM, MEIS, RATE.n]
 
 # Demping av konsolloutput med msg() og header()
 silent: FALSE
