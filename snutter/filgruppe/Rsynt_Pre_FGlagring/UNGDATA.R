@@ -221,8 +221,17 @@ if(any(unique(Filgruppe$AARl) < startaar)){
   Filgruppe <- Filgruppe[AARl >= startaar]
 }
 
-# Rader der kommunen/bydelen ikke har gjennomført må flagges som missing, slik at de ikke går inn i kubekjøring som 0 og personvernprikkes
-Filgruppe[nchar(GEO) %in% c(4,6) &  NEVNER == 0, let(NEVNER = NA, NEVNER.f = 1)]
+# Årganger der kommunen/bydelen ikke har gjennomført må flagges som missing, slik at de ikke går inn i kubekjøring som 0 og personvernprikkes
+
+Filgruppe[
+  Filgruppe[, .(sum_nevner = sum(NEVNER, na.rm = TRUE)),by = .(GEO, AARl)][sum_nevner == 0, .(GEO, AARl)],
+  on = .(GEO, AARl),
+  `:=`(
+    ANTALL.f = 1,
+    NEVNER.f = 1
+  )
+]
+
 # Gamle kommentarer
 # /*
 #   <STATA>
