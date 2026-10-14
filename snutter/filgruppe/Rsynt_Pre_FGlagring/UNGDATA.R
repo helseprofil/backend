@@ -222,6 +222,7 @@ if(any(unique(Filgruppe$AARl) < startaar)){
 }
 
 # Årganger der kommunen/bydelen ikke har gjennomført må flagges som missing, slik at de ikke går inn i kubekjøring som 0 og personvernprikkes
+# Fjerner også VEKT-kolonnen, som ikke trengs i kubekjøringen og som krasjer med dimensjonsnavn i en annen kube. 
 
 Filgruppe[
   Filgruppe[, .(sum_nevner = sum(NEVNER, na.rm = TRUE)),by = .(GEO, AARl)][sum_nevner == 0, .(GEO, AARl)],
@@ -231,6 +232,9 @@ Filgruppe[
     NEVNER.f = 1
   )
 ]
+
+vektkolonner <- intersect(c("VEKT", "VEKT.f", "VEKT.a"), names(Filgruppe))
+Filgruppe[, (vektkolonner) := NULL]
 
 # Gamle kommentarer
 # /*
