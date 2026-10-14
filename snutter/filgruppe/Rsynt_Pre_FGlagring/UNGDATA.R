@@ -220,6 +220,9 @@ data.table::setkeyv(Filgruppe, c(bycols, "TAB1", "TAB2"))
 if(any(unique(Filgruppe$AARl) < startaar)){
   Filgruppe <- Filgruppe[AARl >= startaar]
 }
+
+# Rader der kommunen/bydelen ikke har gjennomført må flagges som missing, slik at de ikke går inn i kubekjøring som 0 og personvernprikkes
+Filgruppe[nchar(GEO) %in% c(4,6) &  NEVNER == 0, let(NEVNER = NA, NEVNER.f = 1)]
 # Gamle kommentarer
 # /*
 #   <STATA>

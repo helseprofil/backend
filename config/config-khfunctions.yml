@@ -108,7 +108,7 @@ geoprikk:
 # Forventet antall unike koder på hvert nivå og antall kommuner/bydeler med lks-data
 forventet:
   "F": "15"
-  "K": "327"
+  "K": "357"
   "B": "36"
   "V": "1137"
   "V_n": "81"
