@@ -4,73 +4,137 @@
 # -Lager middelfolkemengde
 
 dims <- khfunctions:::identify_nonvalues(khtools::duckdb_get_columns(duckdb_con, tablename))
-dims_sql <- paste(dims, collapse = ", ")
+dims_sql <- paste(khtools::sql_quote_I(duckdb_con, dims), collapse = ", ")
+tbl_sql <- khtools::sql_quote_I(duckdb_con, tablename)
 # Fjern BEF.a og BEF.f
-sql <- paste0(sprintf('ALTER TABLE "%s" DROP COLUMN IF EXISTS "%s"',
-                      tablename,
-                      c("BEF.a", "BEF.f")),
-              collapse = ";\n")
+sql <- paste0(sprintf('ALTER TABLE %s DROP COLUMN IF EXISTS %s', 
+                      tbl_sql, 
+                      khtools::sql_quote_I(duckdb_con, c("BEF.a", "BEF.f"))), collapse = ";\n")
 invisible(DBI::dbExecute(duckdb_con, sql))
 
-# Hent max år
-aar_max <- DBI::dbGetQuery(duckdb_con, sprintf("SELECT MAX(AARl) AS aar_max FROM %s", tablename))$aar_max
+# Hent min/max år og max alder
+aar_range <- DBI::dbGetQuery(duckdb_con, sprintf("SELECT MIN(AARl) AS aar_min, MAX(AARl) AS aar_max FROM %s",
+                                                 tbl_sql))
 
-khtools::msg("\n - Aggregerer BEF")
-# Første aggregering, lage sum av BEF for alle kombinasjoner av dims, lagres som mellomtabell bef_grunnlag
-invisible(DBI::dbExecute(duckdb_con,
-  sprintf('
-  CREATE OR REPLACE TEMP TABLE bef_grunnlag AS SELECT %s, 
-  SUM(BEF) AS BEF FROM %s 
-  GROUP BY %s',
+aar_min <- aar_range$aar_min
+aar_max <- aar_range$aar_max
+alder_max <- DBI::dbGetQuery(duckdb_con, sprintf("SELECT MAX(ALDERl) AS alder_max FROM %s", tbl_sql))$alder_max
+
+khtools::msg("- Aggregerer BEF")
+invisible(DBI::dbExecute(
+    duckdb_con, sprintf(
+      "CREATE OR REPLACE TEMP TABLE bef_grunnlag AS
+      SELECT %s, SUM(BEF) AS BEF 
+      FROM %s
+      GROUP BY %s",
+      dims_sql, tbl_sql, dims_sql
+    )))
+
+khtools::msg("\n - Lager Lexis-grunnlag")
+
+sql_lexis <- sprintf(
+  "CREATE OR REPLACE TEMP TABLE bef_lexis_expanded AS
+-- Original
+    SELECT %s, 
+      BEF AS BEF, 
+      CAST(0 AS DOUBLE) AS BEF_am1, 
+      CAST(0 AS DOUBLE) AS BEF3112a,
+      CAST(0 AS DOUBLE) AS BEF3112c 
+    FROM bef_grunnlag
+    
+UNION ALL
+    
+-- ALDER +1  (BEF_am1)
+    SELECT %s,
+      CAST(0 AS DOUBLE) AS BEF,
+      BEF AS BEF_am1,
+      CAST(0 AS DOUBLE) AS BEF3112a,
+      CAST(0 AS DOUBLE) AS BEF3112c
+    FROM bef_grunnlag
+    WHERE ALDERh + 1 <= %s
+
+UNION ALL
+
+-- AAR -1, ALDER -1 (BEF3112c)
+    SELECT %s,
+      CAST(0 AS DOUBLE) AS BEF,
+      CAST(0 AS DOUBLE) AS BEF_am1,
+      CAST(0 AS DOUBLE) AS BEF3112a,
+      BEF AS BEF3112c
+    FROM bef_grunnlag
+    WHERE ALDERl - 1 >= 0 AND AARl - 1 >= %s
+
+UNION ALL
+
+-- AAR -1 (BEF3112a)
+    SELECT %s,
+      CAST(0 AS DOUBLE) AS BEF,
+      CAST(0 AS DOUBLE) AS BEF_am1,
+      BEF AS BEF3112a,
+      CAST(0 AS DOUBLE) AS BEF3112c
+    FROM bef_grunnlag 
+    WHERE AARl - 1 >= %s",
   dims_sql,
-  tablename,
-  dims_sql
-  )
-))
+  paste(vapply(dims, function(x){
+        if(x == "ALDERl"){ 
+          "ALDERl + 1 AS ALDERl"
+        } else if(x == "ALDERh"){
+          "ALDERh + 1 AS ALDERh"
+        } else {
+          x
+        }
+      }, character(1)), collapse = ",\n"
+  ),
+  alder_max,
+  paste(vapply(dims, function(x){
+        if(x == "AARl"){
+          "AARl - 1 AS AARl"
+        } else if(x == "AARh"){
+          "AARh - 1 AS AARh"
+        } else if(x == "ALDERl"){
+          "ALDERl - 1 AS ALDERl"
+        } else if(x == "ALDERh"){
+          "ALDERh - 1 AS ALDERh"
+        } else {
+          x
+        }
+      }, character(1)), collapse = ",\n"
+  ),
+  aar_min, 
+  paste(
+    vapply(dims, function(x){
+        if(x == "AARl"){
+          "AARl - 1 AS AARl"
+        } else if(x == "AARh"){
+          "AARh - 1 AS AARh"
+        } else {
+          x
+        }
+      }, character(1)), collapse = ",\n"
+  ),
+  aar_min)
 
-khtools::msg("\n - Lager grunnlag for BEF-varianter")
-# Legge til forskjøvet BEF med tre selvjoins, lagres i mellomtabell bef_lexis
-# am1/ap1 = alder minus/pluss 1
-# aam1/aap1 = aar minus/pluss 1
-join_base <- setdiff(dims, c("AARl", "AARh", "ALDERl", "ALDERh", "FYLKE", "GEOniv"))
-join_base_sql <- paste(sprintf("b.%s = x.%s", join_base, join_base), collapse = "\n   AND ")
-dims_b_sql <- paste0("b.", dims, collapse = ", ")
+invisible(DBI::dbExecute(duckdb_con, sql_lexis))
 
-sql2 <- sprintf(
-  'CREATE OR REPLACE TEMP TABLE bef_lexis AS
-SELECT
-    %s,
-    b.BEF AS BEF0101,
-    COALESCE(am1.BEF, 0)   AS BEF_am1,
-    COALESCE(ap1aap1.BEF, 0) AS BEF3112c,
-    COALESCE(aap1.BEF, 0)   AS BEF3112a
-FROM bef_grunnlag b
-LEFT JOIN bef_grunnlag am1
-    ON %s
-    AND am1.AARl   = b.AARl
-    AND am1.ALDERl = b.ALDERl - 1
-LEFT JOIN bef_grunnlag ap1aap1
-    ON %s
-    AND ap1aap1.AARl   = b.AARl + 1
-    AND ap1aap1.ALDERl = b.ALDERl + 1
-LEFT JOIN bef_grunnlag aap1
-    ON %s
-    AND aap1.AARl   = b.AARl + 1
-    AND aap1.ALDERl = b.ALDERl',
-  dims_b_sql,
-  gsub("x\\.", "am1.", join_base_sql),
-  gsub("x\\.", "ap1aap1.", join_base_sql),
-  gsub("x\\.", "aap1.", join_base_sql)
+sql_agg <- sprintf(
+  "CREATE OR REPLACE TEMP TABLE bef_lexis AS
+   SELECT %s,
+     SUM(BEF) AS BEF0101,
+     SUM(BEF_am1) AS BEF_am1,
+     SUM(BEF3112a) AS BEF3112a,
+     SUM(BEF3112c) AS BEF3112c
+   FROM bef_lexis_expanded
+   GROUP BY %s",
+  dims_sql, dims_sql
 )
 
-invisible(DBI::dbExecute(duckdb_con, sql2))
+invisible(DBI::dbExecute(duckdb_con, sql_agg))
 
-khtools::msg("\n - Beregner ulike BEF-varianter")
+khtools::msg(" - Beregner ulike BEF-varianter")
 # Beregne de ulike befolkningsvariantene, og sette siste år til NA for de ulike befolkningskolonnene utenom BEF0101
 # Overskrive den originale tabellen.
-sql3 <- sprintf(
-  'CREATE OR REPLACE TABLE %s AS 
-  SELECT
+sql_befvarianter <- sprintf(
+  'SELECT
     %s,
     BEF0101,
     CASE WHEN AARl = %s THEN CAST(NULL AS DOUBLE) ELSE BEF3112a END AS BEF3112a,
@@ -108,7 +172,7 @@ sql3 <- sprintf(
     1 AS "mBEFa.a"
 
   FROM bef_lexis',
-  tablename,
+  tml_sql,
   dims_sql,
   aar_max,
   aar_max,
@@ -120,7 +184,12 @@ sql3 <- sprintf(
   aar_max
 )
 
-invisible(DBI::dbExecute(duckdb_con, sql3))
+khtools::duckdb_replace_existing_table(duckdb_con, target = tablename, select_sql = sql_befvarianter)
+
+khtools::duckdb_drop_tables(
+  duckdb_con,
+  c("bef_grunnlag", "bef_lexis_expanded", "bef_lexis")
+)
 
 
 # Gamle beregninger av personår-estimater for de tre rektanglene i Lexis-diagrammet (se Carstensen, ?????)
