@@ -51,7 +51,7 @@ DF[Klasse >= 98, let(klasse_6delt = paste0(Klasse, "_", 2/Tidspunkt))]
 DF[, let(teller = 1)]
 DF[is.na(vekt2020), let(vekt2020 = 1)]
 
-dims <- c(tab1, "Kommune", "AAR", "KJONN", "klasse_6delt", "SOES")
+dims <- c(tab13, "Kommune", "AAR", "KJONN", "klasse_6delt", "SOES")
 g <- collapse::GRP(DF, dims)
 DF <- collapse::add_vars(g[["groups"]], collapse::fsum(collapse::get_vars(DF, c("teller", "vekt2020")), g = g))
 DF[, let(exist = 1)]
@@ -65,7 +65,7 @@ for(dim in setdiff(dims, c("Kommune", "klasse_6delt", "AAR"))){
 }  
 
 full <- do.call(khfunctions:::expand.grid.dt, full)
-data.table::setcolorder(full, c("Kommune", "AAR", "KJONN", tab1, "klasse_6delt", "SOES"))
+data.table::setcolorder(full, c("Kommune", "AAR", "KJONN", tab13, "klasse_6delt", "SOES"))
 DF <- collapse::join(full, DF, multiple = T, overid = 2, verbose = 0)
 DF[is.na(exist), let(teller = 0, vekt2020 = 0)][, let(exist = NULL)]
 
