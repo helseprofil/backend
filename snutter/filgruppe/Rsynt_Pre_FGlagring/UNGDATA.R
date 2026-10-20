@@ -13,10 +13,11 @@ startaar <- collapse::fmin(Filgruppe$AARl)
 
 # Lage vektet nevner
 bycols <- c("GEOniv", "FYLKE", "GEO", "AARl", "AARh", "KJONN", "ALDERl", "ALDERh", "UTDANN", "INNVKAT", "LANDBAK")
-Filgruppe[, let(vNEVNER = sum(VEKT, na.rm = T)), by = c(bycols, "TAB2")]
+tab23 <- intersect(names(Filgruppe), c("TAB2", "TAB3"))
+Filgruppe[, let(vNEVNER = sum(VEKT, na.rm = T)), by = c(bycols, tab23)]
 
 # Aggreger duplikatrader
-g <- collapse::GRP(Filgruppe, c(bycols, "TAB1", "TAB2"))
+g <- collapse::GRP(Filgruppe, c(bycols, "TAB1", tab23))
 sumvars <- c("ANTALL", "VEKT", grep(".a$", names(Filgruppe), value = T))
 meanvars <- c("NEVNER", "vNEVNER", grep(".f$", names(Filgruppe), value = T))
 Filgruppe <- collapse::add_vars(g[["groups"]],
@@ -26,8 +27,8 @@ Filgruppe <- collapse::add_vars(g[["groups"]],
 # Lage samletall for soes
 # Siden tallene i den gamle bydelsfilen i praksis er SOES = 0 må tallene aggregeres på nytt etter at SOES = 0 er sydd på.
 soes0 <- Filgruppe[TAB2 != 0]
-  
-g <- collapse::GRP(soes0, c(bycols, "TAB1"))
+tab13 <- intersect(names(Filgruppe), c("TAB1", "TAB3"))  
+g <- collapse::GRP(soes0, c(bycols, tab13))
 sumvars <- c("ANTALL", "NEVNER", "vNEVNER", "VEKT", grep(".a$", names(soes0), value = T))
 meanvars <- grep(".f$", names(soes0), value = T)
 soes0 <- collapse::add_vars(g[["groups"]],
@@ -36,7 +37,8 @@ soes0 <- collapse::add_vars(g[["groups"]],
 soes0[, let(TAB2 = 0)]
 
 Filgruppe <- data.table::rbindlist(list(Filgruppe, soes0), use.names = T, fill = T)
-g <- collapse::GRP(Filgruppe, c(bycols, "TAB1", "TAB2"))
+tab123 <- intersect(names(Filgruppe), c("TAB1", "TAB2", "TAB3"))  
+g <- collapse::GRP(Filgruppe, c(bycols, tab123))
 Filgruppe <- collapse::add_vars(g[["groups"]],
                                 collapse::fsum(collapse::get_vars(Filgruppe, sumvars), g = g),
                                 collapse::fmean(collapse::get_vars(Filgruppe, meanvars), g = g))
@@ -48,7 +50,7 @@ Fylkeorg <- data.table::copy(Filgruppe)[GEOniv == "K"][, let(ANTALL = VEKT, NEVN
 Fylkeorg <- khfunctions:::do_harmonize_geo(file = Fylkeorg, vals = list(), rectangularize = F, parameters = parameters)
 sumvars <- c("ANTALL", "NEVNER", grep(".a$", names(Fylkeorg), value = T))
 meanvars <- grep(".f$", names(Fylkeorg), value = T)
-gcols <- c(setdiff(bycols, "GEO"), "TAB1", "TAB2")
+gcols <- c(setdiff(bycols, "GEO"), tab123)
 data.table::setkeyv(Fylkeorg, c(setdiff(gcols, c("AARl", "AARh")), "GEO", "AARl", "AARh"))
 Fylkeorg[, let(aar_org = AARl)]
 
@@ -133,7 +135,7 @@ Fylke[, let(GEO = FYLKE, GEOniv = "F")]
 Land <- data.table::copy(Fylke)
 Land[, let(GEO = "0", FYLKE = "00", GEOniv = "L")]
 
-g <- collapse::GRP(Land, c(bycols, "TAB1", "TAB2"))
+g <- collapse::GRP(Land, c(bycols, tab123))
 Land <- collapse::add_vars(g[["groups"]],
                             collapse::fsum(collapse::get_vars(Fylke, sumvars), g = g),
                             collapse::fmean(collapse::get_vars(Fylke, meanvars), g = g))
