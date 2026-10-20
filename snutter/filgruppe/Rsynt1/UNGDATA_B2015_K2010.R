@@ -1,25 +1,33 @@
 # Rsynt 1 for innlesing av vanlige ungdataindikatorer
 # Bydelstall fra 2015 og kommunetall fra 2010
 
-tab1 <- filedescription$TAB1 # Kan bruke filedescription$TAB1, men do_special_handling må også kunne ta med filedescription før dette kan brukes
+tab1 <- filedescription$TAB1
+tab2 <- filedescription$TAB2
+tab3 <- filedescription$TAB3
+
+tab13 <- c(tab1, tab3)
+tab13 <- tab13[which(tab13 != "-" & !is.na(tab13))]
+
 data.table::setnames(DF, c("klasse", "kommune", "tidspunkt"), c("Klasse", "Kommune", "Tidspunkt"), skip_absent = T)
 bydelcols <- grep("^Bydel", names(DF), ignore.case = TRUE, value = T)
 isbydel <- length(bydelcols) > 0
-keepcols <- c(tab1, "Kommune", "AAR", "Tidspunkt", "KJONN", "Klasse", "SOES", "vekt2020", bydelcols)
+keepcols <- c(tab13, "Kommune", "AAR", "Tidspunkt", "KJONN", "Klasse", "SOES", "vekt2020", bydelcols)
 keepcols <- intersect(keepcols, names(DF))
 DF <- DF[, .SD, .SDcols = keepcols]
-DF[, names(.SD) := lapply(.SD, as.numeric), .SDcols = setdiff(keepcols, tab1)]
+DF[, names(.SD) := lapply(.SD, as.numeric), .SDcols = setdiff(keepcols, tab13)]
 
 minaar <- collapse::fmin(unique(DF$AAR))
 if(minaar > 2012) minaar <- 2012 # rektangulariser minst tilbake til 2012
 maxaar <- collapse::fmax(unique(DF$AAR))
 
-x <- DF[[tab1]]
-x_num <- suppressWarnings(as.numeric(x))
-if(all(is.na(x) | !is.na(x_num))) {
-  idx_keep <- which(x_num < 98)
-  DF <- DF[idx_keep]
-} 
+for(tab in tab13){
+  x <- DF[[tab]]
+  x_num <- suppressWarnings(as.numeric(x))
+  if(all(is.na(x) | !is.na(x_num))) {
+    idx_keep <- which(x_num < 98)
+    DF <- DF[idx_keep]
+  }
+}
 
 DF[is.na(SOES), let(SOES = 99)]
 
