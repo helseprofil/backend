@@ -112,6 +112,10 @@ forventet:
   "B": "36"
   "V": "1137"
   "V_n": "81"
+  
+# orgfiler som skal leses med lokal kopi
+localread_patterns: 
+  - UNGDATA
 
 # testing
 test.db: "STYRING/test/KHELSAtest.mdb"
