@@ -141,6 +141,7 @@ Fylke <- data.table::rbindlist(list(Fylke, new_rows), use.names = TRUE, fill = T
 # Dersom filen har TAB3 og noen av disse har startår senere enn startåret for hele filen, 
 # må disse settes på nytt for at fylke- og landstall skal bli like for de første tre årene
 if(is_tab3 && length(tab3_start) > 0){
+  khtools::msg("-- Sikrer korrekt startår for kategorier av TAB3")
   for(cat in names(tab3_start)){
     start <- tab3_start[[cat]]
     replace <- start:(start+1)
@@ -188,6 +189,7 @@ Filgruppe[, let(vNEVNER = NULL)]
        
 # Håndtere sammenslåing av kommuner/undersøkelser (slik det var hardkodet i opprinnelig STATA-snutt)
 # Manuelle endringer
+khtools::msg("- Manuell flytting og sammenslåing av undersøkelser")
 aarcols <- c("AARl", "AARh")
 valcols <- c("ANTALL", "NEVNER")
 # Flytte Nedre Eiker og Svelvik fra 2017 til 2016 for å havne sammen med resten av Drammen
@@ -276,6 +278,11 @@ Filgruppe[
 
 vektkolonner <- intersect(c("VEKT", "VEKT.f", "VEKT.a"), names(Filgruppe))
 Filgruppe[, (vektkolonner) := NULL]
+
+# Dersom noen tab3 nå har fått tall før sitt individuelle startår må dette ryddes opp til slutt.
+if(is_tab3 && length(tab3_start) > 0){
+  ungdata_set_startaar_tab3(data = Filgruppe, tab3_start = tab3_start)
+}
 
 # Gamle kommentarer
 # /*
