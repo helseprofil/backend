@@ -1,15 +1,22 @@
 # NB! For fylkes- og landstall beholdes bare siste gjennomføring dersom en kommune har flere gjennomføring i perioden
 # UNNTAK: 99-koder, da dette hovedsakelig vil være ulike kommuner.
-
 Filgruppe[GEO == "0217" & AARl == 2017, names(.SD) := 0, .SDcols = c("ANTALL", "NEVNER", "VEKT")] # Slette Oppegård-2017 om det er kommet med ved et uhell. 
 Filgruppe[GEO == "1507" & AARl == 2023, let(GEO = "1508")] # La undersøkelsen for Ålesund + Haram i 2023 representere Ålesund
 
 # Slette høst-data f.o.m 2016, sette missing soes til 0 (gammel bydelsfil)
-Filgruppe[AARl >= 2016 & ALDERl %in% c(1,3,5), names(.SD) := 0, .SDcols = c("ANTALL", "NEVNER", "VEKT")]
+Filgruppe[AARl >= 2016 & ALDERl %in% c(1,3,5) & ANTALL.f == 0, names(.SD) := 0, .SDcols = c("ANTALL", "NEVNER", "VEKT")]
 Filgruppe[is.na(TAB2) | TAB2 == 98, let(TAB2 = 0)]
 # Fjerne år hvor spørsmålet ikke var med (nevner = 0 for hele årgangen). Fjerner også evt dummy landstall (skal ikke lages lenger i rsynt1)
 Filgruppe <- Filgruppe[, let(missing = mean(NEVNER, na.rm = T)), by = AARl][missing != 0 & !(as.numeric(GEO) == 0 & NEVNER == 0)][, let(missing = NULL)]
 startaar <- collapse::fmin(Filgruppe$AARl)
+
+# Håndtere evt ulike startår for kombinasjonsindikatorer
+tab3_start <- NULL
+is_tab3 <- "TAB3" %in% names(Filgruppe)
+if(is_tab3){
+  tab3_start <- ungdata_get_startaar_tab3(Filgruppe)
+  tab3_start <- tab3_start[tab3_start > startaar]
+}
 
 # Lage vektet nevner
 bycols <- c("GEOniv", "FYLKE", "GEO", "AARl", "AARh", "KJONN", "ALDERl", "ALDERh", "UTDANN", "INNVKAT", "LANDBAK")
@@ -44,6 +51,7 @@ Filgruppe <- collapse::add_vars(g[["groups"]],
                                 collapse::fmean(collapse::get_vars(Filgruppe, meanvars), g = g))
 
 # Aggregere til fylkes- og landstall basert på vektet antall og nevner.
+khtools::msg("- Lager treårige fylkes- og landstall")
 # Kommunekodene geoharmoniseres for å få korrekte lands- og fylkestall
 # For 2021 og 2022 lagres ettårige tall pga Covid19
 Fylkeorg <- data.table::copy(Filgruppe)[GEOniv == "K"][, let(ANTALL = VEKT, NEVNER = vNEVNER)][, let(VEKT = NULL, vNEVNER= NULL)]
@@ -112,23 +120,54 @@ fylke2016[, let(AARl = AARh)] # Setter AARl = AARh slik at AAR 2014 inneholder 2
 
 Fylke <- data.table::rbindlist(list(fylke2015, fylke2016), fill = TRUE, use.names = TRUE)
 # Legge til fylkestall for første to år, settes lik det tredje året.
-# For 2021 og 2022 erstattes radene av de ettårige tallene lagret over.
 missingaar <- startaar:(startaar+1)
 tredjeaar <- startaar+2
-if(!startaar %in% c(2019, 2020)){
-  for(aar in missingaar){
-    new <- data.table::copy(Fylke[AARl == tredjeaar])[, names(.SD) := aar, .SDcols = c("AARl", "AARh")]
-    Fylke <- data.table::rbindlist(list(Fylke, new), use.names = TRUE, fill = TRUE)
-  }
- } else {
-  for(aar in missingaar){
-    warning(paste0("Første år med data er 2019 eller 2020.\nKan ikke fylle inn fylkestall fra 2021 eller 2022 (ettårige).\n\n",
-                   "Radene settes til missing, vurder å bruke startår 2021 i kuben."))
-    new <- data.table::copy(Fylke[AARl == tredjeaar])[, names(.SD) := aar, .SDcols = c("AARl", "AARh")]
-    new[, let(ANTALL = 0, ANTALL.a = 0, ANTALL.f = 1, NEVNER = 0, NEVNER.a = 0, NEVNER.f = 1)]
-    Fylke <- data.table::rbindlist(list(Fylke, new), use.names = TRUE, fill = TRUE)
-  }
+source_rows <- Fylke[AARl == tredjeaar]
+new_rows <- data.table::rbindlist(
+  list(
+    data.table::copy(source_rows)[, `:=`(AARl = missingaar[1], AARh = missingaar[1])],
+    data.table::copy(source_rows)[, `:=`(AARl = missingaar[2], AARh = missingaar[2])]
+  ), 
+  use.names = TRUE
+)
+if(startaar %in% c(2019, 2020)){
+  warning(paste0("Første år med data er 2019 eller 2020.\nKan ikke fylle inn fylkestall fra 2021 eller 2022 (ettårige).\n\n",
+                 "Radene settes til missing, vurder å bruke startår 2021 i kuben."))
+  new_rows[, let(ANTALL = 0, ANTALL.a = 0, ANTALL.f = 1, NEVNER = 0, NEVNER.a = 0, NEVNER.f = 1)]
 }
+
+Fylke <- data.table::rbindlist(list(Fylke, new_rows), use.names = TRUE, fill = TRUE)
+
+# Dersom filen har TAB3 og noen av disse har startår senere enn startåret for hele filen, 
+# må disse settes på nytt for at fylke- og landstall skal bli like for de første tre årene
+if(is_tab3 && length(tab3_start) > 0){
+  for(cat in names(tab3_start)){
+    start <- tab3_start[[cat]]
+    replace <- start:(start+1)
+    replacewith <- start+2
+    source_rows <- Fylke[TAB3 == cat & AARl == replacewith]
+    missing_rows <- data.table::rbindlist(
+      list(
+        data.table::copy(source_rows)[, `:=`(AARl = replace[1], AARh = replace[1])],
+        data.table::copy(source_rows)[, `:=`(AARl = replace[2], AARh = replace[2])]
+      ), 
+      use.names = TRUE
+    )
+    if(start %in% c(2019, 2020)){
+      warning(paste0("Startår for TAB3 = ", cat, " er satt til 2019 eller 2020.\nKan ikke fylle inn fylkestall fra 2021 eller 2022 (ettårige).\n\n",
+                     "Radene settes til missing, vurder å bruke startår 2021 i kuben."))
+      missing_rows[, let(ANTALL = 0, ANTALL.a = 0, ANTALL.f = 1, NEVNER = 0, NEVNER.a = 0, NEVNER.f = 1)]
+    }
+    Fylke <- data.table::rbindlist(list(Fylke[!(TAB3 == cat & AARl %in% replace)], missing_rows), use.names = TRUE, fill = TRUE)
+  }
+  # Sikkerhetsventil:
+  # Kategorier med senere startår har fått korrigert de tre første
+  # gyldige årene over. Her settes alle år før startåret tilbake til
+  # missing dersom tidligere utfylling av fylkestall har introdusert verdier.
+  ungdata_set_startaar_tab3(Fylke, tab3_start = tab3_start)
+}
+
+# 2021 og 2022 erstattes radene av de ettårige tallene lagret over.
 Fylke <- data.table::rbindlist(list(Fylke[!AARl %in% c(2021, 2022)], fylke2122), use.names = TRUE, fill = TRUE)
 Fylke[, let(GEO = FYLKE, GEOniv = "F")]
 

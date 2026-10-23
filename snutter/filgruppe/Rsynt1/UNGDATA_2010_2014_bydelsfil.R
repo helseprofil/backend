@@ -1,17 +1,26 @@
 # Rsynt 1 for innlesing av gammel bydelsfil Ungdata
 
-tab1 <- filedescription$TAB1 # Kan bruke filedescription$TAB1, men do_special_handling må også kunne ta med filedescription før dette kan brukes
-keepcols <- c(tab1, "Kommune", "AAR", "Tidspunkt", "KJONN", "Klasse", grep("^Bydel", names(DF), value = T))
+# tab1 <- filedescription$TAB1 # Kan bruke filedescription$TAB1, men do_special_handling må også kunne ta med filedescription før dette kan brukes
+tab1 <- filedescription$TAB1
+tab2 <- filedescription$TAB2
+tab3 <- filedescription$TAB3
+
+tab13 <- c(tab1, tab3)
+tab13 <- tab13[which(tab13 != "-" & !is.na(tab13))]
+
+keepcols <- c(tab13, "Kommune", "AAR", "Tidspunkt", "KJONN", "Klasse", grep("^Bydel", names(DF), value = T))
 DF <- DF[, .SD, .SDcols = keepcols]
 # Gjør alt til numerisk for at resten av koden skal fungere
-DF[, names(.SD) := lapply(.SD, as.numeric), .SDcols = setdiff(keepcols, tab1)]
+DF[, names(.SD) := lapply(.SD, as.numeric), .SDcols = setdiff(keepcols, tab13)]
 
-x <- DF[[tab1]]
-x_num <- suppressWarnings(as.numeric(x))
-if(all(is.na(x) | !is.na(x_num))) {
-  idx_keep <- which(x_num < 98)
-  DF <- DF[idx_keep]
-} 
+for(tab in tab13){
+  x <- DF[[tab]]
+  x_num <- suppressWarnings(as.numeric(x))
+  if(all(is.na(x) | !is.na(x_num))) {
+    idx_keep <- which(x_num < 98)
+    DF <- DF[idx_keep]
+  }
+}
 
 DF <- DF[!((Kommune == 301 & (Bydel_Oslo >= 98 | Bydel_Oslo == 17)) | 
              (Kommune == 1103 & Bydel_Stavanger >= 98) |
@@ -47,7 +56,7 @@ DF[Klasse < 98, let(klasse_6delt = paste0(Klasse + 7, "_", 2/Tidspunkt))]
 DF[Klasse >= 98, let(klasse_6delt = paste0(Klasse, "_", 2/Tidspunkt))]
 DF[, let(teller = 1, vekt2020 = 1)]
 
-dims <- c(tab1, "Kommune", "AAR", "KJONN", "klasse_6delt")
+dims <- c(tab13, "Kommune", "AAR", "KJONN", "klasse_6delt")
 g <- collapse::GRP(DF, dims)
 DF <- collapse::add_vars(g[["groups"]], collapse::fsum(collapse::get_vars(DF, c("teller", "vekt2020")), g = g))
 DF[, let(exist = 1)]
@@ -61,7 +70,7 @@ for(dim in setdiff(dims, c("klasse_6delt", "AAR"))){
 }
 
 full <- do.call(khfunctions:::expand.grid.dt, full)
-data.table::setcolorder(full, c("Kommune", "AAR", "KJONN", tab1, "klasse_6delt"))
+data.table::setcolorder(full, c("Kommune", "AAR", "KJONN", tab13, "klasse_6delt"))
 DF <- collapse::join(full, DF, multiple = T, overid = 2, verbose = 0)
 DF[is.na(exist), let(teller = 0, vekt2020 = 0)][, let(exist = NULL)]
 
