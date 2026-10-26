@@ -109,8 +109,11 @@ fylke2016 <- khfunctions:::extend_to_periods(fylke2016, allperiods)
 # (f.eks. 5099 hvor noen av de opprinnelige kommunene gjennomførte i 2017 og andre i 2018)
 fylke2016[, let(has_data = NEVNER > 0)]
 fylke2016[, let(n_values = sum(has_data)), by = c(gcols, "GEO")]
-fylke2016[n_values > 1 & has_data == TRUE, let(max_aar = max(aar_org)), by = c(gcols, "GEO")]
-fylke2016[n_values > 1 & aar_org != max_aar & !grepl("99$", GEO), names(.SD) := 0, .SDcols = sumvars]
+any_dup <- fylke2016[n_values > 1 & has_data == TRUE, .N] > 0
+if(any_dup){
+  fylke2016[n_values > 1 & has_data == TRUE, let(max_aar = max(aar_org)), by = c(gcols, "GEO")]
+  fylke2016[n_values > 1 & aar_org != max_aar & !grepl("99$", GEO), names(.SD) := 0, .SDcols = sumvars]
+}
 
 g <- collapse::GRP(fylke2016, gcols)
 fylke2016 <- collapse::add_vars(g[["groups"]],
@@ -256,7 +259,6 @@ new_bydel[GEO %in% c("5030", "1662"), let(GEO = "500104")]
 new_bydel[GEO == "1141", let(GEO = "110308")]
 new_bydel[GEO == "1142", let(GEO = "110309")]
 Filgruppe <- data.table::rbindlist(list(Filgruppe, new_bydel), fill = T)
-data.table::setkeyv(Filgruppe, c(bycols, "TAB1", "TAB2"))
 
 # For kuber med startaar 2017 dukket det opp rader med 2016 fordi kommunetall flyttes fra 
 # 2017 til 2016. For dette og tilsvarende tilfeller legge sdet inn et sikkerhetsfilter til slutt. 
