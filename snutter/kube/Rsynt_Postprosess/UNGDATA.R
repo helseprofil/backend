@@ -5,7 +5,8 @@
 
 dekning <- max(list.files(file.path(getOption("khfunctions.root"), getOption("khfunctions.kubedir"), getOption("khfunctions.kube.dat"), "R"),
                           pattern = "^UNGDATA_DEKNINGSGRAD_\\d{4}-\\d{2}-\\d{2}-\\d{2}-\\d{2}.parquet$", full.names = T))
-dekning <- arrow::read_parquet(dekning, col_select = c("GEOniv", "GEO", "AARh", "TELLER", "sumTELLER"))[GEOniv %in% c("K", "F")]
+
+dekning <- khtools::read_pq(dekning)[GEOniv %in% c("K", "F"), .SD, .SDcols = c("GEOniv", "GEO", "AARh", "TELLER", "sumTELLER")]
 
 # Finne ut hvilke kommuner som har deltatt (har predteller != 0)
 # Treårige lister for alle år utenom spesialbehandling av pandemiårene:
