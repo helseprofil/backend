@@ -4,8 +4,8 @@
 
 cols <- grep("^atfpro(1$|12$|15$|18$|25$)|^skolprob4", names(DF), value = T, ignore.case = T)
 DF <- DF[AAR >= 2017] # første år alle spørsmålene er med
-DF[, (depr_cols) := lapply(.SD, as.numeric), .SDcols = cols]
-DF[, (cols) := lapply(.SD, function(x) data.table::fifelse(x >= 98, NA, x >= 2 & x <=5)), .SDcols = cols]
+DF[, names(.SD) := lapply(.SD, as.numeric), .SDcols = cols]
+DF[, names(.SD) := lapply(.SD, function(x) data.table::fifelse(x >= 98, NA, x >= 2 & x <=5)), .SDcols = cols]
 DF[, let(miss = rowSums(is.na(.SD)),
          regbrudd = rowSums(.SD, na.rm = T)), .SDcols = cols]
 DF <- DF[miss <= 1] # Fjerne missing for TAB1
