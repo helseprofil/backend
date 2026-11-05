@@ -122,6 +122,10 @@ fylke2016 <- collapse::add_vars(g[["groups"]],
 fylke2016[, let(AARl = AARh)] # Setter AARl = AARh slik at AAR 2014 inneholder 2012_2014 osv. 
 
 Fylke <- data.table::rbindlist(list(fylke2015, fylke2016), fill = TRUE, use.names = TRUE)
+
+### HVORFOR BEHOLDES aar_org av og til men ikke alltid???
+### SJEKK DET I MORGEN!
+
 # Legge til fylkestall for første to år, settes lik det tredje året.
 missingaar <- startaar:(startaar+1)
 tredjeaar <- startaar+2
@@ -186,6 +190,7 @@ Land <- collapse::add_vars(g[["groups"]],
 # Legge til fylkes- og landstall og filtrere bort år før startåret
 Filgruppe <- data.table::rbindlist(list(Filgruppe, Fylke, Land), use.names = T, fill = T)[AARl >= startaar]
 Filgruppe[, let(vNEVNER = NULL)]
+if("aar_org" %in% names(Filgruppe)) Filgruppe[, aar_org := NULL]
 # Gammel kommentar fra Jørgen: 
 # [Aggregering til fylke og land skjer før kommunesammenslåing av undersøkelser. Burde det ikke vært motsatt rekkefølge? :-()
 # Dette burde nok vært gjort i motsatt rekkefølge.Nå vil en undersøkelse telle i fylkes- og landstall for ett år men gå inn i kommunetallet et annet år. 
