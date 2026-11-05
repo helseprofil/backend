@@ -88,9 +88,10 @@ cat(paste0("\n Nye prikker: ", KUBE[spv_tmp == 0 & UDIRPRIKK == 1, .N]))
 
 # Delete data for rows where UDIRPRIKK == 1
 flags <- c(grep("\\.f$", names(KUBE), value = T), "spv_tmp")
-idx <- which(KUBE[["spv_tmp"]] == 0 & KUBE[["UDIRPRIKK"]] == 1)
+idx <- which(KUBE[["spv_tmp"]] != 3 & KUBE[["UDIRPRIKK"]] == 1)
 data.table::set(KUBE, i = idx, j = flags, value = 3L)
 data.table::set(KUBE, i = idx, j = "manuellprikket", value = 1L)
+data.table::set(KUBE, i = idx, j = "pvern", value = 1L)
 # KUBE[spv_tmp == 0 & UDIRPRIKK == 1, c("spv_tmp", flags) := 3L]
 # KUBE[spv_tmp == 0 & UDIRPRIKK == 1, "manuellprikket" := 1L]
 
