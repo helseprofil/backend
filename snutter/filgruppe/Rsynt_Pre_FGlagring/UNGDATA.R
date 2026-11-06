@@ -272,8 +272,14 @@ if(any(unique(Filgruppe$AARl) < startaar)){
 }
 
 # Årganger der kommunen/bydelen ikke har gjennomført må flagges som missing, slik at de ikke går inn i kubekjøring som 0 og personvernprikkes
+# Filgruppen må geoharmoniseres før disse radene flagges, for å unngå at dette flagget slår ut hele tidsrekken 
+# for kommuner som omkodes. Dette gjøres etter at alle undersøkelser er flyttet til riktig år.
 # Fjerner også VEKT-kolonnen, som ikke trengs i kubekjøringen og som krasjer med dimensjonsnavn i en annen kube. 
+vektkolonner <- intersect(c("VEKT", "VEKT.f", "VEKT.a"), names(Filgruppe))
+Filgruppe[, (vektkolonner) := NULL]
 
+khtools::msg("- Harmoniserer geokoder og setter flagg = 1 for år der kommunen ikke har gjennomført")
+Filgruppe <- khfunctions:::do_harmonize_geo(file = Filgruppe, vals = list(), rectangularize = F, parameters = parameters)
 Filgruppe[
   Filgruppe[, .(sum_nevner = sum(NEVNER, na.rm = TRUE)),by = .(GEO, AARl)][sum_nevner == 0, .(GEO, AARl)],
   on = .(GEO, AARl),
@@ -282,9 +288,6 @@ Filgruppe[
     NEVNER.f = 1
   )
 ]
-
-vektkolonner <- intersect(c("VEKT", "VEKT.f", "VEKT.a"), names(Filgruppe))
-Filgruppe[, (vektkolonner) := NULL]
 
 # Dersom noen tab3 nå har fått tall før sitt individuelle startår må dette ryddes opp til slutt.
 if(is_tab3 && length(tab3_start) > 0){
