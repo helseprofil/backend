@@ -42,10 +42,11 @@ if(isbydel){
   DF[, (bydelcols) := NULL]
   if(!"vekt2020" %in% names(DF)) DF[, let(vekt2020 = 1)]
 }
+
 allgeos <- unique(DF$Kommune)
 DF <- DF[!is.na(Klasse) & !is.na(KJONN)]
 
-DF[(Tidspunkt == 99 & AAR > 2021)  | (is.na(tidspunkt) & AAR > 2016), let(Tidspunkt = 1)]
+DF[(Tidspunkt == 99 & AAR > 2021)  | (is.na(Tidspunkt) & AAR > 2016), let(Tidspunkt = 1)]
 DF[Klasse < 98, let(klasse_6delt = paste0(Klasse + 7, "_", 2/Tidspunkt))]
 DF[Klasse >= 98, let(klasse_6delt = paste0(Klasse, "_", 2/Tidspunkt))]
 DF[, let(teller = 1)]
