@@ -8,13 +8,15 @@ tab3 <- filedescription$TAB3
 tab13 <- c(tab1, tab3)
 tab13 <- tab13[which(tab13 != "-" & !is.na(tab13))]
 
-data.table::setnames(DF, c("klasse", "kommune", "tidspunkt"), c("Klasse", "Kommune", "Tidspunkt"), skip_absent = T)
+data.table::setnames(DF, 
+                     c("klasse", "kommune", "tidspunkt"), 
+                     c("Klasse", "Kommune", "Tidspunkt"), skip_absent = T)
 bydelcols <- grep("^Bydel", names(DF), ignore.case = TRUE, value = T)
 isbydel <- length(bydelcols) > 0
 keepcols <- c(tab13, "Kommune", "AAR", "Tidspunkt", "KJONN", "Klasse", "SOES", "vekt2020", bydelcols)
 keepcols <- intersect(keepcols, names(DF))
 DF <- DF[, .SD, .SDcols = keepcols]
-DF[, names(.SD) := lapply(.SD, as.numeric), .SDcols = setdiff(keepcols, tab13)]
+DF[, names(.SD) := lapply(.SD, as.numeric), .SDcols = setdiff(keepcols, c("Kommune", tab13))]
 
 minaar <- collapse::fmin(unique(DF$AAR))
 if(minaar > 2012) minaar <- 2012 # rektangulariser minst tilbake til 2012
@@ -30,6 +32,14 @@ for(tab in tab13){
 }
 
 DF[is.na(SOES), let(SOES = 99)]
+
+# Fjerne Svalbard (2100) - har vært lagt i kodebok tidligere men kan gjøres her.
+khtools::msg("-- Sletter Svalbard (2100) og koder XX00 (ukjente kommuner) om til XX99")
+DF <- DF[Kommune != "2100"]
+# Fra 2026 er små kommuner med N < 50 slått sammen til "ukjent kommune i fylket". Disse kommer inn med XX00-kode (XX = fylkeskoden)
+# For å håndteres korrekt hos oss må disse kodes om til XX99 slik at de plasseres i riktig fylke ved aggregering
+DF[grepl("00$", Kommune), Kommune := sub("00$", "99", Kommune)]
+DF[, Kommune := as.numeric(Kommune)]
 
 if(isbydel){
   DF[, let(nonmiss = rowSums(!is.na(.SD)),
