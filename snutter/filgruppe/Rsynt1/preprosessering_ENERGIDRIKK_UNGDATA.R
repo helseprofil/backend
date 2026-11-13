@@ -6,7 +6,7 @@
 # For daglig-spørsmålet vil dette korrespondere til daglig/sjeldnere
 DF[, let(energidrikk_ukentlig = kosthold22,
          energidrikk_daglig = kosthold22, 
-         energidrikk_3_4_ganger = kosthold_22)]
+         energidrikk_3_4_ganger = kosthold22)]
 DF[energidrikk_daglig < 6, energidrikk_daglig := "1"]
 DF[energidrikk_3_4_ganger < 4, energidrikk_3_4_ganger := "1"]
 DF <- ungdata_reshape_questions(data = DF, questions = c("energidrikk_ukentlig", "energidrikk_3_4_ganger", "energidrikk_daglig"), fd = filedescription)
