@@ -2,19 +2,41 @@
 # Bydelstall fra 2015 og kommunetall fra 2010
 
 tab1 <- filedescription$TAB1
-minaar <- collapse::fmin(unique(DF$AAR))
-if(minaar > 2014) minaar <- 2014 # rektangulariser minst tilbake til 2014
-maxaar <- collapse::fmax(unique(DF$AAR))
-if(is.numeric(DF[[tab1]])) DF <- DF[x < 98, env = list(x = tab1)]
-DF[is.na(SOES), let(SOES = 99)]
-keepcols <- c(tab1, "GEO", "AAR", "KJONN", "ALDER", "SOES")
+tab2 <- filedescription$TAB2
+tab3 <- filedescription$TAB3
+
+tab13 <- c(tab1, tab3)
+tab13 <- tab13[which(tab13 != "-" & !is.na(tab13))]
+
+keepcols <- intersect(c(tab13, "GEO", "AAR", "KJONN", "ALDER", "SOES"), names(DF))
 DF <- DF[, .SD, .SDcols = keepcols]
-allgeos <- unique(DF$GEO)
+khtools::msg("-- koder XX00 (ukjente kommuner) om til XX99")
+# Fra 2026 er små kommuner med N < 50 slått sammen til "ukjent kommune i fylket". Disse kommer inn med XX00-kode (XX = fylkeskoden)
+# For å håndteres korrekt hos oss må disse kodes om til XX99 slik at de plasseres i riktig fylke ved aggregering
+DF[grepl("00$", GEO), GEO := sub("00$", "99", GEO)]
+
+DF[, names(.SD) := lapply(.SD, as.numeric), .SDcols = setdiff(keepcols, c("Kommune", tab13))]
+
+minaar <- collapse::fmin(unique(DF$AAR))
+# if(minaar > 2014) minaar <- 2014 # rektangulariser minst tilbake til 2014
+maxaar <- collapse::fmax(unique(DF$AAR))
+
+for(tab in tab13){
+  x <- DF[[tab]]
+  x_num <- suppressWarnings(as.numeric(x))
+  if(all(is.na(x) | !is.na(x_num))) {
+    idx_keep <- which(x_num < 98)
+    DF <- DF[idx_keep]
+  }
+}
+
+DF[is.na(SOES), let(SOES = 99)]
+
+allgeos <- collapse::funique(DF$GEO)
 DF <- DF[!is.na(ALDER) & !is.na(KJONN)]
 DF[, let(teller = 1)]
-# DF[is.na(vekt2020), let(vekt2020 = 1)]
 
-dims <- c(tab1, "GEO", "AAR", "KJONN", "ALDER", "SOES")
+dims <- c(tab13, "GEO", "AAR", "KJONN", "ALDER", "SOES")
 g <- collapse::GRP(DF, dims)
 DF <- collapse::add_vars(g[["groups"]], collapse::fsum(collapse::get_vars(DF, "teller"), g = g))
 DF[, let(exist = 1)]
@@ -28,10 +50,10 @@ for(dim in setdiff(dims, c("GEO", "ALDER", "AAR"))){
 }  
 
 full <- do.call(khfunctions:::expand.grid.dt, full)
-data.table::setcolorder(full, c("GEO", "AAR", "KJONN", tab1, "ALDER", "SOES"))
+data.table::setcolorder(full, c("GEO", "AAR", "KJONN", "ALDER", "SOES", tab13))
 DF <- collapse::join(full, DF, multiple = T, overid = 2, verbose = 0)
 DF[is.na(exist), let(teller = 0)][, let(exist = NULL)]
 
 # Lag nevner som sum(teller) i hvert strata og gjør alt til tekst
-DF[, let(nevner = collapse::fsum(teller)), by = setdiff(dims, tab1)]
+DF[, let(nevner = collapse::fsum(teller)), by = setdiff(dims, tab13)]
 DF[, names(.SD) := lapply(.SD, as.character)]
