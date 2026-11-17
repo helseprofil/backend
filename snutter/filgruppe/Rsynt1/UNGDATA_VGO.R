@@ -55,5 +55,5 @@ DF <- collapse::join(full, DF, multiple = T, overid = 2, verbose = 0)
 DF[is.na(exist), let(teller = 0)][, let(exist = NULL)]
 
 # Lag nevner som sum(teller) i hvert strata og gjør alt til tekst
-DF[, let(nevner = collapse::fsum(teller)), by = setdiff(dims, tab13)]
+DF[, let(nevner = collapse::fsum(teller)), by = setdiff(dims, tab1)]
 DF[, names(.SD) := lapply(.SD, as.character)]
