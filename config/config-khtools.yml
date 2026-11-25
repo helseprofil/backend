@@ -8,16 +8,16 @@ duckdbopts:
     path: null
   POSL-SDIR-FHP02:
     mem_limit_gb: 100
-    path: "D:/helseprofil/duck"
+    path: "D:/khtools_db"
   POSL-SDIR-FHP03:
     mem_limit_gb: 8
-    path: "D:/helseprofil/duck"
+    path: "D:/khtools_db"
   POSL-SDIR-FHP04:
     mem_limit_gb: 24
-    path: "D:/helseprofil/duck"
+    path: "D:/khtools_db"
   POSL-SDIR-FHP05:
     mem_limit_gb: 24
-    path: "D:/helseprofil/duck"
+    path: "D:/khtools_db"
 
 # Kolonnelister
 prikkeinfo: [pvern, orgprikket, serieprikket, naboprikket, dekningprikket, geoprikket, manuellprikket]
