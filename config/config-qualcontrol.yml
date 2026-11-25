@@ -1,4 +1,5 @@
-year: 2027
+year: 2027 
+duckdb: "qualcontrol"
 
 # Paths
 root: "O:/Prosjekt/FHP/PRODUKSJON"

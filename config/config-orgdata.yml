@@ -2,6 +2,8 @@
 # To select which geo recode table to use eg. 2021 will use tables grunnkrets2021, kommune2021 etc
 year: 2026
 
+duck: "orgdata"
+
 # Only in use up to version 1.4.6
 encoding: latin1
 # Implemented from version 1.4.7
