@@ -2,6 +2,7 @@
 # Andre fellesoptions som ikke skal variere ligger i config-khtools og brukes som "khtools.optname"
 # Årgang - styrer hvilke mapper friskvikfiler og kvalitetskontrolloutput havner
 profileyear: 2027
+geoyear: 2026
 
 # Filstier
 root: "O:/Prosjekt/FHP/PRODUKSJON"
