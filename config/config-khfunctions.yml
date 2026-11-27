@@ -13,6 +13,18 @@ lagkube_guardfile: "helseprofil/lagkube_running.txt"
 stataprikking: "StataPrikking_MASTER.do"
 
 # values and other parameters
+valcols: 
+  "MT": "MALTALL"
+  "T": "TELLER"
+  "N": "NEVNER"
+  "RATE": "RATE"
+  "SMR": "SMR"
+  "MEIS": "MEIS"
+  "ST": "sumTELLER"
+  "SN": "sumNEVNER"
+  "SPT": "sumPREDTELLER"
+  "RN": "RATE.n"
+  
 totals:
   Gn: "L"
   K: 0
@@ -88,17 +100,6 @@ VURDERING, YTELSE, AARSAK, STILLINGSANDEL]
 
 kolorgs: [GEO, AAR, KJONN, ALDER, UTDANN, INNVKAT, LANDBAK, TAB1, TAB2, TAB3, VAL1, VAL2, VAL3]
 taborgs: [GEO, AAR, KJONN, ALDER, TAB1, TAB2, TAB3]
-valcols: 
-  "MT": "MALTALL"
-  "T": "TELLER"
-  "N": "NEVNER"
-  "RATE": "RATE"
-  "SMR": "SMR"
-  "MEIS": "MEIS"
-  "ST": "sumTELLER"
-  "SN": "sumNEVNER"
-  "SPT": "sumPREDTELLER"
-  "RN": "RATE.n"
 profiltabs: [GEO , AAR, KJONN, ALDER, UTDANN, INNVKAT, LANDBAK, ETAB]
 profilvals: [sumTELLER, sumNEVNER, RATE, MALTALL, sumPREDTELLER, PREDTELLER, SMR, NORM, MEIS, RATE.n]
 qcvals: [TELLER, NEVNER, sumTELLER, sumNEVNER, PREDTELLER, RATE, RATE.n]
