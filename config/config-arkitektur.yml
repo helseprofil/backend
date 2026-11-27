@@ -20,7 +20,6 @@
 # -----------------------------------------------------------------------------
 # Pakkeoppsett
 # -----------------------------------------------------------------------------
-
 package_opts:
 
   khfunctions:
@@ -43,6 +42,9 @@ package_opts:
 paths:
 
   root: "O:/Prosjekt/FHP/PRODUKSJON"
+  
+  orgdata:
+    root: "ORGDATA"
 
   filgruppe:
     root: "PRODUKTER/FILGRUPPER"
@@ -54,24 +56,25 @@ paths:
 
   kube:
     root: "PRODUKTER/KUBER"
-    dat: "STATBANK/DATERT"
-    specs: "STATBANK/SPECS"
-    qc: "STATBANK/QC"
-    logg: "STATBANK/KUBELOGG"
+    statbank:
+      root: "STATBANK"  
+      dat: "DATERT"
+      specs: "SPECS"
+      qc: "QC"
+      logg: "KUBELOGG"
+      prod: "STATBANK_"
     friskvik:
       fhp:
         fylke: "FRISKVIK_FYLKE"
         kommune: "FRISKVIK_KOMM"
         bydel: "FRISKVIK_BYDEL"
-
       ovp:
         fylke: "OVP_FYLKE"
         kommune: "OVP_KOMM"
         bydel: "OVP_BYDEL"
-
   
-  orgdata:
-    root: "ORGDATA"
+  dumpdir: "RUNTIMEDUMP"
+  snuttdir: "BIN/Z_Statasnutter"
     
   qc:
     output: "VALIDERING/QualControl"
