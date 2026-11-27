@@ -1,16 +1,14 @@
-# year -> globals::profileyear
-year: 2027 
-duckdb: "qualcontrol"
+# =============================================================================
+# WUALCONTROL-KONFIGURASJON
+#
+# Konfigurasjon som gjelder spesifikt for qualcontrol, og som ikke
+# brukes i andre deler av produksjonssystemet
+#
+# Overskriver options fra config-globals dersom de har samme navn
+# =============================================================================
 
-# Paths
-root: "O:/Prosjekt/FHP/PRODUKSJON"
-output: "VALIDERING/QualControl"
-cubefiles: "PRODUKTER/KUBER/STATBANK"
-files: "PRODUKTER/KUBER"
-db: "STYRING/KHELSA_backend/KHELSA_BE.accdb"
-dbgeo: "STYRING/raw-khelse/geo-koder.accdb"
- 
-# Columns 
+
+# kolonner som skal omdøpes
 rename:
   "antall": TELLER
   "Crude": RATE
@@ -21,6 +19,16 @@ rename:
   "FLx": MEIS
   "Utdanningsnivå": UTDANN
   
+# default fildumper fra readfiles
+dumps: [comparecube, newcube_flag]
+
+# DEVELOP parameters
+skipslowtest: TRUE
+
+# Skal utfases
+
+year: 2027 
+
 standarddimensions: [GEO, AAR, KJONN, ALDER, UTDANN, INNVKAT, LANDBAK]
   
 standardvalues: [TELLER, sumTELLER, NEVNER, sumNEVNER, MEIS, RATE, SMR]
@@ -40,8 +48,13 @@ sumNEVNER, RATE, MALTALL, sumPREDTELLER, PREDTELLER, SMR, NORM, MEIS, RATE.n]
 prikkeinfo: [pvern, orgprikket, serieprikket, naboprikket, dekningprikket, geoprikket, manuellprikket]
 misccols: [origgeo, GEOniv, KOMMUNE, WEIGHTS, any_diffs, newrow, exprow]
 
-# Filedumps
-dumps: [comparecube, newcube_flag]
+# Paths
+root: "O:/Prosjekt/FHP/PRODUKSJON"
+output: "VALIDERING/QualControl"
+cubefiles: "PRODUKTER/KUBER/STATBANK"
+files: "PRODUKTER/KUBER"
+db: "STYRING/KHELSA_backend/KHELSA_BE.accdb"
+dbgeo: "STYRING/raw-khelse/geo-koder.accdb"
 
-# DEVELOP parameters
-skipslowtest: TRUE
+# arbeidsdatabasenavn
+duckdb: "qualcontrol"

@@ -13,12 +13,11 @@
 #
 # package_opts angir hvilke øvrige configfiler hver pakke skal lese.
 # Filene leses i angitt rekkefølge. Senere filer overskriver tidligere
-# verdier dersom samme option forekommer flere steder.
+# verdier dersom samme option forekommer flere steder
 # =============================================================================
 
-
 # -----------------------------------------------------------------------------
-# Pakkeoppsett
+# Pakkeoppsett - hvilke configfiler skal leses
 # -----------------------------------------------------------------------------
 package_opts:
 
@@ -34,9 +33,17 @@ package_opts:
     - config-globals.yml
     - config-orgdata.yml
 
+# -----------------------------------------------------------------------------
+# arbeidsdatabaser
+# -----------------------------------------------------------------------------
+
+db:
+  khfunctions: "khfun"
+  qualcontrol: "qc"
+  orgdata: "org"
 
 # -----------------------------------------------------------------------------
-# Filstier
+# Filstier - beskriver hele mappestrukturen
 # -----------------------------------------------------------------------------
 
 paths:

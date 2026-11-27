@@ -1,77 +1,17 @@
-# Verdier for produksjonsår (hvor friskvikfiler havner og aktiv prodmappe)
-year: 2027
-duck: "khfunctions"
-kube.prod: "STATBANK/STATBANK_2027"
+# =============================================================================
+# KHFUNCTIONS-KONFIGURASJON
+#
+# Konfigurasjon som gjelder spesifikt for khfunctions, og som ikke
+# brukes i andre deler av produksjonssystemet
+#
+# Overskriver options fra config-globals dersom de har samme navn
+# =============================================================================
 
-# Paths 
-root: "O:/Prosjekt/FHP/PRODUKSJON" 
 
-dumpdir: "RUNTIMEDUMP"
-snuttdir: "BIN/Z_Statasnutter"
-## Filgruppemapper
-fgdir: "PRODUKTER/FILGRUPPER"
-fg.ny: "NYESTE"
-fg.dat: "DATERT"
-fg.kblogg: "KODEBOK_LOGG"
-fg.sjekk: "FILGRUPPE_SJEKK"
-fg.logg: "FILGRUPPE_LOGG"
-## Kubemapper
-kubedir: "PRODUKTER/KUBER"
-kube.dat: "STATBANK/DATERT"
-kube.specs: "STATBANK/SPECS"
-kube.qc: "STATBANK/QC"
-kube.logg: "STATBANK/KUBELOGG"
-## Friskvikmapper
-fhpF: "FRISKVIK_FYLKE"
-fhpK: "FRISKVIK_KOMM"
-fhpB: "FRISKVIK_BYDEL"
-ovpF: "OVP_FYLKE"
-ovpK: "OVP_KOMM"
-ovpB: "OVP_BYDEL"
-
-# Scripts, databases and files
-stataprikkfile: "BIN/Z_Statasnutter/StataPrikking_MASTER.do"
-db: "STYRING/KHELSA_backend/KHELSA_BE.accdb"
+# spesialfiler
 lagkube_guardfile: "helseprofil/lagkube_running.txt"
+stataprikking: "StataPrikking_MASTER.do"
 
-# Partitioned population dataset names
-pop_alderaargeo: "BEF_GKny_alder_aar_geo"
-pop_aargeo: "BEF_GKny_aar_geo"
-
-# column lists: 
-standarddimensions: [GEO, AAR, KJONN, ALDER, UTDANN, INNVKAT, LANDBAK]
-standarddimensions_full: [GEO, AARl, AARh, KJONN, ALDERl, ALDERh, UTDANN, INNVKAT, LANDBAK]
-khtabs: [GEO, AAR, KJONN, ALDER, UTDANN, INNVKAT, LANDBAK]
-
-alldimensions: [GEOniv, GEO, FYLKE, AAR, AARl, AARh, ALDER, ALDERl, ALDERh, KJONN, 
-UTDANN, INNVKAT, LANDBAK, ANTALL_GANGER, ANTALLGANGER, BH_NORM, BODD, DATAKILDE, 
-DELTARNAA, DEPRESJON, FERDNIVAA, FERIE, FORNOYD, FORNOYDHET, GRENSE, HAR_POL, HARVENN, 
-HYPPIGHET_TRENING, ICD, INDIKATOR, INNTAK, JA_NEI, KMI_KAT, KODEGRUPPE, LIVSKVALITET, 
-LOKALTILBUD, MANED, MEDIEBRUK, MAAL, NIVA, NIVA_PLAGET, POL, PROGNOSEAAR, REGELBRUDD, 
-Sivilstand, SKJERMTID, SOES, SPM_ID, STATUS, STONADSLENGDE, STOTTE, STOYKILDE, 
-SVOMMEFERD, TRINN, TYPE_VALG, ULIK_MAAL, Utdanning, UTDANNING, VAKSINE, VEKT, 
-VURDERING, YTELSE, AARSAK, STILLINGSANDEL]
-
-
-
-kolorgs: [GEO, AAR, KJONN, ALDER, UTDANN, INNVKAT, LANDBAK, TAB1, TAB2, TAB3, VAL1, VAL2, VAL3]
-taborgs: [GEO, AAR, KJONN, ALDER, TAB1, TAB2, TAB3]
-valcols: 
-  "MT": "MALTALL"
-  "T": "TELLER"
-  "N": "NEVNER"
-  "RATE": "RATE"
-  "SMR": "SMR"
-  "MEIS": "MEIS"
-  "ST": "sumTELLER"
-  "SN": "sumNEVNER"
-  "SPT": "sumPREDTELLER"
-  "RN": "RATE.n"
-profiltabs: [GEO , AAR, KJONN, ALDER, UTDANN, INNVKAT, LANDBAK, ETAB]
-profilvals: [sumTELLER, sumNEVNER, RATE, MALTALL, sumPREDTELLER, PREDTELLER, SMR, NORM, MEIS, RATE.n]
-qcvals: [TELLER, NEVNER, sumTELLER, sumNEVNER, PREDTELLER, RATE, RATE.n]
-prikkeinfo: [pvern, orgprikket, serieprikket, naboprikket, dekningprikket, geoprikket, manuellprikket]
- 
 # values and other parameters
 totals:
   Gn: "L"
@@ -121,3 +61,78 @@ localread_patterns:
 # testing
 test.db: "STYRING/test/KHELSAtest.mdb"
 test.logg: "STYRING/test/KHloggtest.mdb"
+
+
+# Skal utfases
+
+year: 2027
+kube.prod: "STATBANK/STATBANK_2027"
+db: "STYRING/KHELSA_backend/KHELSA_BE.accdb"
+stataprikkfile: "BIN/Z_Statasnutter/StataPrikking_MASTER.do"
+
+# column lists: 
+standarddimensions: [GEO, AAR, KJONN, ALDER, UTDANN, INNVKAT, LANDBAK]
+standarddimensions_full: [GEO, AARl, AARh, KJONN, ALDERl, ALDERh, UTDANN, INNVKAT, LANDBAK]
+khtabs: [GEO, AAR, KJONN, ALDER, UTDANN, INNVKAT, LANDBAK]
+
+alldimensions: [GEOniv, GEO, FYLKE, AAR, AARl, AARh, ALDER, ALDERl, ALDERh, KJONN, 
+UTDANN, INNVKAT, LANDBAK, ANTALL_GANGER, ANTALLGANGER, BH_NORM, BODD, DATAKILDE, 
+DELTARNAA, DEPRESJON, FERDNIVAA, FERIE, FORNOYD, FORNOYDHET, GRENSE, HAR_POL, HARVENN, 
+HYPPIGHET_TRENING, ICD, INDIKATOR, INNTAK, JA_NEI, KMI_KAT, KODEGRUPPE, LIVSKVALITET, 
+LOKALTILBUD, MANED, MEDIEBRUK, MAAL, NIVA, NIVA_PLAGET, POL, PROGNOSEAAR, REGELBRUDD, 
+Sivilstand, SKJERMTID, SOES, SPM_ID, STATUS, STONADSLENGDE, STOTTE, STOYKILDE, 
+SVOMMEFERD, TRINN, TYPE_VALG, ULIK_MAAL, Utdanning, UTDANNING, VAKSINE, VEKT, 
+VURDERING, YTELSE, AARSAK, STILLINGSANDEL]
+
+
+
+kolorgs: [GEO, AAR, KJONN, ALDER, UTDANN, INNVKAT, LANDBAK, TAB1, TAB2, TAB3, VAL1, VAL2, VAL3]
+taborgs: [GEO, AAR, KJONN, ALDER, TAB1, TAB2, TAB3]
+valcols: 
+  "MT": "MALTALL"
+  "T": "TELLER"
+  "N": "NEVNER"
+  "RATE": "RATE"
+  "SMR": "SMR"
+  "MEIS": "MEIS"
+  "ST": "sumTELLER"
+  "SN": "sumNEVNER"
+  "SPT": "sumPREDTELLER"
+  "RN": "RATE.n"
+profiltabs: [GEO , AAR, KJONN, ALDER, UTDANN, INNVKAT, LANDBAK, ETAB]
+profilvals: [sumTELLER, sumNEVNER, RATE, MALTALL, sumPREDTELLER, PREDTELLER, SMR, NORM, MEIS, RATE.n]
+qcvals: [TELLER, NEVNER, sumTELLER, sumNEVNER, PREDTELLER, RATE, RATE.n]
+prikkeinfo: [pvern, orgprikket, serieprikket, naboprikket, dekningprikket, geoprikket, manuellprikket]
+
+# Paths 
+root: "O:/Prosjekt/FHP/PRODUKSJON" 
+
+dumpdir: "RUNTIMEDUMP"
+snuttdir: "BIN/Z_Statasnutter"
+## Filgruppemapper
+fgdir: "PRODUKTER/FILGRUPPER"
+fg.ny: "NYESTE"
+fg.dat: "DATERT"
+fg.kblogg: "KODEBOK_LOGG"
+fg.sjekk: "FILGRUPPE_SJEKK"
+fg.logg: "FILGRUPPE_LOGG"
+## Kubemapper
+kubedir: "PRODUKTER/KUBER"
+kube.dat: "STATBANK/DATERT"
+kube.specs: "STATBANK/SPECS"
+kube.qc: "STATBANK/QC"
+kube.logg: "STATBANK/KUBELOGG"
+## Friskvikmapper
+fhpF: "FRISKVIK_FYLKE"
+fhpK: "FRISKVIK_KOMM"
+fhpB: "FRISKVIK_BYDEL"
+ovpF: "OVP_FYLKE"
+ovpK: "OVP_KOMM"
+ovpB: "OVP_BYDEL"
+
+# Partitioned population dataset names
+pop_alderaargeo: "BEF_GKny_alder_aar_geo"
+pop_aargeo: "BEF_GKny_aar_geo"
+
+# arbeidsdatabasenavn
+duck: "khfunctions"
