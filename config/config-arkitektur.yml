@@ -37,7 +37,7 @@ package_opts:
 # arbeidsdatabaser
 # -----------------------------------------------------------------------------
 
-db:
+workdb:
   khfunctions: "khfun"
   qualcontrol: "qc"
   orgdata: "org"
