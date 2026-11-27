@@ -91,10 +91,11 @@ paths:
 # Kolonnelister
 # -----------------------------------------------------------------------------
 
-dim.standard: [GEO, AAR, KJONN, ALDER, UTDANN, INNVKAT, LANDBAK, TAB1, TAB2, TAB3]
+dim.standard: [GEO, AAR, KJONN, ALDER, UTDANN, INNVKAT, LANDBAK]
 dim.interval: [AARl, AARh, ALDERl, ALDERh]
-## dim.tab settes dynamisk som alle unike verdier av TAB1-3
+## dim.tab settes dynamisk som alle unike verdier av TAB1-3 + TAB1-3
 val.standard: [TELLER, sumTELLER, NEVNER, sumNEVNER, MEIS, RATE, SMR]
 prikkeinfo: [pvern, orgprikket, serieprikket, naboprikket, dekningprikket, geoprikket, manuellprikket]
 friskviktabs: [GEO , AAR, KJONN, ALDER, UTDANN, INNVKAT, LANDBAK, ETAB]
 friskvikvals: [sumTELLER, sumNEVNER, RATE, MALTALL, sumPREDTELLER, PREDTELLER, SMR, NORM, MEIS, RATE.n]
+qcvals: [TELLER, NEVNER, sumTELLER, sumNEVNER, PREDTELLER, RATE, RATE.n]
