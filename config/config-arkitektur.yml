@@ -59,6 +59,9 @@ paths:
     statbank:
       root: "STATBANK"  
       dat: "DATERT"
+        full: "R"
+        csv: "csv"
+        parquet: "parquet"
       specs: "SPECS"
       qc: "QC"
       logg: "KUBELOGG"
