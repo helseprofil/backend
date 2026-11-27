@@ -5,7 +5,7 @@
 # publication.folder - mappenavn hvor ferdige filer til statistikkbanken legges (i kh.paths$kube$statbank$root)
 profileyear: 2027
 geoyear: 2026
-publication.folder: "STATBANK_2027"
+publication.dir: "STATBANK_2027"
 
 # databaser
 db_khelsa: "STYRING/KHELSA_backend/KHELSA_BE.accdb"
