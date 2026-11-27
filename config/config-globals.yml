@@ -4,8 +4,6 @@
 profileyear: 2027
 geoyear: 2026
 
-# Filstier
-root: "O:/Prosjekt/FHP/PRODUKSJON"
 
 # databaser
 db_khelsa: "STYRING/KHELSA_backend/KHELSA_BE.accdb"

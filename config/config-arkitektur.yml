@@ -1,0 +1,84 @@
+# =============================================================================
+# KH-ARKITEKTUR
+#
+# Felles konfigurasjon for KH-produksjonsapparatet.
+#
+# Verdiene her er felles for pakkene og skal ikke kunne variere pakkevis.
+# Ved innlesing settes de som options med prefiks "kh.".
+#
+# Eksempel:
+#   paths       -> kh.paths
+#   db_khelsa   -> kh.db_khelsa
+#   prikkeinfo  -> kh.prikkeinfo
+#
+# package_opts angir hvilke øvrige configfiler hver pakke skal lese.
+# Filene leses i angitt rekkefølge. Senere filer overskriver tidligere
+# verdier dersom samme option forekommer flere steder.
+# =============================================================================
+
+
+# -----------------------------------------------------------------------------
+# Pakkeoppsett
+# -----------------------------------------------------------------------------
+
+package_opts:
+
+  khfunctions:
+    - config-globals.yml
+    - config-khfunctions.yml
+
+  qualcontrol:
+    - config-globals.yml
+    - config-qualcontrol.yml
+
+  orgdata:
+    - config-globals.yml
+    - config-orgdata.yml
+
+
+# -----------------------------------------------------------------------------
+# Filstier
+# -----------------------------------------------------------------------------
+
+paths:
+
+  root: "O:/Prosjekt/FHP/PRODUKSJON"
+
+  filgruppe:
+    root: "PRODUKTER/FILGRUPPER"
+    ny: "NYESTE"
+    dat: "DATERT"
+    kblogg: "KODEBOK_LOGG"
+    sjekk: "FILGRUPPE_SJEKK"
+    logg: "FILGRUPPE_LOGG"
+
+  kube:
+    root: "PRODUKTER/KUBER"
+    friskvik:
+      fhp:
+        fylke: "FRISKVIK_FYLKE"
+        kommune: "FRISKVIK_KOMM"
+        bydel: "FRISKVIK_BYDEL"
+
+      ovp:
+        fylke: "OVP_FYLKE"
+        kommune: "OVP_KOMM"
+        bydel: "OVP_BYDEL"
+
+    statbank:
+      root: "STATBANK"
+      dat: "DATERT"
+      specs: "SPECS"
+      qc: "QC"
+      logg: "KUBELOGG"
+  
+  orgdata:
+    root: "ORGDATA"
+    
+  qc:
+    output: "VALIDERING/QualControl"
+
+  database:
+    khelsa: "STYRING/KHELSA_backend/KHELSA_BE.accdb"
+    geo: "STYRING/raw-khelse/geo-koder.accdb"
+    orgdata: "STYRING/raw-khelse/raw-database_BE.accdb"
