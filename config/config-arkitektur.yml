@@ -54,6 +54,10 @@ paths:
 
   kube:
     root: "PRODUKTER/KUBER"
+    dat: "STATBANK/DATERT"
+    specs: "STATBANK/SPECS"
+    qc: "STATBANK/QC"
+    logg: "STATBANK/KUBELOGG"
     friskvik:
       fhp:
         fylke: "FRISKVIK_FYLKE"
@@ -65,12 +69,6 @@ paths:
         kommune: "OVP_KOMM"
         bydel: "OVP_BYDEL"
 
-    statbank:
-      root: "STATBANK"
-      dat: "DATERT"
-      specs: "SPECS"
-      qc: "QC"
-      logg: "KUBELOGG"
   
   orgdata:
     root: "ORGDATA"
