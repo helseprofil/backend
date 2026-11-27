@@ -58,7 +58,8 @@ paths:
     root: "PRODUKTER/KUBER"
     statbank:
       root: "STATBANK"  
-      dat: "DATERT"
+      dat: 
+        root: "DATERT"
         full: "R"
         csv: "csv"
         parquet: "parquet"
